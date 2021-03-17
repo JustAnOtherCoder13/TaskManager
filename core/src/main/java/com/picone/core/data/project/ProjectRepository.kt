@@ -5,16 +5,16 @@ import javax.inject.Inject
 
 class ProjectRepository @Inject constructor(
     private val projectDaoImpl: ProjectDaoImpl
-){
-    fun getAllProjects():List<Project>{
+) {
+    suspend fun getAllProjects(): List<Project> {
         return projectDaoImpl.getAllProjects()
     }
 
-    fun getProjectForId(projectId:Int):Project{
+    suspend fun getProjectForId(projectId: Int): Project {
         return projectDaoImpl.getProjectForId(projectId)
     }
 
-    suspend fun addNewProject(project: Project){
+    suspend fun addNewProject(project: Project) {
         projectDaoImpl.addNewProject(project)
     }
 

@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class CategoryRepository @Inject constructor(private val categoryDaoImpl: CategoryDaoImpl) {
 
-    fun getAllCategories() : List<Category>{
+    suspend fun getAllCategories() : List<Category>{
         return categoryDaoImpl.getAllCategories()
     }
 

@@ -10,7 +10,7 @@ import com.picone.core.domain.entity.UnderStain
 interface UnderStainDao {
 
     @Query("SELECT*FROM under_stain_table WHERE under_stain_table.taskId= :taskId")
-    fun getAllUnderStainForTaskId(taskId:Int):List<UnderStain>
+    suspend fun getAllUnderStainForTaskId(taskId:Int):List<UnderStain>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addNewUnderStain(underStain: UnderStain)

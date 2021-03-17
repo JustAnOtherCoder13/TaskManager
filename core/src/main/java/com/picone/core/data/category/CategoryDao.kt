@@ -9,7 +9,7 @@ import com.picone.core.domain.entity.Category
 interface CategoryDao {
 
     @Query("SELECT*FROM category_table")
-    fun getAllCategories():List<Category>
+    suspend fun getAllCategories():List<Category>
 
     @Insert
     suspend fun addNewCategory(category: Category)

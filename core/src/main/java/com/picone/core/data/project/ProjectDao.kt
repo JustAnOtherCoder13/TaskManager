@@ -9,10 +9,10 @@ import com.picone.core.domain.entity.Project
 interface ProjectDao {
 
     @Query("SELECT*FROM project_table")
-    fun getAllProjects():List<Project>
+    suspend fun getAllProjects():List<Project>
 
     @Query("SELECT*FROM project_table WHERE project_table.id= :projectId")
-    fun getProjectForId(projectId:Int):Project
+    suspend fun getProjectForId(projectId:Int):Project
 
     @Insert
     suspend fun addNewProject(project: Project)

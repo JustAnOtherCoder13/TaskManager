@@ -54,9 +54,9 @@ abstract class TaskDatabase: RoomDatabase() {
                 contentValues.put("id", category.id)
                 contentValues.put("color", category.color)
                 contentValues.put("name", category.name)
-            }
-            db.insert(CATEGORY_TABLE_NAME, OnConflictStrategy.IGNORE, contentValues)
-        }
 
+                db.insert(CATEGORY_TABLE_NAME, OnConflictStrategy.IGNORE, contentValues)
+            }
+        }
     }
 }

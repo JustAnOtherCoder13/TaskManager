@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class UnderStainRepository @Inject constructor(private val underStainDaoImpl: UnderStainDaoImpl) {
 
-    fun getAllUnderStainForTaskId(taskId:Int):List<UnderStain>{
+    suspend fun getAllUnderStainForTaskId(taskId:Int):List<UnderStain>{
         return underStainDaoImpl.getAllUnderStainForTaskId(taskId)
     }
 

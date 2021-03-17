@@ -9,7 +9,7 @@ taskDatabase: TaskDatabase
 ){
     private val categoryDao:CategoryDao = taskDatabase.categoryDao()
 
-    fun getAllCategories():List<Category>{
+    suspend fun getAllCategories():List<Category>{
         return categoryDao.getAllCategories()
     }
 

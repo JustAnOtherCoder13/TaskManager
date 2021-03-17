@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import com.picone.taskmanager.R
 import com.picone.taskmanager.ui.viewModels.CategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,6 +19,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.i("TAG", "onCreate: ${categoryViewModel.getAllCategories()}")
+        categoryViewModel.setAllCategories()
+        categoryViewModel.getAllCategories.observe(this, {
+            Log.i("TAG", "onCreate: $it")
+        })
     }
+
 }

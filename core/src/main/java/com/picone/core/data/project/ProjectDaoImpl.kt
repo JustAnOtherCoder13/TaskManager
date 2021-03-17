@@ -4,16 +4,14 @@ import com.picone.core.data.TaskDatabase
 import com.picone.core.domain.entity.Project
 import javax.inject.Inject
 
-class ProjectDaoImpl @Inject constructor(
-    taskDatabase: TaskDatabase
-) {
+class ProjectDaoImpl @Inject constructor(taskDatabase: TaskDatabase) {
     private val projectDao = taskDatabase.projectDao()
 
-    fun getAllProjects():List<Project>{
+    suspend fun getAllProjects():List<Project>{
         return projectDao.getAllProjects()
     }
 
-    fun getProjectForId(projectId:Int):Project{
+    suspend fun getProjectForId(projectId:Int):Project{
         return projectDao.getProjectForId(projectId)
     }
 
