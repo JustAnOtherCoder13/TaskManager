@@ -14,10 +14,11 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 
-@InstallIn(ActivityComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
 class CoreModule {
     @Singleton
@@ -38,7 +39,6 @@ class CoreModule {
     }
 
     @Provides
-    @ViewModelScoped
     fun provideGetAllCategories(categoryRepository: CategoryRepository): GetAllCategoriesInteractor {
         return GetAllCategoriesInteractor(categoryRepository)
     }
