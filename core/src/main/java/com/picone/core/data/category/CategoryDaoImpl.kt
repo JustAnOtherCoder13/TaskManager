@@ -12,4 +12,8 @@ taskDatabase: TaskDatabase
     fun getAllCategories():List<Category>{
         return categoryDao.getAllCategories()
     }
+
+    suspend fun addNewCategory(category: Category){
+        categoryDao.addNewCategory(category)
+    }
 }

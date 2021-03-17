@@ -8,4 +8,8 @@ class CategoryRepository @Inject constructor(private val categoryDaoImpl: Catego
     fun getAllCategories() : List<Category>{
         return categoryDaoImpl.getAllCategories()
     }
+
+    suspend fun addNewCategory(category: Category){
+        categoryDaoImpl.addNewCategory(category)
+    }
 }
