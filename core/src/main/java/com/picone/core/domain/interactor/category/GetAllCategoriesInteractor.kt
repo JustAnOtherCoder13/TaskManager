@@ -7,10 +7,6 @@ import javax.inject.Inject
 
 class GetAllCategoriesInteractor @Inject constructor(private val categoryRepository: CategoryRepository){
 
-    /*suspend fun getAllCategoriesInteractor():List<Category>{
-        return categoryRepository.getAllCategories()
-    }*/
-
     val allCategoriesFlow : Flow<List<Category>>
     get() = categoryRepository.getAllCategories()
 }
