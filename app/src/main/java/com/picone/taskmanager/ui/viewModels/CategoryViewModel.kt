@@ -1,28 +1,30 @@
 package com.picone.taskmanager.ui.viewModels
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.interactor.category.AddNewCategoryInteractor
 import com.picone.core.domain.interactor.category.GetAllCategoriesInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val getAllCategoriesInteractor: GetAllCategoriesInteractor,
+    getAllCategoriesInteractor: GetAllCategoriesInteractor,
     private val addNewCategoryInteractor: AddNewCategoryInteractor
 ):ViewModel() {
 
-    fun setAllCategories()= viewModelScope.launch {
-        getAllCategories.value=getAllCategoriesInteractor.getAllCategoriesInteractor()
-        Log.i("TAG", "setAllCategories: ${getAllCategories.value!!.size}")
-    }
+    private val scope = CoroutineScope(Dispatchers.IO)
 
-    var getAllCategories = MutableLiveData<List<Category>>()
+
+    val allCategories : LiveData<List<Category>> = getAllCategoriesInteractor.allCategoriesFlow.asLiveData()
+
+    fun addNewCategory(category: Category){
+        scope.launch {
+            addNewCategoryInteractor.addNewCategory(category)
+        }
+    }
 }
