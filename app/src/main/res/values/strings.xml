@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TaskManager</string>
+
+
+    <!--CONTENT DESCRIPTION-->
+    <string name="top_bar_add_menu_button">top bar add menu button</string>
 </resources>
