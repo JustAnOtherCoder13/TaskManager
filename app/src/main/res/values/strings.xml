@@ -4,4 +4,17 @@
 
     <!--CONTENT DESCRIPTION-->
     <string name="top_bar_add_menu_button">top bar add menu button</string>
+
+    <!--MENU-->
+    <string name="home">HOME</string>
+    <string name="detail">DETAIL</string>
+
+    <!--TEXT VIEW-->
+    <string name="task">task</string>
+    <string name="importance">Importance</string>
+
+    <!--TABLE TITLE-->
+    <string name="important">Important</string>
+    <string name="normal">Normal</string>
+    <string name="unimportant">Unimportant</string>
 </resources>
