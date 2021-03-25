@@ -3,6 +3,9 @@
 
     <!--CONTENT DESCRIPTION-->
     <string name="top_bar_add_menu_button">top bar add menu button</string>
+    <string name="date_picker_icon">date picker icon</string>
+    <string name="show_progress_image">show progress image</string>
+
 
     <!--MENU-->
     <string name="home">HOME</string>
@@ -24,9 +27,11 @@
     <string name="importance">Importance :</string>
     <string name="deadline">Deadline :</string>
     <string name="start_on">Start on :</string>
-    <string name="show_progress_image">show progress image</string>
 
     <!--DESCRIPTION TITLE-->
     <string name="expected_time">Expected Time :</string>
     <string name="description">Description :</string>
+
+    <!--UNDER STAIN TITLE-->
+    <string name="under_stain">Under stain :</string>
 </resources>

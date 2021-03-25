@@ -13,5 +13,10 @@
         <attr name="title"/>
     </declare-styleable>
 
+    <declare-styleable name="CustomAddTaskEditText">
+        <attr name="title"/>
+        <attr name="android:inputType"/>
+    </declare-styleable>
+
 
 </resources>

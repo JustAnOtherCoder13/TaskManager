@@ -5,4 +5,5 @@
     <dimen name="custom_task_detail_shape_corner_radius">20dp</dimen>
     <dimen name="custom_table_shape_corner_radius">10dp</dimen>
     <dimen name="progress_information_round_size">30dp</dimen>
+    <dimen name="custom_add_edit_text_stroke">2dp</dimen>
 </resources>

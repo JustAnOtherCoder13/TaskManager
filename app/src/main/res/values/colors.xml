@@ -7,6 +7,7 @@
     <color name="colorGreyBlueDark">#29434e</color>
     <color name="colorGreyBlueLight">#819ca9</color>
     <color name="white">#fff</color>
+    <color name="greyLight">#DADADA</color>
     <color name="black">#000</color>
     <color name="workDone">#64dd17</color>
     <color name="inProgress">#ffff00</color>

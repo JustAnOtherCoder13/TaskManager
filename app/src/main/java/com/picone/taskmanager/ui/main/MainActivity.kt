@@ -30,5 +30,6 @@ class MainActivity : AppCompatActivity() {
         mCategoryViewModel.allCategories.observe(this, {
             Log.i("TAG", "onCreate: $it  ")
         })
+        mBinding.topAppBar.initAddButton(this)
     }
 }
