@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.DetailFragment">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
-</FrameLayout>
+    <include
+        android:layout_marginStart="@dimen/basic_marge"
+        android:layout_marginTop="@dimen/basic_marge"
+        android:id="@+id/fragment_detail_task_information"
+        layout="@layout/fragment_detail_task_information_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:layout_marginStart="@dimen/basic_marge"
+        android:layout_marginTop="@dimen/little_marge"
+        android:id="@+id/fragment_detail_task_description"
+        layout="@layout/fragment_detail_task_description_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fragment_detail_task_information" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

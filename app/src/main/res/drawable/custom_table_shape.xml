@@ -4,12 +4,12 @@
     <solid android:color="@color/white" />
 
     <stroke
-        android:width="4dp"
+        android:width="@dimen/custom_shape_stroke"
         android:color="?attr/colorPrimary" />
 
     <corners
-        android:bottomLeftRadius="10dp"
-        android:bottomRightRadius="10dp"
-        android:topLeftRadius="10dp"
-        android:topRightRadius="10dp" />
+        android:bottomLeftRadius="@dimen/custom_table_shape_corner_radius"
+        android:bottomRightRadius="@dimen/custom_table_shape_corner_radius"
+        android:topLeftRadius="@dimen/custom_table_shape_corner_radius"
+        android:topRightRadius="@dimen/custom_table_shape_corner_radius" />
 </shape>

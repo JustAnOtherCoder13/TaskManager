@@ -2,17 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/homeFragment"
+        android:id="@id/homeFragment"
         android:enabled="true"
-        android:title="@string/home"
         android:icon="@drawable/ic_bottom_nav_bar_home_24"
-        />
+        android:title="@string/home" />
 
     <item
-        android:id="@+id/detailFragment"
+        android:id="@id/detailFragment"
         android:enabled="true"
-        android:title="@string/detail"
         android:icon="@drawable/ic_bottom_nav_bar_detail_list_24"
-        />
+        android:title="@string/detail" />
 
 </menu>
