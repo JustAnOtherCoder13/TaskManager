@@ -15,13 +15,13 @@ class UnderStainViewModel @Inject constructor(
     private val getAllUnderStainForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor,
     private val addNewUnderStainInteractor: AddNewUnderStainInteractor
 ) : BaseViewModel() {
-    lateinit var data: MutableLiveData<List<UnderStain>>
+    lateinit var underStain: MutableLiveData<List<UnderStain>>
 
     fun allUnderStainForTask(task: Task) =
         ioScope.launch {
             getAllUnderStainForTaskIdInteractor.getAllUnderStainForTaskId(task.id)
                 .collect {
-                    data.value = it
+                    underStain.value = it
                 }
         }
 

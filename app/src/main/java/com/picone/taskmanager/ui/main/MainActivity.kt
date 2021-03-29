@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(mBinding.root)
         mNavController  = Navigation.findNavController(this, R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(mBinding.bottomNavBar,mNavController)
-        mCategoryViewModel.allCategories.observe(this, {
+        mCategoryViewModel.allCategories().observe(this, {
             Log.i("TAG", "onCreate: $it  ")
         })
         mBinding.topAppBar.initAddButton(this)

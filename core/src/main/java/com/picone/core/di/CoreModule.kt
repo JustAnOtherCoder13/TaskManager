@@ -26,12 +26,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 
 @InstallIn(SingletonComponent::class)
 @Module
 class CoreModule {
+
+    @Provides
+    fun provideCoroutineScope() :CoroutineScope {return CoroutineScope(Dispatchers.IO)}
+
     @Singleton
     @Provides
     fun provideTaskDatabase(@ApplicationContext context: Context):TaskDatabase {
