@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">TaskManager</string>
+
+    <!--CONTENT DESCRIPTION-->
+    <string name="top_bar_add_menu_button">top bar add menu button</string>
+    <string name="date_picker_icon">date picker icon</string>
+    <string name="show_progress_image">show progress image</string>
+
+
+    <!--MENU-->
+    <string name="home">HOME</string>
+    <string name="detail">DETAIL</string>
+
+    <!--TEXT VIEW-->
+    <string name="task">task</string>
+    <string name="task_name">TASK NAME</string>
+    <string name="information_type">Information type :</string>
+    <string name="information">Information</string>
+
+    <!--TABLE TITLE-->
+    <string name="important">Important</string>
+    <string name="normal">Normal</string>
+    <string name="unimportant">Unimportant</string>
+
+    <!--INFORMATION TITLE-->
+    <string name="category">Category :</string>
+    <string name="importance">Importance :</string>
+    <string name="deadline">Deadline :</string>
+    <string name="start_on">Start on :</string>
+
+    <!--DESCRIPTION TITLE-->
+    <string name="expected_time">Expected Time :</string>
+    <string name="description">Description :</string>
+
+    <!--UNDER STAIN TITLE-->
+    <string name="under_stain">Under stain :</string>
 </resources>

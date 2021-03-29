@@ -1,10 +1,40 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorBlue</item>
+        <item name="colorPrimaryDark">@color/colorBlueDark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorAccent">@color/colorGreyBlue</item>
+        <item name="fontFamily">@font/roboto_regular</item>
+        <item name="textAppearanceHeadline1">
+            @style/TextAppearance.RealEstateManagerStyles.Headline1
+        </item>
+        <item name="textAppearanceHeadline2">
+            @style/TextAppearance.RealEstateManagerStyles.Headline2
+        </item>
+        <item name="textAppearanceSubtitle1">
+            @style/TextAppearance.RealEstateManagerStyles.Subtitle1
+        </item>
+        <item name="textAppearanceBody1">
+            @style/TextAppearance.RealEstateManagerStyles.Body1
+        </item>
+
+        <!--COMPONENT-->
+        <item name="shapeAppearanceSmallComponent">@style/AppShapeAppearance.SmallComponent</item>
+        <item name="bottomNavigationStyle">@style/AppBottomNavigation</item>
     </style>
 
+    <!--BASE STYLES-->
+
+    <style name="AppShapeAppearance.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/button_corner</item>
+    </style>
+
+    <style name="AppBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView.Colored" />
+
+    <style name="task_detail_information_text_style">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
 </resources>

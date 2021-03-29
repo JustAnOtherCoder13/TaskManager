@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import androidx.navigation.ui.NavigationUI
+import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.ActivityMainBinding
 import com.picone.taskmanager.ui.viewModels.CategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -13,15 +17,19 @@ import dagger.hilt.android.scopes.ActivityScoped
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-    private val categoryViewModel: CategoryViewModel by viewModels()
+    private lateinit var mBinding: ActivityMainBinding
+    private lateinit var mNavController:NavController
+    private val mCategoryViewModel: CategoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        categoryViewModel.allCategories.observe(this, {
+        mBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mBinding.root)
+        mNavController  = Navigation.findNavController(this, R.id.nav_host_fragment)
+        NavigationUI.setupWithNavController(mBinding.bottomNavBar,mNavController)
+        mCategoryViewModel.allCategories.observe(this, {
             Log.i("TAG", "onCreate: $it  ")
         })
+        mBinding.topAppBar.initAddButton(this)
     }
 }

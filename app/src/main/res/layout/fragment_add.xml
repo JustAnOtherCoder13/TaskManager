@@ -1,13 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.AddFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/add_fragment_category_spinner"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/basic_marge"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-</FrameLayout>
+        <AutoCompleteTextView
+            android:id="@+id/category_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/big_marge"
+            android:layout_marginBottom="@dimen/big_marge"
+            android:enabled="false"
+            tools:ignore="LabelFor" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/add_fragment_importance_spinner"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/basic_marge"
+        android:layout_marginEnd="@dimen/basic_marge"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/importance_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/big_marge"
+            android:layout_marginBottom="@dimen/big_marge"
+            android:enabled="false"
+            tools:ignore="LabelFor" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/add_fragment_date_picker_image_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/big_marge"
+        android:background="?attr/colorPrimary"
+        android:contentDescription="@string/date_picker_icon"
+        android:padding="@dimen/basic_marge"
+        android:src="@drawable/ic_add_fragment_date_picker_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/separator"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/separator_height"
+        android:layout_marginTop="@dimen/XL_marge"
+        android:background="@color/colorGreyBlueDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_fragment_date_picker_image_button" />
+
+    <com.picone.taskmanager.utils.customView.CustomAddTaskEditText
+        android:id="@+id/add_fragment_name_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="@id/add_fragment_importance_spinner"
+        app:layout_constraintStart_toStartOf="@id/add_fragment_category_spinner"
+        app:layout_constraintTop_toBottomOf="@id/separator"
+        android:layout_marginTop="@dimen/basic_marge"
+        app:title="Name :" />
+
+    <com.picone.taskmanager.utils.customView.CustomAddTaskEditText
+        android:id="@+id/add_fragment_description_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:layout_marginTop="@dimen/little_marge"
+        app:layout_constraintEnd_toEndOf="@id/add_fragment_importance_spinner"
+        app:layout_constraintStart_toStartOf="@id/add_fragment_category_spinner"
+        app:layout_constraintTop_toBottomOf="@id/add_fragment_name_edit_text"
+        app:title="Description :" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

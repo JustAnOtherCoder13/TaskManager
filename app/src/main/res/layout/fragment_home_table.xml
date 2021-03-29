@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+    <com.picone.taskmanager.utils.customView.CustomRecyclerViewTable
+        android:id="@+id/important_recycler_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/normal_recycler_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/important" />
+
+    <com.picone.taskmanager.utils.customView.CustomRecyclerViewTable
+        android:id="@+id/normal_recycler_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/unimportant_recycler_view"
+        app:layout_constraintStart_toStartOf="@id/important_recycler_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/normal" />
+
+    <com.picone.taskmanager.utils.customView.CustomRecyclerViewTable
+        android:id="@+id/unimportant_recycler_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/normal_recycler_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/unimportant" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

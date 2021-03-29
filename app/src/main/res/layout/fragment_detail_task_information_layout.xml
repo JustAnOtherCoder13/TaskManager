@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/basic_marge"
+    android:background="@drawable/custom_task_detail_shape">
+
+    <TextView
+        android:id="@+id/task_information_title"
+        style="@style/task_detail_information_text_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/basic_marge"
+        android:layout_marginTop="@dimen/little_marge"
+        android:text="@string/task_name"
+        app:layout_constraintEnd_toStartOf="@id/progress_information_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/progress_information_image"
+        app:layout_constraintBottom_toBottomOf="@id/progress_information_image"/>
+
+    <ImageView
+        android:id="@+id/progress_information_image"
+        android:layout_marginStart="@dimen/basic_marge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_round_work_done"
+        app:layout_constraintStart_toEndOf="@id/task_information_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/task_information_title"
+        android:contentDescription="@string/show_progress_image" />
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="@dimen/separator_height"
+        android:layout_marginTop="@dimen/little_marge"
+        android:background="?attr/colorOnPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progress_information_image" />
+
+    <com.picone.taskmanager.utils.customView.CustomTaskInformation
+        android:id="@+id/task_detail_information_start_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/task_information_title"
+        app:title="@string/start_on" />
+
+    <com.picone.taskmanager.utils.customView.CustomTaskInformation
+        android:id="@+id/task_detail_information_deadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/task_detail_information_start_date"
+        app:title="@string/deadline" />
+
+    <com.picone.taskmanager.utils.customView.CustomTaskInformation
+        android:id="@+id/task_detail_information_importance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/task_detail_information_deadline"
+        app:title="@string/importance" />
+
+    <com.picone.taskmanager.utils.customView.CustomTaskInformation
+        android:id="@+id/task_detail_information_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/task_detail_information_importance"
+        app:title="@string/category" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

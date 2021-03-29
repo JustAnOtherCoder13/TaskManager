@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GlobalAttributeDeclare">
+        <attr name="title" format="string"/>
+        <attr name="information" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="CustomRecyclerViewTable">
+        <attr name="title"/>
+    </declare-styleable>
+
+    <declare-styleable name="CustomTaskInformation">
+        <attr name="title"/>
+    </declare-styleable>
+
+    <declare-styleable name="CustomAddTaskEditText">
+        <attr name="title"/>
+        <attr name="android:inputType"/>
+    </declare-styleable>
+
+
+</resources>

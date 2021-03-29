@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MARGE-->
+    <dimen name="little_marge">5dp</dimen>
+    <dimen name="basic_marge">15dp</dimen>
+    <dimen name="big_marge">30dp</dimen>
+    <dimen name="XL_marge">50dp</dimen>
+    <dimen name="XXL_marge">100dp</dimen>
+    <dimen name="XXXL_marge">150dp</dimen>
+
+    <!-- TEXT-->
+    <dimen name="headline1">30sp</dimen>
+    <dimen name="headline2">19sp</dimen>
+    <dimen name="subtitle1">17sp</dimen>
+    <dimen name="body1">14sp</dimen>
+
+    <!-- APP STYLE SIZE-->
+    <dimen name="button_corner">10dp</dimen>
+    <dimen name="dialog_corner">40dp</dimen>
+</resources>
