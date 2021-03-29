@@ -1,16 +1,17 @@
 package com.picone.core.data.project
 
 import com.picone.core.domain.entity.Project
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ProjectRepository @Inject constructor(
     private val projectDaoImpl: ProjectDaoImpl
 ) {
-    suspend fun getAllProjects(): List<Project> {
+    fun getAllProjects(): Flow<List<Project>> {
         return projectDaoImpl.getAllProjects()
     }
 
-    suspend fun getProjectForId(projectId: Int): Project {
+    fun getProjectForId(projectId: Int): Flow<Project> {
         return projectDaoImpl.getProjectForId(projectId)
     }
 

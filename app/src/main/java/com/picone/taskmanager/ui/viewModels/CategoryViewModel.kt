@@ -16,15 +16,12 @@ import javax.inject.Inject
 class CategoryViewModel @Inject constructor(
     getAllCategoriesInteractor: GetAllCategoriesInteractor,
     private val addNewCategoryInteractor: AddNewCategoryInteractor
-):ViewModel() {
-
-    private val scope = CoroutineScope(Dispatchers.IO)
-
+):BaseViewModel() {
 
     val allCategories : LiveData<List<Category>> = getAllCategoriesInteractor.allCategoriesFlow.asLiveData()
 
     fun addNewCategory(category: Category){
-        scope.launch {
+        ioScope.launch {
             addNewCategoryInteractor.addNewCategory(category)
         }
     }

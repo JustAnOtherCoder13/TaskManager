@@ -9,4 +9,5 @@ class GetAllCategoriesInteractor @Inject constructor(private val categoryReposit
 
     val allCategoriesFlow : Flow<List<Category>>
     get() = categoryRepository.getAllCategories()
+
 }
