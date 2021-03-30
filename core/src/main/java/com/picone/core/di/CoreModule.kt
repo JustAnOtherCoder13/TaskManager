@@ -35,9 +35,6 @@ import javax.inject.Singleton
 @Module
 class CoreModule {
 
-    @Provides
-    fun provideCoroutineScope() :CoroutineScope {return CoroutineScope(Dispatchers.IO)}
-
     @Singleton
     @Provides
     fun provideTaskDatabase(@ApplicationContext context: Context):TaskDatabase {

@@ -1,9 +1,6 @@
 package com.picone.taskmanager.ui.viewModels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
@@ -34,7 +31,7 @@ class TaskViewModel @Inject constructor(
         getAllTasksForCategoryIdInteractor.getAllTasksForCategoryId(category.id).asLiveData()
 
     fun addNewTask(task: Task) =
-        ioScope.launch {
+        viewModelScope.launch {
             addNewTaskInteractor.addNewTask(task)
         }
 }

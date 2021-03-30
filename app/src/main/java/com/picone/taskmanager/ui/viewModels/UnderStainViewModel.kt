@@ -18,7 +18,7 @@ class UnderStainViewModel @Inject constructor(
     lateinit var underStain: MutableLiveData<List<UnderStain>>
 
     fun allUnderStainForTask(task: Task) =
-        ioScope.launch {
+        viewModelScope.launch {
             getAllUnderStainForTaskIdInteractor.getAllUnderStainForTaskId(task.id)
                 .collect {
                     underStain.value = it
@@ -27,7 +27,7 @@ class UnderStainViewModel @Inject constructor(
 
 
     fun addNewUnderStain(underStain: UnderStain) =
-        ioScope.launch {
+        viewModelScope.launch {
             addNewUnderStainInteractor.addNewUnderStain(underStain)
         }
 }

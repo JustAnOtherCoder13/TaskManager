@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mNavController:NavController
-    private val mCategoryViewModel: CategoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,9 +26,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(mBinding.root)
         mNavController  = Navigation.findNavController(this, R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(mBinding.bottomNavBar,mNavController)
-        mCategoryViewModel.allCategories().observe(this, {
-            Log.i("TAG", "onCreate: $it  ")
-        })
         mBinding.topAppBar.initAddButton(this)
     }
 }
