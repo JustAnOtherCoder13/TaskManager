@@ -10,7 +10,7 @@ class TaskRepository @Inject constructor(private val taskDaoImpl: TaskDaoImpl) {
         return taskDaoImpl.getAllTasks()
     }
 
-    fun getTaskForId(id: Int): Flow<Task> {
+    suspend fun getTaskForId(id: Int): Task {
         return taskDaoImpl.getTaskForId(id)
     }
 

@@ -13,7 +13,7 @@ class TaskDaoImpl @Inject constructor(taskDatabase: TaskDatabase) {
         return taskDao.getAllTasks()
     }
 
-    fun getTaskForId(id: Int): Flow<Task> {
+    suspend fun getTaskForId(id: Int): Task {
         return taskDao.getTaskForId(id)
     }
 

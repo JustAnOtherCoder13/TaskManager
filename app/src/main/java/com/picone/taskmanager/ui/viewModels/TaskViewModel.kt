@@ -1,7 +1,6 @@
 package com.picone.taskmanager.ui.viewModels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Task
@@ -10,30 +9,50 @@ import com.picone.core.domain.interactor.task.GetAllTasksForCategoryIdInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.GetTaskForIdInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class TaskViewModel @Inject constructor(
-    getAllTasksInteractor: GetAllTasksInteractor,
-    private val getTaskForIdInteractor: GetTaskForIdInteractor,
-    private val getAllTasksForCategoryIdInteractor: GetAllTasksForCategoryIdInteractor,
-    private val addNewTaskInteractor: AddNewTaskInteractor
+    private val mGetAllTasksInteractor: GetAllTasksInteractor,
+    private val mGetTaskForIdInteractor: GetTaskForIdInteractor,
+    private val mGetAllTasksForCategoryIdInteractor: GetAllTasksForCategoryIdInteractor,
+    private val mAddNewTaskInteractor: AddNewTaskInteractor
 ) : BaseViewModel() {
 
+    val mAllTasksMutableLD: MutableLiveData<MutableList<Task>> = MutableLiveData()
+    val mTaskForIdMutableLD: MutableLiveData<Task> = MutableLiveData()
+    val mTasksForCategoryMutableLD: MutableLiveData<MutableList<Task>> = MutableLiveData()
 
-    val allTasks: LiveData<List<Task>> =
-        getAllTasksInteractor.getAllTasks().asLiveData()
+    fun getAllTasks() {
+        viewModelScope.launch {
+            mGetAllTasksInteractor.allTasksFlow
+                .collect {
+                    mAllTasksMutableLD.value = it.toMutableList()
+                }
+        }
+    }
 
-    fun taskForId(id: Int): LiveData<Task> =
-        getTaskForIdInteractor.getTaskForId(id).asLiveData()
+    fun getTaskForId(id: Int) {
+        viewModelScope.launch {
+            mTaskForIdMutableLD.value = mGetTaskForIdInteractor.getTaskForId(id)
+        }
+    }
 
-    fun tasksForCategory(category: Category): LiveData<List<Task>> =
-        getAllTasksForCategoryIdInteractor.getAllTasksForCategoryId(category.id).asLiveData()
+
+    fun getTasksForCategory(category: Category) {
+        viewModelScope.launch {
+            mGetAllTasksForCategoryIdInteractor.getAllTasksForCategoryId(category.id)
+                .collect {
+                    mTasksForCategoryMutableLD.value = it.toMutableList()
+                }
+        }
+    }
 
     fun addNewTask(task: Task) =
         viewModelScope.launch {
-            addNewTaskInteractor.addNewTask(task)
+            mAddNewTaskInteractor.addNewTask(task)
         }
 }

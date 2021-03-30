@@ -5,15 +5,22 @@ import androidx.lifecycle.Observer
 import com.picone.core.data.Generator
 import com.picone.core.data.category.CategoryRepository
 import com.picone.core.data.project.ProjectRepository
+import com.picone.core.data.task.TaskRepository
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
+import com.picone.core.domain.entity.Task
 import com.picone.core.domain.interactor.category.AddNewCategoryInteractor
 import com.picone.core.domain.interactor.category.GetAllCategoriesInteractor
 import com.picone.core.domain.interactor.project.AddNewProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.project.GetProjectForIdInteractor
+import com.picone.core.domain.interactor.task.AddNewTaskInteractor
+import com.picone.core.domain.interactor.task.GetAllTasksForCategoryIdInteractor
+import com.picone.core.domain.interactor.task.GetAllTasksInteractor
+import com.picone.core.domain.interactor.task.GetTaskForIdInteractor
 import com.picone.taskmanager.ui.viewModels.CategoryViewModel
 import com.picone.taskmanager.ui.viewModels.ProjectViewModel
+import com.picone.taskmanager.ui.viewModels.TaskViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -29,7 +36,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 
-open class BaseUnitTest {
+open class BaseViewModelUnitTest {
 
     companion object {
         private const val TEST_CATEGORY_ID = 3
@@ -44,6 +51,17 @@ open class BaseUnitTest {
         val projectToAdd = Project(
             TEST_PROJECT_ID, TEST_PROJECT_CATEGORY_ID, TEST_PROJECT_NAME,
             TEST_PROJECT_DESCRIPTION
+        )
+
+        const val TEST_TASK_ID = 4
+        const val TEST_TASK_CATEGORY_ID = 2
+        const val TEST_TASK_NAME = "new task"
+        const val TEST_TASK_DESCRIPTION = "new task description"
+        const val TEST_TASK_ENTER_DATE = 0
+        const val TEST_TASK_END_DATE = 1
+        val taskToAdd = Task(
+            TEST_TASK_ID, TEST_TASK_CATEGORY_ID, TEST_TASK_NAME, TEST_TASK_DESCRIPTION,
+            TEST_TASK_ENTER_DATE, TEST_TASK_END_DATE
         )
     }
 
@@ -92,6 +110,34 @@ open class BaseUnitTest {
     @Mock
     private lateinit var projectForIdObserver: Observer<Project>
 
+    //TASK VIEW MODEL__________________________________________________
+
+    lateinit var taskViewModel: TaskViewModel
+
+    @Mock
+    private lateinit var taskRepository: TaskRepository
+
+    @InjectMocks
+    private lateinit var getAllTasksInteractor: GetAllTasksInteractor
+
+    @InjectMocks
+    private lateinit var getTaskForIdInteractor: GetTaskForIdInteractor
+
+    @InjectMocks
+    private lateinit var getTasksForCategoryInteractor: GetAllTasksForCategoryIdInteractor
+
+    @InjectMocks
+    private lateinit var addNewTaskInteractor: AddNewTaskInteractor
+
+    @Mock
+    private lateinit var allTasksObserver: Observer<List<Task>>
+
+    @Mock
+    private lateinit var taskForIdObserver: Observer<Task>
+
+    @Mock
+    private lateinit var tasksForCategoryObserver: Observer<List<Task>>
+
     @ExperimentalCoroutinesApi
     @Before
     fun setup() {
@@ -136,6 +182,37 @@ open class BaseUnitTest {
                 .then { projectViewModel.mAllProjectsMutableLD.value?.add(projectToAdd) }
         }
         projectViewModel.getAllProject()
+
+        //TASK VIEW MODEL -------------------------------------------------------------------
+
+        taskViewModel = TaskViewModel(
+            getAllTasksInteractor,
+            getTaskForIdInteractor,
+            getTasksForCategoryInteractor,
+            addNewTaskInteractor
+        )
+        taskViewModel.mAllTasksMutableLD.observeForever(allTasksObserver)
+        taskViewModel.mTaskForIdMutableLD.observeForever(taskForIdObserver)
+        taskViewModel.mTasksForCategoryMutableLD.observeForever(tasksForCategoryObserver)
+
+        Mockito.`when`(taskRepository.getAllTasks()).thenReturn(flowOf(Generator.generatedTasks()))
+        runBlocking {
+            Mockito.`when`(taskRepository.getAllTasksForCategoryId(Generator.generatedCategories()[0].id))
+                .thenReturn(flowOf(Generator.generatedTasks().filter {
+                    Generator.generatedTasks()[0].categoryId == it.categoryId
+                }))
+        }
+        runBlocking {
+            Mockito.`when`(taskRepository.getTaskForId(Generator.generatedTasks()[0].id))
+                .thenReturn(Generator.generatedTasks()[0])
+        }
+        runBlocking {
+            Mockito.`when`(taskRepository.addNewTask(taskToAdd))
+                .then { taskViewModel.mAllTasksMutableLD.value?.add(taskToAdd) }
+        }
+
+        taskViewModel.getAllTasks()
+
     }
 
     @ExperimentalCoroutinesApi

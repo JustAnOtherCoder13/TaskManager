@@ -10,4 +10,8 @@ class GetAllTasksInteractor @Inject constructor(private val taskRepository: Task
     fun getAllTasks(): Flow<List<Task>> {
         return taskRepository.getAllTasks()
     }
+
+    val allTasksFlow: Flow<List<Task>>
+        get() = taskRepository.getAllTasks()
+
 }

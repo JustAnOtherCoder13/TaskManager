@@ -5,7 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 
-class ProjectViewModelUnitTest : BaseUnitTest() {
+class ProjectViewModelViewModelUnitTest : BaseViewModelUnitTest() {
 
     @Test
     fun assertNotNull() {

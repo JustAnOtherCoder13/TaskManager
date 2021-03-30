@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class GetTaskForIdInteractor @Inject constructor(private val taskRepository: TaskRepository) {
 
-    fun getTaskForId(id: Int): Flow<Task> {
+    suspend fun getTaskForId(id: Int): Task {
         return taskRepository.getTaskForId(id)
     }
 }
