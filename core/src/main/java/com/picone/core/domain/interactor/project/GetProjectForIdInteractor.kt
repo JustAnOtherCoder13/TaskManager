@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class GetProjectForIdInteractor @Inject constructor(private val projectRepository: ProjectRepository){
 
-    fun getProjectForId(projectId: Int): Flow<Project> {
+    suspend fun getProjectForId(projectId: Int): Project {
         return projectRepository.getProjectForId(projectId)
     }
 }

@@ -1,15 +1,12 @@
 package com.picone.taskmanager.ui.main
 
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.ActivityMainBinding
-import com.picone.taskmanager.ui.viewModels.CategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 

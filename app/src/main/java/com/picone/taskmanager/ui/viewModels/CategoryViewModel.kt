@@ -12,24 +12,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
-    private val getAllCategoriesInteractor: GetAllCategoriesInteractor,
-    private val addNewCategoryInteractor: AddNewCategoryInteractor,
+    private val mGetAllCategoriesInteractor: GetAllCategoriesInteractor,
+    private val mAddNewCategoryInteractor: AddNewCategoryInteractor,
 ) : BaseViewModel() {
 
-    var allCategoriesMutableLD: MutableLiveData<MutableList<Category>> = MutableLiveData()
+    var mAllCategoriesMutableLD: MutableLiveData<MutableList<Category>> = MutableLiveData()
 
     fun getAllCategories() {
         viewModelScope.launch {
-            getAllCategoriesInteractor.allCategoriesFlow
+            mGetAllCategoriesInteractor.allCategoriesFlow
                 .collect {
-                    allCategoriesMutableLD.value = it.toMutableList()
+                    mAllCategoriesMutableLD.value = it.toMutableList()
                 }
         }
     }
 
     fun addNewCategory(category: Category) {
         viewModelScope.launch {
-            addNewCategoryInteractor.addNewCategory(category)
+            mAddNewCategoryInteractor.addNewCategory(category)
         }
     }
 }

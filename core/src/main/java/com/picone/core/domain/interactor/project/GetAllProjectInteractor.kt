@@ -8,9 +8,6 @@ import javax.inject.Inject
 
 class GetAllProjectInteractor @Inject constructor(private val projectRepository: ProjectRepository) {
 
-    fun getAllProjects(): Flow<List<Project>> {
-        return projectRepository.getAllProjects()
-    }
-    val allProjectsFlow : Flow<List<Project>>
+    val allProjectsFlow: Flow<List<Project>>
         get() = projectRepository.getAllProjects()
 }

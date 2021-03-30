@@ -12,7 +12,7 @@ class ProjectDaoImpl @Inject constructor(taskDatabase: TaskDatabase) {
         return projectDao.getAllProjects()
     }
 
-    fun getProjectForId(projectId:Int):Flow<Project>{
+    suspend fun getProjectForId(projectId:Int):Project{
         return projectDao.getProjectForId(projectId)
     }
 

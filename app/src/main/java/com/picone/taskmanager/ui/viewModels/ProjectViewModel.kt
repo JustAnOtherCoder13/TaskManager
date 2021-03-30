@@ -1,10 +1,7 @@
 package com.picone.taskmanager.ui.viewModels
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.interactor.project.AddNewProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
@@ -16,28 +13,33 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProjectViewModel @Inject constructor(
-    private val getAllProjectInteractor: GetAllProjectInteractor,
-    private val getProjectForIdInteractor: GetProjectForIdInteractor,
-    private val addNewProjectInteractor: AddNewProjectInteractor
+    private val mGetAllProjectInteractor: GetAllProjectInteractor,
+    private val mGetProjectForIdInteractor: GetProjectForIdInteractor,
+    private val mAddNewProjectInteractor: AddNewProjectInteractor
 ) : BaseViewModel() {
 
-    var allProjectsMutableLD: MutableLiveData<MutableList<Project>> = MutableLiveData()
+    var mAllProjectsMutableLD: MutableLiveData<MutableList<Project>> = MutableLiveData()
+    var mProjectForIdMutableLD: MutableLiveData<Project> = MutableLiveData()
+
 
     fun getAllProject() {
         viewModelScope.launch {
-            getAllProjectInteractor.allProjectsFlow
+            mGetAllProjectInteractor.allProjectsFlow
                 .collect {
-                    allProjectsMutableLD.value = it.toMutableList()
+                    mAllProjectsMutableLD.value = it.toMutableList()
                 }
         }
     }
 
-    fun projectForId(id: Int): LiveData<Project> =
-        getProjectForIdInteractor.getProjectForId(id).asLiveData()
+    fun getProjectForId(id: Int) {
+        viewModelScope.launch {
+            mProjectForIdMutableLD.value = mGetProjectForIdInteractor.getProjectForId(id)
+        }
+    }
+
 
     fun addNewProject(project: Project) =
         viewModelScope.launch {
-            addNewProjectInteractor.addNewProject(project)
+            mAddNewProjectInteractor.addNewProject(project)
         }
-
 }

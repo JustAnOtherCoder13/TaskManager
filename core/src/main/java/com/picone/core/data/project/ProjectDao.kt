@@ -13,7 +13,7 @@ interface ProjectDao {
     fun getAllProjects():Flow<List<Project>>
 
     @Query("SELECT*FROM project_table WHERE project_table.id= :projectId")
-    fun getProjectForId(projectId:Int):Flow<Project>
+    suspend fun getProjectForId(projectId:Int):Project
 
     @Insert
     suspend fun addNewProject(project: Project)

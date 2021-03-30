@@ -11,7 +11,7 @@ class ProjectRepository @Inject constructor(
         return projectDaoImpl.getAllProjects()
     }
 
-    fun getProjectForId(projectId: Int): Flow<Project> {
+    suspend fun getProjectForId(projectId: Int): Project {
         return projectDaoImpl.getProjectForId(projectId)
     }
 
