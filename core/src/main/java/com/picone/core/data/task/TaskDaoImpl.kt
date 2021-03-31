@@ -1,6 +1,7 @@
 package com.picone.core.data.task
 
 import com.picone.core.data.TaskDatabase
+import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.Task
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -9,7 +10,7 @@ class TaskDaoImpl @Inject constructor(taskDatabase: TaskDatabase) {
 
     private val taskDao = taskDatabase.taskDao()
 
-    fun getAllTasks(): Flow<List<Task>> {
+    fun getAllTasks(): Flow<List<CompleteTask>> {
         return taskDao.getAllTasks()
     }
 

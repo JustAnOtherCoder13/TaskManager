@@ -17,6 +17,7 @@ data class Task(
     @ColumnInfo(index = true)val categoryId:Int,
     var name:String?,
     var description:String?,
+    var importance:Int,
     val creation:Int,
     var close:Int?
     )

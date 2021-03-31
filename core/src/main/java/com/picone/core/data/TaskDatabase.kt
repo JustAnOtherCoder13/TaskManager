@@ -85,6 +85,7 @@ abstract class TaskDatabase: RoomDatabase() {
                 contentValues.put("id", task.id)
                 contentValues.put("categoryId", task.categoryId)
                 contentValues.put("name", task.name)
+                contentValues.put("importance", task.importance)
                 contentValues.put("description", task.description)
                 contentValues.put("creation", task.creation)
                 contentValues.put("close", task.close)

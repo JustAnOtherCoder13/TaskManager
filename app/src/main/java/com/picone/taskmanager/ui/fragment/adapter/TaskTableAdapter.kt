@@ -4,10 +4,11 @@ import android.view.LayoutInflater
 import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.Task
 import com.picone.taskmanager.databinding.TaskTableRecyclerviewItemBinding
 
-class TaskTableAdapter(private var mAllTasks: List<Task>) :
+class TaskTableAdapter(private var mAllTasks: List<CompleteTask>) :
     RecyclerView.Adapter<TaskTableAdapter.ViewHolder>() {
 
     private lateinit var binding: TaskTableRecyclerviewItemBinding
@@ -22,9 +23,9 @@ class TaskTableAdapter(private var mAllTasks: List<Task>) :
     }
 
     override fun onBindViewHolder(holder: TaskTableAdapter.ViewHolder, position: Int) {
-        val task : Task = mAllTasks[position]
+        val task : CompleteTask = mAllTasks[position]
         if (position==0){binding.separator.visibility=GONE}
-        binding.taskItemTextView.text=task.name
+        binding.taskItemTextView.text=task.task.name
     }
 
     override fun getItemCount(): Int {
@@ -34,7 +35,7 @@ class TaskTableAdapter(private var mAllTasks: List<Task>) :
     inner class ViewHolder(binding: TaskTableRecyclerviewItemBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    fun updateTasks(tasks:List<Task>){
+    fun updateTasks(tasks:List<CompleteTask>){
         mAllTasks = tasks
         notifyDataSetChanged()
     }

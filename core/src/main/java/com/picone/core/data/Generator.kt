@@ -27,9 +27,9 @@ object Generator {
     }
 
     private val TASKS: List<Task> = listOf(
-        Task(1, 1, "task manager", "task application description", 1, null),
-        Task(2, 1, "Account manager", "account application  description", 2, 3),
-        Task(3, 2, "React native", "to make me bankable", 2, null)
+        Task(1, 1, "task manager", "task application description", 0,1, null),
+        Task(2, 1, "Account manager", "account application  description", 2,2, 3),
+        Task(3, 2, "React native", "to make me bankable", 1,2, null)
     )
 
     fun generatedTasks(): MutableList<Task> {
