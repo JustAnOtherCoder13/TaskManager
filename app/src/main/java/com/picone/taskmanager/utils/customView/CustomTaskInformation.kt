@@ -2,10 +2,8 @@ package com.picone.taskmanager.utils.customView
 
 import android.content.Context
 import android.content.res.TypedArray
-import android.text.InputType
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.EditText
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.picone.taskmanager.R

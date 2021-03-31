@@ -1,23 +1,24 @@
 package com.picone.core.data.task
 
 import com.picone.core.domain.entity.Task
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class TaskRepository @Inject constructor(private val taskDaoImpl: TaskDaoImpl) {
 
-    suspend fun getAllTasks():List<Task>{
+    fun getAllTasks(): Flow<List<Task>> {
         return taskDaoImpl.getAllTasks()
     }
 
-    suspend fun getTaskForId(id:Int): Task {
+    suspend fun getTaskForId(id: Int): Task {
         return taskDaoImpl.getTaskForId(id)
     }
 
-    suspend fun getAllTasksForCategoryId(categoryId:Int):List<Task>{
+    fun getAllTasksForCategoryId(categoryId: Int): Flow<List<Task>> {
         return taskDaoImpl.getAllTasksForCategoryId(categoryId)
     }
 
-    suspend fun addNewTask(task: Task){
+    suspend fun addNewTask(task: Task) {
         taskDaoImpl.addNewTask(task)
     }
 }

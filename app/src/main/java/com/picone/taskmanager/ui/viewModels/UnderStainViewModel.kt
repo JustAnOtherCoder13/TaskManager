@@ -1,18 +1,37 @@
 package com.picone.taskmanager.ui.viewModels
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.picone.core.domain.entity.Task
+import com.picone.core.domain.entity.UnderStain
 import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class UnderStainViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val getAllUnderStainForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor,
-    private val addNewUnderStainInteractor: AddNewUnderStainInteractor
-):ViewModel() {
-    
+    private val mGetAllUnderStainForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor,
+    private val mAddNewUnderStainInteractor: AddNewUnderStainInteractor
+) : BaseViewModel() {
 
+    val mAllUnderStainsForTaskMutableLD: MutableLiveData<MutableList<UnderStain>> =
+        MutableLiveData()
+
+    fun getAllUnderStainsForTask(task: Task) {
+        viewModelScope.launch {
+            mGetAllUnderStainForTaskIdInteractor.getAllUnderStainForTaskId(task.id)
+                .collect {
+                    mAllUnderStainsForTaskMutableLD.value = it.toMutableList()
+                }
+        }
+    }
+
+    fun addNewUnderStain(underStain: UnderStain) {
+        viewModelScope.launch {
+            mAddNewUnderStainInteractor.addNewUnderStain(underStain)
+        }
+    }
 }

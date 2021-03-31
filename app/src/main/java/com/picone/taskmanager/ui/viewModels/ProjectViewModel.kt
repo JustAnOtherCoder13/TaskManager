@@ -1,20 +1,45 @@
 package com.picone.taskmanager.ui.viewModels
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.picone.core.domain.entity.Project
 import com.picone.core.domain.interactor.project.AddNewProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.project.GetProjectForIdInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProjectViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val getAllProjectInteractor: GetAllProjectInteractor,
-    private val getProjectForIdInteractor: GetProjectForIdInteractor,
-    private val addNewProjectInteractor: AddNewProjectInteractor
-):ViewModel(){
+    private val mGetAllProjectInteractor: GetAllProjectInteractor,
+    private val mGetProjectForIdInteractor: GetProjectForIdInteractor,
+    private val mAddNewProjectInteractor: AddNewProjectInteractor
+) : BaseViewModel() {
+
+    var mAllProjectsMutableLD: MutableLiveData<MutableList<Project>> = MutableLiveData()
+    var mProjectForIdMutableLD: MutableLiveData<Project> = MutableLiveData()
 
 
+    fun getAllProject() {
+        viewModelScope.launch {
+            mGetAllProjectInteractor.allProjectsFlow
+                .collect {
+                    mAllProjectsMutableLD.value = it.toMutableList()
+                }
+        }
+    }
+
+    fun getProjectForId(id: Int) {
+        viewModelScope.launch {
+            mProjectForIdMutableLD.value = mGetProjectForIdInteractor.getProjectForId(id)
+        }
+    }
+
+
+    fun addNewProject(project: Project) =
+        viewModelScope.launch {
+            mAddNewProjectInteractor.addNewProject(project)
+        }
 }

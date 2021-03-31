@@ -16,8 +16,8 @@ import com.picone.core.domain.interactor.project.AddNewProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.project.GetProjectForIdInteractor
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
-import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksForCategoryIdInteractor
+import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.GetTaskForIdInteractor
 import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
@@ -32,6 +32,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class CoreModule {
+
     @Singleton
     @Provides
     fun provideTaskDatabase(@ApplicationContext context: Context):TaskDatabase {
