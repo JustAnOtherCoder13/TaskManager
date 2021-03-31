@@ -13,5 +13,10 @@ object Constants {
     val Date.medium:String
         get() = DateFormat.getDateInstance(DateFormat.MEDIUM).format(this)
 
+    const val IMPORTANCE_IMPORTANT = 0
+    const val IMPORTANCE_NORMAL = 1
+    const val IMPORTANCE_UNIMPORTANT = 2
+
+
 
 }

@@ -10,7 +10,7 @@ import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
 import com.picone.taskmanager.databinding.TaskTableRecyclerviewItemBinding
 
-class TaskTableAdapter(private var mAllTasks: List<CompleteTask>) :
+open class TaskTableAdapter(private var mAllTasks: List<CompleteTask>) :
     RecyclerView.Adapter<TaskTableAdapter.ViewHolder>() {
 
     private lateinit var binding: TaskTableRecyclerviewItemBinding

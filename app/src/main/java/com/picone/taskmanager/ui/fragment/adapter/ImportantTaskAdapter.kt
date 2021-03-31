@@ -1,4 +1,6 @@
 package com.picone.taskmanager.ui.fragment.adapter
 
-class ImportantTaskAdapter {
+import com.picone.core.domain.entity.CompleteTask
+
+class ImportantTaskAdapter (mAllTasks: List<CompleteTask>) :TaskTableAdapter(mAllTasks) {
 }
