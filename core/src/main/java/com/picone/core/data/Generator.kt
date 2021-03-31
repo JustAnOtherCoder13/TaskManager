@@ -4,6 +4,7 @@ import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
+import java.util.*
 
 object Generator {
 
@@ -27,9 +28,9 @@ object Generator {
     }
 
     private val TASKS: List<Task> = listOf(
-        Task(1, 1, "task manager", "task application description", 0,1, null),
-        Task(2, 1, "Account manager", "account application  description", 2,2, 3),
-        Task(3, 2, "React native", "to make me bankable", 1,2, null)
+        Task(1, 1, "task manager", "task application description", 0,Calendar.getInstance().time, Calendar.getInstance().time,null,null),
+        Task(2, 1, "Account manager", "account application  description", 2,Calendar.getInstance().time, Calendar.getInstance().time,null,null),
+        Task(3, 2, "React native", "to make me bankable", 1,Calendar.getInstance().time, Calendar.getInstance().time,Calendar.getInstance().time,null)
     )
 
     fun generatedTasks(): MutableList<Task> {
@@ -37,9 +38,9 @@ object Generator {
     }
 
     private val UNDER_STAINS: List<UnderStain> = listOf(
-        UnderStain(1, 1, "technical documentation", "functional description, technical description", 1, null),
-        UnderStain(2, 1, "implement architecture", "clean architecture, two module, one for other for data", 2, 3),
-        UnderStain(3, 2, "react native basics", "follow the online course on OpenClassrooms", 2, null)
+        UnderStain(1, 1, "technical documentation", "functional description, technical description", Calendar.getInstance().time, null,null),
+        UnderStain(2, 1, "implement architecture", "clean architecture, two module, one for other for data", Calendar.getInstance().time, Calendar.getInstance().time,null),
+        UnderStain(3, 2, "react native basics", "follow the online course on OpenClassrooms", Calendar.getInstance().time, null,null)
     )
 
     fun generatedUnderStains(): MutableList<UnderStain> {

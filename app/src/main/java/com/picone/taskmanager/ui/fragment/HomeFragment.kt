@@ -1,6 +1,7 @@
 package com.picone.taskmanager.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.picone.core.data.Generator
+import com.picone.core.util.Constants.medium
 import com.picone.taskmanager.databinding.FragmentHomeBinding
 import com.picone.taskmanager.ui.fragment.adapter.TaskTableAdapter
 import com.picone.taskmanager.ui.viewModels.TaskViewModel
@@ -43,6 +45,7 @@ class HomeFragment : Fragment() {
         taskViewModel.getAllTasks()
         taskViewModel.mAllTasksMutableLD.observe(viewLifecycleOwner, {
             tableAdapter.updateTasks(it)
+            Log.i("TAG", "onViewCreated: ${(it[0].task.creation).medium}")
         })
     }
 

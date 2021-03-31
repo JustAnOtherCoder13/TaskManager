@@ -4,17 +4,6 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/task_item_text_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="@dimen/basic_marge"
-        android:text="@string/task"
-        android:textAlignment="center"
-        />
     <FrameLayout
         android:id="@+id/separator"
         android:layout_width="0dp"
@@ -26,5 +15,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+
+    <TextView
+        android:id="@+id/task_item_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="@dimen/basic_marge"
+        android:text="@string/task"
+        android:textAlignment="center"
+        />
+
+    <FrameLayout
+        android:id="@+id/under_stain_separator"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/separator_height"
+        android:background="?attr/colorPrimary"
+        android:layout_marginStart="@dimen/big_marge"
+        android:layout_marginEnd="@dimen/big_marge"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/task_item_text_view"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

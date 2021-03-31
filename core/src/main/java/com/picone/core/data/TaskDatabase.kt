@@ -2,10 +2,7 @@ package com.picone.core.data
 
 import android.content.ContentValues
 import android.content.Context
-import androidx.room.Database
-import androidx.room.OnConflictStrategy
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.picone.core.data.category.CategoryDao
 import com.picone.core.data.project.ProjectDao
@@ -19,12 +16,14 @@ import com.picone.core.util.Constants.CATEGORY_TABLE_NAME
 import com.picone.core.util.Constants.PROJECT_TABLE_NAME
 import com.picone.core.util.Constants.TASK_TABLE_NAME
 import com.picone.core.util.Constants.UNDER_STAIN_TABLE_NAME
+import com.picone.core.util.DateTypeConverter
 
 @Database(
     entities = [Category::class, Project::class, Task::class, UnderStain::class],
     version = 1,
     exportSchema = false
 )
+@TypeConverters(DateTypeConverter::class)
 abstract class TaskDatabase: RoomDatabase() {
     abstract fun categoryDao():CategoryDao
     abstract fun projectDao():ProjectDao
@@ -87,8 +86,10 @@ abstract class TaskDatabase: RoomDatabase() {
                 contentValues.put("name", task.name)
                 contentValues.put("importance", task.importance)
                 contentValues.put("description", task.description)
-                contentValues.put("creation", task.creation)
-                contentValues.put("close", task.close)
+                contentValues.put("creation", task.creation.time)
+                contentValues.put("deadLine", task.deadLine?.time)
+                contentValues.put("start", task.start?.time)
+                contentValues.put("close", task.close?.time)
 
                 db.insert(TASK_TABLE_NAME, OnConflictStrategy.IGNORE, contentValues)
             }
@@ -101,8 +102,9 @@ abstract class TaskDatabase: RoomDatabase() {
                 contentValues.put("taskId", underStain.taskId)
                 contentValues.put("name", underStain.name)
                 contentValues.put("description", underStain.description)
-                contentValues.put("start", underStain.start)
-                contentValues.put("close", underStain.close)
+                contentValues.put("start", underStain.start.time)
+                contentValues.put("deadLine", underStain.deadLine?.time)
+                contentValues.put("close", underStain.close?.time)
 
                 db.insert(UNDER_STAIN_TABLE_NAME, OnConflictStrategy.IGNORE, contentValues)
             }

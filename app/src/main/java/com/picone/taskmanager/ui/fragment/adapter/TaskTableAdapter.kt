@@ -3,9 +3,11 @@ package com.picone.taskmanager.ui.fragment.adapter
 import android.view.LayoutInflater
 import android.view.View.GONE
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.Task
+import com.picone.core.domain.entity.UnderStain
 import com.picone.taskmanager.databinding.TaskTableRecyclerviewItemBinding
 
 class TaskTableAdapter(private var mAllTasks: List<CompleteTask>) :
