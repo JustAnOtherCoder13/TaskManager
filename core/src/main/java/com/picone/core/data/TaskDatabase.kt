@@ -16,6 +16,9 @@ import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
 import com.picone.core.util.Constants.CATEGORY_TABLE_NAME
+import com.picone.core.util.Constants.PROJECT_TABLE_NAME
+import com.picone.core.util.Constants.TASK_TABLE_NAME
+import com.picone.core.util.Constants.UNDER_STAIN_TABLE_NAME
 
 @Database(
     entities = [Category::class, Project::class, Task::class, UnderStain::class],
@@ -44,6 +47,9 @@ abstract class TaskDatabase: RoomDatabase() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 createCategories(db)
+                createProjects(db)
+                createTasks(db)
+                createUnderStains(db)
             }
         }
 
@@ -56,6 +62,48 @@ abstract class TaskDatabase: RoomDatabase() {
                 contentValues.put("name", category.name)
 
                 db.insert(CATEGORY_TABLE_NAME, OnConflictStrategy.IGNORE, contentValues)
+            }
+        }
+
+        private fun createProjects(db: SupportSQLiteDatabase){
+            val contentValues = ContentValues()
+
+            for (project in Generator.generatedProjects()){
+                contentValues.put("id", project.id)
+                contentValues.put("categoryId", project.categoryId)
+                contentValues.put("name", project.name)
+                contentValues.put("description", project.description)
+
+                db.insert(PROJECT_TABLE_NAME, OnConflictStrategy.IGNORE, contentValues)
+            }
+        }
+
+        private fun createTasks(db: SupportSQLiteDatabase){
+            val contentValues = ContentValues()
+
+            for (task in Generator.generatedTasks()){
+                contentValues.put("id", task.id)
+                contentValues.put("categoryId", task.categoryId)
+                contentValues.put("name", task.name)
+                contentValues.put("description", task.description)
+                contentValues.put("creation", task.creation)
+                contentValues.put("close", task.close)
+
+                db.insert(TASK_TABLE_NAME, OnConflictStrategy.IGNORE, contentValues)
+            }
+        }
+        private fun createUnderStains(db: SupportSQLiteDatabase){
+            val contentValues = ContentValues()
+
+            for (underStain in Generator.generatedUnderStains()){
+                contentValues.put("id", underStain.id)
+                contentValues.put("taskId", underStain.taskId)
+                contentValues.put("name", underStain.name)
+                contentValues.put("description", underStain.description)
+                contentValues.put("start", underStain.start)
+                contentValues.put("close", underStain.close)
+
+                db.insert(UNDER_STAIN_TABLE_NAME, OnConflictStrategy.IGNORE, contentValues)
             }
         }
     }

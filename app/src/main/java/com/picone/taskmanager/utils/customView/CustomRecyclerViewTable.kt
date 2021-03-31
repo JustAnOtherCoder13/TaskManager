@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
 import com.picone.taskmanager.R
 
 class CustomRecyclerViewTable@JvmOverloads constructor(
@@ -15,11 +16,13 @@ class CustomRecyclerViewTable@JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : ConstraintLayout(context, attributeSet, defStyle, defStyleRes) {
 
+    lateinit var tableRecyclerView:RecyclerView
 
     init {
         LayoutInflater.from(context)
             .inflate(R.layout.custom_recyclerview_table, this, true)
         val title:TextView = findViewById(R.id.table_title)
+        tableRecyclerView = findViewById(R.id.table_recycler_view)
         val attributes:TypedArray = context.obtainStyledAttributes(attributeSet,R.styleable.CustomRecyclerViewTable)
 
         title.text = attributes.getText(R.styleable.CustomRecyclerViewTable_title)
