@@ -13,22 +13,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UnderStainViewModel @Inject constructor(
-    private val getAllUnderStainForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor,
-    private val addNewUnderStainInteractor: AddNewUnderStainInteractor
+    private val mGetAllUnderStainForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor,
+    private val mAddNewUnderStainInteractor: AddNewUnderStainInteractor
 ) : BaseViewModel() {
-    lateinit var underStain: MutableLiveData<List<UnderStain>>
 
-    fun allUnderStainForTask(task: Task) =
+    val mAllUnderStainsForTaskMutableLD: MutableLiveData<MutableList<UnderStain>> =
+        MutableLiveData()
+
+    fun getAllUnderStainsForTask(task: Task) {
         viewModelScope.launch {
-            getAllUnderStainForTaskIdInteractor.getAllUnderStainForTaskId(task.id)
+            mGetAllUnderStainForTaskIdInteractor.getAllUnderStainForTaskId(task.id)
                 .collect {
-                    underStain.value = it
+                    mAllUnderStainsForTaskMutableLD.value = it.toMutableList()
                 }
         }
+    }
 
-
-    fun addNewUnderStain(underStain: UnderStain) =
+    fun addNewUnderStain(underStain: UnderStain) {
         viewModelScope.launch {
-            addNewUnderStainInteractor.addNewUnderStain(underStain)
+            mAddNewUnderStainInteractor.addNewUnderStain(underStain)
         }
+    }
 }

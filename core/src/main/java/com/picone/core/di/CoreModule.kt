@@ -16,8 +16,8 @@ import com.picone.core.domain.interactor.project.AddNewProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.project.GetProjectForIdInteractor
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
-import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksForCategoryIdInteractor
+import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.GetTaskForIdInteractor
 import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
@@ -26,8 +26,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 

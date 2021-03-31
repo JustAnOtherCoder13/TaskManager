@@ -6,9 +6,11 @@ import com.picone.core.data.Generator
 import com.picone.core.data.category.CategoryRepository
 import com.picone.core.data.project.ProjectRepository
 import com.picone.core.data.task.TaskRepository
+import com.picone.core.data.underStain.UnderStainRepository
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
+import com.picone.core.domain.entity.UnderStain
 import com.picone.core.domain.interactor.category.AddNewCategoryInteractor
 import com.picone.core.domain.interactor.category.GetAllCategoriesInteractor
 import com.picone.core.domain.interactor.project.AddNewProjectInteractor
@@ -18,9 +20,12 @@ import com.picone.core.domain.interactor.task.AddNewTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksForCategoryIdInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.GetTaskForIdInteractor
+import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
+import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
 import com.picone.taskmanager.ui.viewModels.CategoryViewModel
 import com.picone.taskmanager.ui.viewModels.ProjectViewModel
 import com.picone.taskmanager.ui.viewModels.TaskViewModel
+import com.picone.taskmanager.ui.viewModels.UnderStainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -62,6 +67,17 @@ open class BaseViewModelUnitTest {
         val taskToAdd = Task(
             TEST_TASK_ID, TEST_TASK_CATEGORY_ID, TEST_TASK_NAME, TEST_TASK_DESCRIPTION,
             TEST_TASK_ENTER_DATE, TEST_TASK_END_DATE
+        )
+
+        const val TEST_UNDER_STAIN_ID = 4
+        const val TEST_UNDER_STAIN_TASK_ID = 1
+        const val TEST_UNDER_STAIN_NAME = "new under stain"
+        const val TEST_UNDER_STAIN_DESCRIPTION = "new under stain description"
+        const val TEST_UNDER_STAIN_ENTER_DATE = 0
+        const val TEST_UNDER_STAIN_END_DATE = 1
+        val underStainToAdd = UnderStain(
+            TEST_UNDER_STAIN_ID, TEST_UNDER_STAIN_TASK_ID, TEST_UNDER_STAIN_NAME,
+            TEST_UNDER_STAIN_DESCRIPTION, TEST_UNDER_STAIN_ENTER_DATE, TEST_UNDER_STAIN_END_DATE
         )
     }
 
@@ -138,6 +154,22 @@ open class BaseViewModelUnitTest {
     @Mock
     private lateinit var tasksForCategoryObserver: Observer<List<Task>>
 
+    //UNDER STAIN VIEW MODEL__________________________________________________
+
+    lateinit var underStainViewModel: UnderStainViewModel
+
+    @Mock
+    private lateinit var underStainRepository: UnderStainRepository
+
+    @InjectMocks
+    private lateinit var getAllUnderStainsForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor
+
+    @InjectMocks
+    private lateinit var addNewUnderStainInteractor: AddNewUnderStainInteractor
+
+    @Mock
+    private lateinit var allUnderStainsForTaskObserver: Observer<List<UnderStain>>
+
     @ExperimentalCoroutinesApi
     @Before
     fun setup() {
@@ -212,6 +244,26 @@ open class BaseViewModelUnitTest {
         }
 
         taskViewModel.getAllTasks()
+
+        //UNDER STAIN VIEW MODEL -------------------------------------------------------------------
+
+        underStainViewModel =
+            UnderStainViewModel(getAllUnderStainsForTaskIdInteractor, addNewUnderStainInteractor)
+
+        underStainViewModel.mAllUnderStainsForTaskMutableLD.observeForever(allUnderStainsForTaskObserver)
+
+        Mockito.`when`(underStainRepository.getAllUnderStainForTaskId(Generator.generatedTasks()[0].id))
+            .thenReturn(flowOf(Generator.generatedUnderStains().filter {
+                it.taskId == Generator.generatedTasks()[0].id
+            }))
+
+        runBlocking {
+            Mockito.`when`(underStainViewModel.addNewUnderStain(underStainToAdd))
+                .then {
+                    underStainViewModel.mAllUnderStainsForTaskMutableLD.value?.add(underStainToAdd)
+                }
+        }
+        underStainViewModel.getAllUnderStainsForTask(Generator.generatedTasks()[0])
 
     }
 

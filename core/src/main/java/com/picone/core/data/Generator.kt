@@ -3,6 +3,7 @@ package com.picone.core.data
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
+import com.picone.core.domain.entity.UnderStain
 
 object Generator {
 
@@ -28,10 +29,20 @@ object Generator {
     private val TASKS: List<Task> = listOf(
         Task(1, 1, "task manager", "task application description", 1, null),
         Task(2, 1, "Account manager", "account application  description", 2, 3),
-        Task(3, 2, "Flutter", "to follow that tool", 2, null)
+        Task(3, 2, "React native", "to make me bankable", 2, null)
     )
 
     fun generatedTasks(): MutableList<Task> {
         return TASKS.toMutableList()
+    }
+
+    private val UNDER_STAINS: List<UnderStain> = listOf(
+        UnderStain(1, 1, "technical documentation", "functional description, technical description", 1, null),
+        UnderStain(2, 1, "implement architecture", "clean architecture, two module, one for other for data", 2, 3),
+        UnderStain(3, 2, "react native basics", "follow the online course on OpenClassrooms", 2, null)
+    )
+
+    fun generatedUnderStains(): MutableList<UnderStain> {
+        return UNDER_STAINS.toMutableList()
     }
 }

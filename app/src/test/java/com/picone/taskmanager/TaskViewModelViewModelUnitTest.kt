@@ -1,22 +1,23 @@
 package com.picone.taskmanager
 
 import com.picone.core.data.Generator
-import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TaskViewModelViewModelUnitTest : BaseViewModelUnitTest() {
 
     @Test
     fun assertNotNull() {
-        Assert.assertNotNull(taskViewModel)
-        Assert.assertNotNull(taskViewModel.mAllTasksMutableLD)
-        Assert.assertNotNull(taskViewModel.mTasksForCategoryMutableLD)
-        Assert.assertNotNull(taskViewModel.mTaskForIdMutableLD)
-        Assert.assertTrue(taskViewModel.mAllTasksMutableLD.hasObservers())
-        Assert.assertTrue(taskViewModel.mTasksForCategoryMutableLD.hasObservers())
-        Assert.assertTrue(taskViewModel.mTaskForIdMutableLD.hasObservers())
+        assertNotNull(taskViewModel)
+        assertNotNull(taskViewModel.mAllTasksMutableLD)
+        assertNotNull(taskViewModel.mTasksForCategoryMutableLD)
+        assertNotNull(taskViewModel.mTaskForIdMutableLD)
+        assertTrue(taskViewModel.mAllTasksMutableLD.hasObservers())
+        assertTrue(taskViewModel.mTasksForCategoryMutableLD.hasObservers())
+        assertTrue(taskViewModel.mTaskForIdMutableLD.hasObservers())
     }
 
     @Test
@@ -60,19 +61,18 @@ class TaskViewModelViewModelUnitTest : BaseViewModelUnitTest() {
     }
 
     @Test
-    fun addCategoryShouldUpdateListOfCategories() {
+    fun addTaskShouldUpdateListOfTasks() {
         runBlocking {
             taskViewModel.addNewTask(taskToAdd)
-            Assert.assertEquals(
+            assertEquals(
                 4,
                 taskViewModel.mAllTasksMutableLD.value?.size
             )
-            Assert.assertTrue(
+            assertTrue(
                 taskViewModel.mAllTasksMutableLD.value?.lastOrNull()?.name.equals(
                     TEST_TASK_NAME
                 )
             )
         }
     }
-
 }
