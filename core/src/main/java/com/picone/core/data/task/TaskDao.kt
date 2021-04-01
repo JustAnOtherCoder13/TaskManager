@@ -1,17 +1,16 @@
 package com.picone.core.data.task
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
+import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.Task
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
 
+    @Transaction
     @Query("SELECT*FROM task_table")
-    fun getAllTasks(): Flow<List<Task>>
+    fun getAllTasks(): Flow<List<CompleteTask>>
 
     @Query("SELECT*FROM task_table WHERE task_table.id= :id")
     suspend fun getTaskForId(id: Int): Task

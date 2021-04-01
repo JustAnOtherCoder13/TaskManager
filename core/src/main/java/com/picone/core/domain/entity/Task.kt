@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.picone.core.util.Constants.TASK_TABLE_NAME
+import java.util.*
 
 @Entity(tableName = TASK_TABLE_NAME,foreignKeys = [ForeignKey(
     entity = Category::class,
@@ -17,6 +18,9 @@ data class Task(
     @ColumnInfo(index = true)val categoryId:Int,
     var name:String?,
     var description:String?,
-    val creation:Int,
-    var close:Int?
+    var importance:Int,
+    val creation:Date,
+    val start : Date?,
+    val deadLine : Date?,
+    var close:Date?
     )

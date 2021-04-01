@@ -3,6 +3,7 @@ package com.picone.taskmanager.ui.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.picone.core.domain.entity.Category
+import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksForCategoryIdInteractor
@@ -22,7 +23,7 @@ class TaskViewModel @Inject constructor(
     private val mAddNewTaskInteractor: AddNewTaskInteractor
 ) : BaseViewModel() {
 
-    val mAllTasksMutableLD: MutableLiveData<MutableList<Task>> = MutableLiveData()
+    val mAllTasksMutableLD: MutableLiveData<MutableList<CompleteTask>> = MutableLiveData()
     val mTaskForIdMutableLD: MutableLiveData<Task> = MutableLiveData()
     val mTasksForCategoryMutableLD: MutableLiveData<MutableList<Task>> = MutableLiveData()
 

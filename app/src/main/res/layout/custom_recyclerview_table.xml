@@ -13,9 +13,11 @@
         android:padding="@dimen/basic_marge"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/separator"/>
 
     <FrameLayout
+        android:id="@+id/separator"
         android:layout_width="0dp"
         android:layout_height="@dimen/separator_height"
         android:background="?attr/colorPrimary"
@@ -29,11 +31,10 @@
         android:id="@+id/table_recycler_view"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:padding="@dimen/basic_marge"
-        android:layout_marginTop="@dimen/basic_marge"
+        android:paddingBottom="@dimen/basic_marge"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/table_title" />
+        app:layout_constraintTop_toBottomOf="@id/separator" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
