@@ -1,8 +1,6 @@
 package com.picone.taskmanager.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.CompleteTask

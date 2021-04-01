@@ -2,9 +2,7 @@ package com.picone.taskmanager
 
 import com.picone.core.data.Generator
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 
 class TaskViewModelViewModelUnitTest : BaseViewModelUnitTest() {
@@ -69,7 +67,7 @@ class TaskViewModelViewModelUnitTest : BaseViewModelUnitTest() {
                 taskViewModel.mAllTasksMutableLD.value?.size
             )
             assertTrue(
-                taskViewModel.mAllTasksMutableLD.value?.lastOrNull()?.name.equals(
+                taskViewModel.mAllTasksMutableLD.value?.lastOrNull()?.task?.name.equals(
                     TEST_TASK_NAME
                 )
             )

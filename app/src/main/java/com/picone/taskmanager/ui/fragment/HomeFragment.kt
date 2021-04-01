@@ -1,7 +1,6 @@
 package com.picone.taskmanager.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -32,7 +31,7 @@ class HomeFragment : Fragment() {
 
     private val mTaskViewModel: TaskViewModel by activityViewModels()
 
-    private lateinit var importanceList:List<String>
+    private lateinit var importanceList: List<String>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,7 +51,7 @@ class HomeFragment : Fragment() {
         observeRecyclerViewValues()
         initFilterByImportanceDropDownMenu()
         setFilterByImportanceItemClickListener()
-}
+    }
 
     override fun onResume() {
         super.onResume()
@@ -60,83 +59,86 @@ class HomeFragment : Fragment() {
     }
 
     private fun setFilterByImportanceItemClickListener() {
-        mBinding.filterSpinner.setOnItemClickListener { parent, view, position, id ->
+        mBinding.filterSpinner.setOnItemClickListener { _, _, position, _ ->
             mBinding.homeFragmentTasksTableLayout.importantRecyclerView.visibility =
-                    if(importanceList[position]==resources.getString(R.string.important)
-                        ||importanceList[position]==resources.getString(R.string.all)) VISIBLE
-                    else GONE
+                if (importanceList[position] == resources.getString(R.string.important)
+                    || importanceList[position] == resources.getString(R.string.all)
+                ) VISIBLE
+                else GONE
 
             mBinding.homeFragmentTasksTableLayout.normalRecyclerView.visibility =
-                if(importanceList[position]==resources.getString(R.string.normal)
-                    ||importanceList[position]==resources.getString(R.string.all)) VISIBLE
+                if (importanceList[position] == resources.getString(R.string.normal)
+                    || importanceList[position] == resources.getString(R.string.all)
+                ) VISIBLE
                 else GONE
 
             mBinding.homeFragmentTasksTableLayout.unimportantRecyclerView.visibility =
-                if(importanceList[position]==resources.getString(R.string.unimportant)
-                    ||importanceList[position]==resources.getString(R.string.all)) VISIBLE
+                if (importanceList[position] == resources.getString(R.string.unimportant)
+                    || importanceList[position] == resources.getString(R.string.all)
+                ) VISIBLE
                 else GONE
         }
     }
 
     private fun initFilterByImportanceDropDownMenu() {
-    importanceList = listOf(
-        resources.getString(R.string.important),
-        resources.getString(R.string.normal),
-        resources.getString(R.string.unimportant),
-        resources.getString(R.string.all)
-    )
-val importanceArrayAdapter = context?.let {
-    ArrayAdapter(
-        it,
-        android.R.layout.simple_spinner_dropdown_item,
-        importanceList
-    )
-}
-(mBinding.filterSpinner as? AutoCompleteTextView)?.setAdapter(importanceArrayAdapter)
-}
-
-private fun observeRecyclerViewValues() {
-mTaskViewModel.mAllTasksMutableLD.observe(viewLifecycleOwner, { it ->
-    mImportantTaskAdapter.updateTasks(it.filter { it.task.importance == IMPORTANCE_IMPORTANT }
-        .sortedBy { it.task.creation })
-    mNormalTaskAdapter.updateTasks(it.filter { it.task.importance == IMPORTANCE_NORMAL }
-        .sortedBy { it.task.creation })
-    mUnimportantTaskAdapter.updateTasks(it.filter { it.task.importance == IMPORTANCE_UNIMPORTANT }
-        .sortedBy { it.task.creation })
-})
-}
-
-private fun initRecyclerViewAdapter() {
-mImportantTaskAdapter =
-    TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment) }
-mNormalTaskAdapter =
-    TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment) }
-mUnimportantTaskAdapter =
-    TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment) }
-}
-
-private fun initRecyclerView() {
-val recyclerViews = listOf(
-    mBinding.homeFragmentTasksTableLayout.importantRecyclerView,
-    mBinding.homeFragmentTasksTableLayout.normalRecyclerView,
-    mBinding.homeFragmentTasksTableLayout.unimportantRecyclerView
-)
-for (recyclerView in recyclerViews) {
-    recyclerView.tableRecyclerView.layoutManager =
-        LinearLayoutManager(context)
-    when (recyclerView.id) {
-        mBinding.homeFragmentTasksTableLayout.importantRecyclerView.id
-        -> recyclerView.tableRecyclerView.adapter = mImportantTaskAdapter
-        mBinding.homeFragmentTasksTableLayout.normalRecyclerView.id
-        -> recyclerView.tableRecyclerView.adapter = mNormalTaskAdapter
-        mBinding.homeFragmentTasksTableLayout.unimportantRecyclerView.id
-        -> recyclerView.tableRecyclerView.adapter = mUnimportantTaskAdapter
+        importanceList = listOf(
+            resources.getString(R.string.important),
+            resources.getString(R.string.normal),
+            resources.getString(R.string.unimportant),
+            resources.getString(R.string.all)
+        )
+        val importanceArrayAdapter = context?.let {
+            ArrayAdapter(
+                it,
+                android.R.layout.simple_spinner_dropdown_item,
+                importanceList
+            )
+        }
+        (mBinding.filterSpinner as? AutoCompleteTextView)?.setAdapter(importanceArrayAdapter)
     }
-}
-}
 
-override fun onDestroyView() {
-super.onDestroyView()
-_binding = null
-}
+    private fun observeRecyclerViewValues() {
+        mTaskViewModel.mAllTasksMutableLD.observe(viewLifecycleOwner, { it ->
+            mImportantTaskAdapter.updateTasks(it.filter { it.task.importance == IMPORTANCE_IMPORTANT }
+                .sortedBy { it.task.creation })
+            mNormalTaskAdapter.updateTasks(it.filter { it.task.importance == IMPORTANCE_NORMAL }
+                .sortedBy { it.task.creation })
+            mUnimportantTaskAdapter.updateTasks(it.filter { it.task.importance == IMPORTANCE_UNIMPORTANT }
+                .sortedBy { it.task.creation })
+        })
+    }
+
+    private fun initRecyclerViewAdapter() {
+        mImportantTaskAdapter =
+            TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment) }
+        mNormalTaskAdapter =
+            TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment) }
+        mUnimportantTaskAdapter =
+            TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment) }
+    }
+
+    private fun initRecyclerView() {
+        val recyclerViews = listOf(
+            mBinding.homeFragmentTasksTableLayout.importantRecyclerView,
+            mBinding.homeFragmentTasksTableLayout.normalRecyclerView,
+            mBinding.homeFragmentTasksTableLayout.unimportantRecyclerView
+        )
+        for (recyclerView in recyclerViews) {
+            recyclerView.tableRecyclerView.layoutManager =
+                LinearLayoutManager(context)
+            when (recyclerView.id) {
+                mBinding.homeFragmentTasksTableLayout.importantRecyclerView.id
+                -> recyclerView.tableRecyclerView.adapter = mImportantTaskAdapter
+                mBinding.homeFragmentTasksTableLayout.normalRecyclerView.id
+                -> recyclerView.tableRecyclerView.adapter = mNormalTaskAdapter
+                mBinding.homeFragmentTasksTableLayout.unimportantRecyclerView.id
+                -> recyclerView.tableRecyclerView.adapter = mUnimportantTaskAdapter
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

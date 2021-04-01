@@ -1,14 +1,12 @@
 package com.picone.taskmanager.ui.fragment.adapter
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
 import com.picone.core.domain.entity.CompleteTask
 import com.picone.taskmanager.R

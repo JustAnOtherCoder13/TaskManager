@@ -1,7 +1,6 @@
 package com.picone.core.util
 
 import androidx.room.TypeConverter
-import java.text.DateFormat
 import java.util.*
 
 class DateTypeConverter {
