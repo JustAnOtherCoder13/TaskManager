@@ -21,11 +21,22 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/progress_information_image"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_margin="@dimen/basic_marge"
         android:text="@string/task"
         android:textAlignment="center"
         />
+
+    <ImageView
+        android:id="@+id/progress_information_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_round_work_done"
+        android:layout_marginEnd="@dimen/basic_marge"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:contentDescription="@string/show_progress_image" />
     
 </androidx.constraintlayout.widget.ConstraintLayout>
