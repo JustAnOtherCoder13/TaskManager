@@ -2,8 +2,11 @@ package com.picone.taskmanager.utils.customView
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageButton
+import android.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -31,9 +34,26 @@ class TopAppBarCustomView @JvmOverloads constructor(
     fun initAddButton(context: MainActivity){
         mNavController = Navigation.findNavController(context,R.id.nav_host_fragment)
         addButton.setOnClickListener{
-            if (mNavController.currentDestination?.id != R.id.addFragment)
-            mNavController.navigate(R.id.addFragment)
+            showPopUp(addButton)
         }
+    }
 
+    fun showPopUp(view: View) {
+        val popupMenu = PopupMenu(context, view)
+        val inflater = popupMenu.menuInflater
+        inflater.inflate(R.menu.add_menu, popupMenu.menu)
+        popupMenu.show()
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.category -> Log.i("TAG", "showPopUp: category")
+                R.id.project -> safeNavigateToAdd()
+                R.id.task -> safeNavigateToAdd()
+            }
+            true
+        }
+    }
+    private fun safeNavigateToAdd(){
+        if (mNavController.currentDestination?.id != R.id.addFragment)
+            mNavController.navigate(R.id.addFragment)
     }
 }

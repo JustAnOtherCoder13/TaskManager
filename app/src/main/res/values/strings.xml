@@ -21,6 +21,8 @@
     <string name="important">Important</string>
     <string name="normal">Normal</string>
     <string name="unimportant">Unimportant</string>
+    <string name="all">All</string>
+
 
     <!--INFORMATION TITLE-->
     <string name="category">Category :</string>
@@ -34,4 +36,5 @@
 
     <!--UNDER STAIN TITLE-->
     <string name="under_stain">Under stain :</string>
+    <string name="project">Project</string>
 </resources>
