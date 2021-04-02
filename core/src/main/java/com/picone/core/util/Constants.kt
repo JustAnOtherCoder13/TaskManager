@@ -18,5 +18,4 @@ object Constants {
     const val IMPORTANCE_UNIMPORTANT = 2
 
 
-
 }

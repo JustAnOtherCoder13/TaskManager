@@ -15,12 +15,14 @@ class CustomTaskInformation@JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : ConstraintLayout(context, attributeSet, defStyle, defStyleRes) {
 
+     var informationTextView: TextView
+
     init {
         LayoutInflater.from(context)
             .inflate(R.layout.custom_task_information, this, true)
         val informationType:TextView = findViewById(R.id.information_type)
         val attributes:TypedArray = context.obtainStyledAttributes(attributeSet,R.styleable.CustomTaskInformation)
-
+        informationTextView = findViewById(R.id.information)
         informationType.text = attributes.getText(R.styleable.CustomTaskInformation_title)
 
         attributes.recycle()

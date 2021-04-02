@@ -38,7 +38,7 @@ class TopAppBarCustomView @JvmOverloads constructor(
         }
     }
 
-    fun showPopUp(view: View) {
+    private fun showPopUp(view: View) {
         val popupMenu = PopupMenu(context, view)
         val inflater = popupMenu.menuInflater
         inflater.inflate(R.menu.add_menu, popupMenu.menu)
