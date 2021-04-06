@@ -5,12 +5,16 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.UnderStain
 import com.picone.core.util.Constants.FIRST_ELEMENT
@@ -33,6 +37,8 @@ class DetailFragment : Fragment() {
     private lateinit var mSelectedTask: CompleteTask
     private val mTaskViewModel: TaskViewModel by activityViewModels()
     private val mUnderStainViewModel: UnderStainViewModel by activityViewModels()
+    private lateinit var mNavController: NavController
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,9 +54,10 @@ class DetailFragment : Fragment() {
         mSelectedTask = mTaskViewModel.mAllTasksMutableLD.value?.filter {
             it.task.id == arguments?.getInt(TASK_ID)
         }?.get(FIRST_ELEMENT)!!
+        mNavController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
         initTaskInformationView()
         initTaskDescriptionView()
-        mBinding.addButton.setOnClickListener { }
+        mBinding.addButton.setOnClickListener { mNavController.navigate(R.id.addFragment) }
         for (underStain in mSelectedTask.underStainsForTask) {
             inflateNewUnderStainView(underStain)
         }
@@ -77,22 +84,45 @@ class DetailFragment : Fragment() {
         underStainButton: ImageButton,
         underStain: UnderStain
     ) {
-        underStainButton.setOnClickListener {
-            showPopUp(underStainButton, R.menu.under_stain_menu, requireContext()) {
-                when (it.itemId) {
-                    R.id.start -> if (underStain.start == null) {
-                        underStain.start = Calendar.getInstance().time
-                        mUnderStainViewModel.addNewUnderStain(underStain)
+        if (underStain.start != null && underStain.close != null)return
+            underStainButton.setOnClickListener {
+                showPopUp(underStainButton, R.menu.under_stain_menu, requireContext()) {
+                    var message = ""
+                    when (it.itemId) {
+                        R.id.start -> message = "would you like to start this under stain now ?"
+                        R.id.close -> message = "would you like to close this under stain ?"
                     }
-                    R.id.close -> if (underStain.close == null) {
-                        underStain.close = Calendar.getInstance().time
-                        mUnderStainViewModel.addNewUnderStain(underStain)
-                    }
-                    else -> Log.i("TAG", "inflateNewUnderStainView: none")
+                    initAlertDialog(message, it, underStain, underStainButton)
+                    true
                 }
-                true
+            }
+    }
+
+    private fun initAlertDialog(
+        message: String,
+        it: MenuItem,
+        underStain: UnderStain,
+        underStainButton: ImageButton
+    ) {
+        val builder: MaterialAlertDialogBuilder? = context?.let { MaterialAlertDialogBuilder(it) }
+        builder?.setMessage(message)
+        builder?.setPositiveButton("OK") { _,_ ->
+            when (it.itemId) {
+                R.id.start -> {
+                    underStain.start = Calendar.getInstance().time
+                    mUnderStainViewModel.addNewUnderStain(underStain)
+                    setProgressIndicatorBackground(underStainButton, underStain)
+                }
+
+                R.id.close -> {
+                    underStain.close = Calendar.getInstance().time
+                    mUnderStainViewModel.addNewUnderStain(underStain)
+                    setProgressIndicatorBackground(underStainButton, underStain)
+                }
+                else -> Log.i("TAG", "inflateNewUnderStainView: none")
             }
         }
+        builder?.show()
     }
 
     private fun setLinearLayoutParams(): LinearLayout.LayoutParams {
@@ -102,9 +132,20 @@ class DetailFragment : Fragment() {
         )
         linearLayoutParams.setMargins(
             resources.getDimension(R.dimen.basic_marge).toInt(),
-            resources.getDimension(R.dimen.little_marge).toInt(), 0, 0
+            setTopMarginForUnderStain(),
+            resources.getDimension(R.dimen.basic_marge).toInt(), 0
         )
         return linearLayoutParams
+    }
+
+    private fun setTopMarginForUnderStain(): Int {
+        //as last view is button, have to check if before last is task description view
+        val taskView: View = mBinding.root.getChildAt(mBinding.root.childCount - 2)
+        return if (taskView.id == R.id.fragment_detail_task_description) {
+            resources.getDimension(R.dimen.basic_marge).toInt()
+        } else {
+            resources.getDimension(R.dimen.little_marge).toInt()
+        }
     }
 
     private fun initUnderStainView(
@@ -124,6 +165,13 @@ class DetailFragment : Fragment() {
             getDelayBetweenTwoDateInDaysToString(underStain.start, underStain.deadLine)
         description.informationTextView.text = underStain.description
 
+        setProgressIndicatorBackground(progressIndicator, underStain)
+    }
+
+    private fun setProgressIndicatorBackground(
+        progressIndicator: ImageButton,
+        underStain: UnderStain
+    ) {
         progressIndicator.background =
             context?.let { setProgressDrawable(underStain.start, underStain.close, it) }
     }
@@ -155,7 +203,6 @@ class DetailFragment : Fragment() {
                 )
             }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -37,4 +37,10 @@
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
+
+    <style name="task_information_margin">
+        <item name="android:layout_marginStart">@dimen/basic_marge</item>
+        <item name="android:layout_marginTop">@dimen/basic_marge</item>
+        <item name="android:layout_marginEnd">@dimen/basic_marge</item>
+    </style>
 </resources>
