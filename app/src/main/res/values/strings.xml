@@ -37,4 +37,6 @@
     <!--UNDER STAIN TITLE-->
     <string name="under_stain">Under stain :</string>
     <string name="project">Project</string>
+    <string name="close">Close</string>
+    <string name="start">Start</string>
 </resources>

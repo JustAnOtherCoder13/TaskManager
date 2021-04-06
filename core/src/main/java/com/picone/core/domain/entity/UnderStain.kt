@@ -18,7 +18,7 @@ data class UnderStain(
     @ColumnInfo(index = true)val taskId:Int,
     var name:String?,
     var description:String?,
-    val start:Date,
-    val deadLine:Date?,
+    var start:Date?,
+    var deadLine:Date?,
     var close:Date?
     )

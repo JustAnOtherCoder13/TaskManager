@@ -3,6 +3,7 @@ package com.picone.taskmanager.ui.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,20 +13,26 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.UnderStain
+import com.picone.core.util.Constants.FIRST_ELEMENT
+import com.picone.core.util.Constants.TASK_ID
 import com.picone.core.util.Constants.medium
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentDetailBinding
 import com.picone.taskmanager.ui.viewModels.TaskViewModel
+import com.picone.taskmanager.ui.viewModels.UnderStainViewModel
 import com.picone.taskmanager.utils.Constants.getDelayBetweenTwoDateInDaysToString
 import com.picone.taskmanager.utils.Constants.getImportanceToString
 import com.picone.taskmanager.utils.Constants.setProgressDrawable
+import com.picone.taskmanager.utils.Constants.showPopUp
 import com.picone.taskmanager.utils.customView.CustomTaskInformation
+import java.util.*
 
 class DetailFragment : Fragment() {
     private var _binding: FragmentDetailBinding? = null
     private val mBinding get() = _binding!!
     private lateinit var mSelectedTask: CompleteTask
     private val mTaskViewModel: TaskViewModel by activityViewModels()
+    private val mUnderStainViewModel: UnderStainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,12 +46,12 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mSelectedTask = mTaskViewModel.mAllTasksMutableLD.value?.filter {
-            it.task.id == arguments?.getInt("taskId")
-        }?.get(0)!!
+            it.task.id == arguments?.getInt(TASK_ID)
+        }?.get(FIRST_ELEMENT)!!
         initTaskInformationView()
         initTaskDescriptionView()
-        mBinding.addButton.setOnClickListener {  }
-        for (underStain in mSelectedTask.underStainsForTask){
+        mBinding.addButton.setOnClickListener { }
+        for (underStain in mSelectedTask.underStainsForTask) {
             inflateNewUnderStainView(underStain)
         }
     }
@@ -57,6 +64,38 @@ class DetailFragment : Fragment() {
             R.layout.fragment_detail_under_stain_description_layout,
             null
         )
+        val linearLayoutParams: LinearLayout.LayoutParams = setLinearLayoutParams()
+        rowView.layoutParams = linearLayoutParams
+        mBinding.detailLinearLayout.addView(rowView, mBinding.root.childCount - 1)
+        val underStainProgressButton: ImageButton =
+            rowView.findViewById(R.id.progress_information_image_button)
+        initUnderStainView(rowView, underStain)
+        initUnderStainProgressButtonClickListener(underStainProgressButton, underStain)
+    }
+
+    private fun initUnderStainProgressButtonClickListener(
+        underStainButton: ImageButton,
+        underStain: UnderStain
+    ) {
+        underStainButton.setOnClickListener {
+            showPopUp(underStainButton, R.menu.under_stain_menu, requireContext()) {
+                when (it.itemId) {
+                    R.id.start -> if (underStain.start == null) {
+                        underStain.start = Calendar.getInstance().time
+                        mUnderStainViewModel.addNewUnderStain(underStain)
+                    }
+                    R.id.close -> if (underStain.close == null) {
+                        underStain.close = Calendar.getInstance().time
+                        mUnderStainViewModel.addNewUnderStain(underStain)
+                    }
+                    else -> Log.i("TAG", "inflateNewUnderStainView: none")
+                }
+                true
+            }
+        }
+    }
+
+    private fun setLinearLayoutParams(): LinearLayout.LayoutParams {
         val linearLayoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
@@ -65,18 +104,28 @@ class DetailFragment : Fragment() {
             resources.getDimension(R.dimen.basic_marge).toInt(),
             resources.getDimension(R.dimen.little_marge).toInt(), 0, 0
         )
-        rowView.layoutParams = linearLayoutParams
-        mBinding.detailLinearLayout.addView(rowView, mBinding.root.childCount - 1)
+        return linearLayoutParams
+    }
+
+    private fun initUnderStainView(
+        rowView: View,
+        underStain: UnderStain
+    ) {
         val title: CustomTaskInformation = rowView.findViewById(R.id.task_detail_under_stain_title)
-        val expectedTime: CustomTaskInformation = rowView.findViewById(R.id.task_detail_under_stain_expected_time)
-        val description: CustomTaskInformation = rowView.findViewById(R.id.task_detail_under_stain_description)
-        val progressIndicator : ImageButton = rowView.findViewById(R.id.progress_information_image_button)
+        val expectedTime: CustomTaskInformation =
+            rowView.findViewById(R.id.task_detail_under_stain_expected_time)
+        val description: CustomTaskInformation =
+            rowView.findViewById(R.id.task_detail_under_stain_description)
+        val progressIndicator: ImageButton =
+            rowView.findViewById(R.id.progress_information_image_button)
 
         title.informationTextView.text = underStain.name
-        expectedTime.informationTextView.text = getDelayBetweenTwoDateInDaysToString(underStain.start,underStain.deadLine)
+        expectedTime.informationTextView.text =
+            getDelayBetweenTwoDateInDaysToString(underStain.start, underStain.deadLine)
         description.informationTextView.text = underStain.description
+
         progressIndicator.background =
-            context?.let { setProgressDrawable(underStain.start,underStain.close, it) }
+            context?.let { setProgressDrawable(underStain.start, underStain.close, it) }
     }
 
     private fun initTaskDescriptionView() {

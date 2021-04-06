@@ -8,7 +8,7 @@ import com.picone.core.domain.entity.CompleteTask
 import com.picone.taskmanager.databinding.TaskTableRecyclerviewItemBinding
 import com.picone.taskmanager.utils.Constants.setProgressDrawable
 
-open class TaskTableAdapter(private var mAllTasks: List<CompleteTask>, val clickListener: (CompleteTask) -> Unit) :
+ class TaskTableAdapter(private var mAllTasks: List<CompleteTask>, val clickListener: (CompleteTask) -> Unit) :
     RecyclerView.Adapter<TaskTableAdapter.ViewHolder>() {
 
     private lateinit var binding: TaskTableRecyclerviewItemBinding

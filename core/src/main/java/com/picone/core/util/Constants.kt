@@ -17,5 +17,8 @@ object Constants {
     const val IMPORTANCE_NORMAL = 1
     const val IMPORTANCE_UNIMPORTANT = 2
 
+    const val FIRST_ELEMENT = 0
+    const val TASK_ID = "taskId"
+
 
 }
