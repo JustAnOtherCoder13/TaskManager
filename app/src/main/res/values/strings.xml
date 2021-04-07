@@ -40,4 +40,6 @@
     <string name="close">Close</string>
     <string name="start">Start</string>
     <string name="add_under_stain">Add under stain</string>
+    <string name="name_info">Name :</string>
+    <string name="description_info">Description :</string>
 </resources>

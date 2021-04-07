@@ -12,7 +12,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/basic_marge"
+        android:hint="@string/category"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/add_fragment_date_picker_image_button"
         app:layout_constraintTop_toTopOf="parent">
 
         <AutoCompleteTextView
@@ -31,9 +33,10 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/basic_marge"
         android:layout_marginEnd="@dimen/basic_marge"
+        android:hint="@string/importance"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/add_fragment_date_picker_image_button"
         app:layout_constraintTop_toTopOf="parent">
 
         <AutoCompleteTextView
@@ -56,8 +59,8 @@
         android:contentDescription="@string/date_picker_icon"
         android:padding="@dimen/basic_marge"
         android:src="@drawable/ic_add_fragment_date_picker_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/add_fragment_importance_spinner"
+        app:layout_constraintStart_toEndOf="@id/add_fragment_category_spinner"
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
@@ -74,22 +77,20 @@
         android:id="@+id/add_fragment_name_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="text"
         app:layout_constraintEnd_toEndOf="@id/add_fragment_importance_spinner"
         app:layout_constraintStart_toStartOf="@id/add_fragment_category_spinner"
         app:layout_constraintTop_toBottomOf="@id/separator"
         android:layout_marginTop="@dimen/basic_marge"
-        app:title="Name :" />
+        app:title="@string/name_info" />
 
     <com.picone.taskmanager.utils.customView.CustomAddTaskEditText
         android:id="@+id/add_fragment_description_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
         android:layout_marginTop="@dimen/little_marge"
         app:layout_constraintEnd_toEndOf="@id/add_fragment_importance_spinner"
         app:layout_constraintStart_toStartOf="@id/add_fragment_category_spinner"
         app:layout_constraintTop_toBottomOf="@id/add_fragment_name_edit_text"
-        app:title="Description :" />
+        app:title="@string/description_info" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

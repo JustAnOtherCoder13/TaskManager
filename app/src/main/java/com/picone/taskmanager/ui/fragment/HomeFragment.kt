@@ -109,7 +109,6 @@ class HomeFragment : Fragment() {
         })
     }
 
-
     private fun initRecyclerViewAdapter() {
         mImportantTaskAdapter =
             TaskTableAdapter(emptyList()) {mNavController.navigate(R.id.detailFragment,taskIdBundle(it)) }
