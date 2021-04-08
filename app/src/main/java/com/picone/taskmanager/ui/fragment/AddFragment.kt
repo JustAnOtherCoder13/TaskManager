@@ -2,14 +2,18 @@ package com.picone.taskmanager.ui.fragment
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.DatePicker
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.picone.core.domain.entity.*
 import com.picone.core.util.Constants.ADD_PROJECT
 import com.picone.core.util.Constants.ADD_TASK
@@ -18,13 +22,11 @@ import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.core.util.Constants.IMPORTANCE_IMPORTANT
 import com.picone.core.util.Constants.IMPORTANCE_NORMAL
 import com.picone.core.util.Constants.IMPORTANCE_UNIMPORTANT
+import com.picone.core.util.Constants.TASK_ID
 import com.picone.core.util.Constants.WHAT_IS_ADD
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentAddBinding
-import com.picone.taskmanager.ui.viewModels.CategoryViewModel
-import com.picone.taskmanager.ui.viewModels.ProjectViewModel
-import com.picone.taskmanager.ui.viewModels.TaskViewModel
-import com.picone.taskmanager.ui.viewModels.UnderStainViewModel
+import com.picone.taskmanager.ui.viewModels.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -43,7 +45,9 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
     private var allCategories: List<Category> = listOf()
     private var allProjects: List<Project> = listOf()
     private var allTasks: List<CompleteTask> = listOf()
-    private var allUnderStains : List<UnderStain>? = mutableListOf()
+    private var allUnderStains : List<UnderStain> = mutableListOf()
+    private lateinit var mNavController: NavController
+
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         var monthToPass = month+1
@@ -62,6 +66,7 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddBinding.inflate(inflater, container, false)
+        mNavController  = activity?.let { Navigation.findNavController(it, R.id.nav_host_fragment) }!!
         return mBinding.root
     }
 
@@ -77,57 +82,84 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
+        underStainViewModel.completionStateMutableLD.observe(viewLifecycleOwner, {
+
+            if (it==BaseViewModel.Companion.CompletionState.ON_COMPLETE) mNavController.navigate(R.id.detailFragment,
+                bundleOf(TASK_ID to arguments?.get(TASK_ID) as Int))
+        })
         initImportanceDropDownMenu()
         initCategoryDropDownMenu()
+        initClickListener()
+    }
+
+    private fun initClickListener() {
         mBinding.addFragmentDatePickerImageButton.setOnClickListener {
             datePickerDialog.show()
         }
         mBinding.addFragmentAddButton.setOnClickListener {
             when (arguments?.get(WHAT_IS_ADD)) {
                 ADD_PROJECT -> {
-                    projectViewModel.addNewProject(
-                        Project(
-                            allProjects.size+1,
-                            allCategories.filter { it.name == mBinding.categorySpinner.text.toString() }[FIRST_ELEMENT].id,
-                            mBinding.addFragmentNameEditText.editText.toString(),
-                            mBinding.addFragmentDescriptionEditText.editText.toString()
-                        )
-                    )
+                    addNewProject()
                 }
                 ADD_TASK -> {
-
-                            taskViewModel.addNewTask(
-                                Task(
-                                    allTasks.size+1,
-                                    allCategories.filter { it.name == mBinding.categorySpinner.text.toString() }[FIRST_ELEMENT].id,
-                                    mBinding.addFragmentNameEditText.editText.text.toString(),
-                                    mBinding.addFragmentDescriptionEditText.editText.text.toString(),
-                                    getImportance(mBinding.importanceSpinner.text.toString()),
-                                    Calendar.getInstance().time,
-                                    null,
-                                    SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).parse(mBinding.addFragmentDeadLineDate.text.toString()),
-                                    null
-                                )
-                            )
+                    addNewTask()
                 }
                 ADD_UNDER_STAIN -> {
-                    val selectedCompleteTask = allTasks.filter { it.task.id== arguments?.get("taskId") as Int}[FIRST_ELEMENT]
-                    underStainViewModel.getAllUnderStainsForTask(selectedCompleteTask.task)
-                    allUnderStains = underStainViewModel.mAllUnderStainsForTaskMutableLD.value
-                    underStainViewModel.addNewUnderStain(
-                        UnderStain(
-                            allUnderStains?.size?.plus(1)?:1,
-                            arguments?.get("taskId") as Int,
-                            mBinding.addFragmentNameEditText.editText.text.toString(),
-                            mBinding.addFragmentDescriptionEditText.editText.text.toString(),
-                            null,
-                            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).parse(mBinding.addFragmentDeadLineDate.text.toString()),
-                            null
-                            )
-                    )
+                    addNewUnderStain()
                 }
             }
         }
+    }
+
+    private fun addNewUnderStain() {
+        val selectedCompleteTask =
+            allTasks.filter { it.task.id == arguments?.get("taskId") as Int }[FIRST_ELEMENT]
+        underStainViewModel.getAllUnderStainsForTask(selectedCompleteTask.task)
+        allUnderStains = underStainViewModel.mAllUnderStainsForTaskMutableLD.value!!
+        val underStain =  UnderStain(
+            selectedCompleteTask.underStainsForTask.size+1,
+            arguments?.get(TASK_ID) as Int,
+            mBinding.addFragmentNameEditText.editText.text.toString(),
+            mBinding.addFragmentDescriptionEditText.editText.text.toString(),
+            null,
+            if (mBinding.addFragmentDeadLineDate.text.trim().isNotEmpty()) SimpleDateFormat(
+                "dd/MM/yyyy",
+                Locale.FRANCE
+            ).parse(mBinding.addFragmentDeadLineDate.text.toString()) else null,
+            null
+        )
+        underStainViewModel.addNewUnderStain(underStain)
+        selectedCompleteTask.underStainsForTask.add(underStain)
+    }
+
+    private fun addNewTask() {
+        taskViewModel.addNewTask(
+            Task(
+                allTasks.size + 1,
+                allCategories.filter { it.name == mBinding.categorySpinner.text.toString() }[FIRST_ELEMENT].id,
+                mBinding.addFragmentNameEditText.editText.text.toString(),
+                mBinding.addFragmentDescriptionEditText.editText.text.toString(),
+                getImportance(mBinding.importanceSpinner.text.toString()),
+                Calendar.getInstance().time,
+                null,
+                if (mBinding.addFragmentDeadLineDate.text != null) SimpleDateFormat(
+                    "dd/MM/yyyy",
+                    Locale.FRANCE
+                ).parse(mBinding.addFragmentDeadLineDate.text.toString()) else null,
+                null
+            )
+        )
+    }
+
+    private fun addNewProject() {
+        projectViewModel.addNewProject(
+            Project(
+                allProjects.size + 1,
+                allCategories.filter { it.name == mBinding.categorySpinner.text.toString() }[FIRST_ELEMENT].id,
+                mBinding.addFragmentNameEditText.editText.toString(),
+                mBinding.addFragmentDescriptionEditText.editText.toString()
+            )
+        )
     }
 
     private fun getImportance(importance: String): Int {

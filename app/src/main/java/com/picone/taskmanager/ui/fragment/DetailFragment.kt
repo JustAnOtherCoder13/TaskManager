@@ -57,15 +57,18 @@ class DetailFragment : Fragment() {
         mSelectedTask = mTaskViewModel.mAllTasksMutableLD.value?.filter {
             it.task.id == arguments?.getInt(TASK_ID)
         }?.get(FIRST_ELEMENT)!!
+        for (underStain in mSelectedTask.underStainsForTask)inflateNewUnderStainView(underStain)
         mNavController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
         initTaskInformationView()
         initTaskDescriptionView()
-        val bundle = bundleOf(WHAT_IS_ADD to ADD_UNDER_STAIN, "taskId" to mSelectedTask.task.id)
-        mBinding.addButton.setOnClickListener { mNavController.navigate(R.id.addFragment,bundle) }
-        for (underStain in mSelectedTask.underStainsForTask) {
-            inflateNewUnderStainView(underStain)
-        }
+        val bundle = bundleOf(WHAT_IS_ADD to ADD_UNDER_STAIN, TASK_ID to mSelectedTask.task.id)
+        mBinding.addButton.setOnClickListener { mNavController.navigate(R.id.addFragment, bundle) }
     }
+
+    private fun getAllUnderStainForTask(allTasks: MutableList<CompleteTask>) =
+        allTasks.filter {
+            it.task.id == arguments?.getInt(TASK_ID)
+        }[FIRST_ELEMENT].underStainsForTask
 
     @SuppressLint("InflateParams")
     private fun inflateNewUnderStainView(underStain: UnderStain) {
@@ -88,18 +91,18 @@ class DetailFragment : Fragment() {
         underStainButton: ImageButton,
         underStain: UnderStain
     ) {
-        if (underStain.start != null && underStain.close != null)return
-            underStainButton.setOnClickListener {
-                showPopUp(underStainButton, R.menu.under_stain_menu, requireContext()) {
-                    var message = ""
-                    when (it.itemId) {
-                        R.id.start -> message = "would you like to start this under stain now ?"
-                        R.id.close -> message = "would you like to close this under stain ?"
-                    }
-                    initAlertDialog(message, it, underStain, underStainButton)
-                    true
+        if (underStain.start != null && underStain.close != null) return
+        underStainButton.setOnClickListener {
+            showPopUp(underStainButton, R.menu.under_stain_menu, requireContext()) {
+                var message = ""
+                when (it.itemId) {
+                    R.id.start -> message = "would you like to start this under stain now ?"
+                    R.id.close -> message = "would you like to close this under stain ?"
                 }
+                initAlertDialog(message, it, underStain, underStainButton)
+                true
             }
+        }
     }
 
     private fun initAlertDialog(
@@ -110,7 +113,7 @@ class DetailFragment : Fragment() {
     ) {
         val builder: MaterialAlertDialogBuilder? = context?.let { MaterialAlertDialogBuilder(it) }
         builder?.setMessage(message)
-        builder?.setPositiveButton("OK") { _,_ ->
+        builder?.setPositiveButton("OK") { _, _ ->
             when (it.itemId) {
                 R.id.start -> {
                     underStain.start = Calendar.getInstance().time

@@ -9,6 +9,7 @@ import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,7 +19,10 @@ class UnderStainViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val mAllUnderStainsForTaskMutableLD: MutableLiveData<MutableList<UnderStain>> =
-        MutableLiveData()
+        MutableLiveData(mutableListOf())
+    var completionStateMutableLD:MutableLiveData<Companion.CompletionState> = MutableLiveData()
+
+
 
     fun getAllUnderStainsForTask(task: Task) {
         viewModelScope.launch {
@@ -30,8 +34,12 @@ class UnderStainViewModel @Inject constructor(
     }
 
     fun addNewUnderStain(underStain: UnderStain) {
-        viewModelScope.launch {
-            mAddNewUnderStainInteractor.addNewUnderStain(underStain)
-        }
+        try {
+            viewModelScope.launch {
+                mAddNewUnderStainInteractor.addNewUnderStain(underStain)
+            }
+            completionStateMutableLD.value=Companion.CompletionState.ON_COMPLETE
+        }catch (e:Exception){e.printStackTrace()}
+
     }
 }
