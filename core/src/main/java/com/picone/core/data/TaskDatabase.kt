@@ -37,7 +37,7 @@ abstract class TaskDatabase: RoomDatabase() {
             instance ?: synchronized(this) { instance ?: buildDatabase(context).also { instance = it } }
 
         private fun buildDatabase(appContext: Context) =
-            Room.databaseBuilder(appContext, TaskDatabase::class.java, "characters")
+            Room.databaseBuilder(appContext, TaskDatabase::class.java, "task_database.db")
                 .fallbackToDestructiveMigration()
                 .addCallback(CALLBACK)
                 .build()
@@ -102,7 +102,7 @@ abstract class TaskDatabase: RoomDatabase() {
                 contentValues.put("taskId", underStain.taskId)
                 contentValues.put("name", underStain.name)
                 contentValues.put("description", underStain.description)
-                contentValues.put("start", underStain.start.time)
+                contentValues.put("start", underStain.start?.time)
                 contentValues.put("deadLine", underStain.deadLine?.time)
                 contentValues.put("close", underStain.close?.time)
 

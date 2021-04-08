@@ -8,11 +8,13 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.util.Constants.IMPORTANCE_IMPORTANT
 import com.picone.core.util.Constants.IMPORTANCE_NORMAL
 import com.picone.core.util.Constants.IMPORTANCE_UNIMPORTANT
@@ -44,7 +46,6 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mTaskViewModel.getAllTasks()
         mNavController = this.findNavController()
         initRecyclerViewAdapter()
         initRecyclerView()
@@ -108,13 +109,18 @@ class HomeFragment : Fragment() {
         })
     }
 
+
     private fun initRecyclerViewAdapter() {
         mImportantTaskAdapter =
-            TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment) }
+            TaskTableAdapter(emptyList()) {mNavController.navigate(R.id.detailFragment,taskIdBundle(it)) }
         mNormalTaskAdapter =
-            TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment) }
+            TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment,taskIdBundle(it)) }
         mUnimportantTaskAdapter =
-            TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment) }
+            TaskTableAdapter(emptyList()) { mNavController.navigate(R.id.detailFragment,taskIdBundle(it)) }
+    }
+
+    private fun taskIdBundle(completeTask: CompleteTask):Bundle{
+        return bundleOf("taskId" to completeTask.task.id)
     }
 
     private fun initRecyclerView() {
