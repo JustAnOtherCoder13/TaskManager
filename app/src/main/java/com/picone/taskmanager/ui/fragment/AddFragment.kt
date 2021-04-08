@@ -2,13 +2,13 @@ package com.picone.taskmanager.ui.fragment
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -22,6 +22,9 @@ import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.core.util.Constants.IMPORTANCE_IMPORTANT
 import com.picone.core.util.Constants.IMPORTANCE_NORMAL
 import com.picone.core.util.Constants.IMPORTANCE_UNIMPORTANT
+import com.picone.core.util.Constants.MY_DAY
+import com.picone.core.util.Constants.MY_MONTH
+import com.picone.core.util.Constants.MY_YEAR
 import com.picone.core.util.Constants.TASK_ID
 import com.picone.core.util.Constants.WHAT_IS_ADD
 import com.picone.taskmanager.R
@@ -40,24 +43,28 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
     private val taskViewModel: TaskViewModel by activityViewModels()
     private val projectViewModel: ProjectViewModel by activityViewModels()
     private val underStainViewModel: UnderStainViewModel by activityViewModels()
-    private val calendar: Calendar = Calendar.getInstance()
     private lateinit var datePickerDialog: DatePickerDialog
     private var allCategories: List<Category> = listOf()
     private var allProjects: List<Project> = listOf()
     private var allTasks: List<CompleteTask> = listOf()
-    private var allUnderStains : List<UnderStain> = mutableListOf()
+    private var allUnderStains: List<UnderStain> = mutableListOf()
     private lateinit var mNavController: NavController
 
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        var monthToPass = month+1
-        if (monthToPass==13)monthToPass=0
+        var monthToPass = month + 1
+        if (monthToPass == 13) monthToPass = 0
         mBinding.addFragmentDeadLineDate.text =
-            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).format(try {
-                SimpleDateFormat("dd/MM/yyy", Locale.FRANCE).parse("$dayOfMonth/$monthToPass/$year")
-            }catch (e:ParseException){
-                e.printStackTrace()
-            })
+            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).format(
+                try {
+                    SimpleDateFormat(
+                        "dd/MM/yyy",
+                        Locale.FRANCE
+                    ).parse("$dayOfMonth/$monthToPass/$year")
+                } catch (e: ParseException) {
+                    e.printStackTrace()
+                }
+            )
     }
 
     override fun onCreateView(
@@ -66,7 +73,8 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddBinding.inflate(inflater, container, false)
-        mNavController  = activity?.let { Navigation.findNavController(it, R.id.nav_host_fragment) }!!
+        mNavController =
+            activity?.let { Navigation.findNavController(it, R.id.nav_host_fragment) }!!
         return mBinding.root
     }
 
@@ -75,17 +83,25 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
         allCategories = categoryViewModel.mAllCategoriesMutableLD.value!!
         allProjects = projectViewModel.mAllProjectsMutableLD.value!!
         allTasks = taskViewModel.mAllTasksMutableLD.value!!
+        underStainViewModel.completionStateMutableLD.value = BaseViewModel.Companion.CompletionState.START_STATE
         datePickerDialog = DatePickerDialog(
             view.context,
             this,
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            MY_YEAR,
+            MY_MONTH,
+            MY_DAY
         )
         underStainViewModel.completionStateMutableLD.observe(viewLifecycleOwner, {
-
-            if (it==BaseViewModel.Companion.CompletionState.ON_COMPLETE) mNavController.navigate(R.id.detailFragment,
+            when(it){
+                BaseViewModel.Companion.CompletionState.UNDER_STAIN_ON_COMPLETE ->
+                    mNavController.navigate(R.id.detailFragment,
                 bundleOf(TASK_ID to arguments?.get(TASK_ID) as Int))
+
+                BaseViewModel.Companion.CompletionState.TASK_ON_COMPLETE ->
+                    mNavController.navigate(R.id.homeFragment)
+                else -> {}
+            }
+
         })
         initImportanceDropDownMenu()
         initCategoryDropDownMenu()
@@ -98,15 +114,9 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
         }
         mBinding.addFragmentAddButton.setOnClickListener {
             when (arguments?.get(WHAT_IS_ADD)) {
-                ADD_PROJECT -> {
-                    addNewProject()
-                }
-                ADD_TASK -> {
-                    addNewTask()
-                }
-                ADD_UNDER_STAIN -> {
-                    addNewUnderStain()
-                }
+                ADD_PROJECT -> addNewProject()
+                ADD_TASK -> addNewTask()
+                ADD_UNDER_STAIN -> addNewUnderStain()
             }
         }
     }
@@ -116,8 +126,8 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
             allTasks.filter { it.task.id == arguments?.get("taskId") as Int }[FIRST_ELEMENT]
         underStainViewModel.getAllUnderStainsForTask(selectedCompleteTask.task)
         allUnderStains = underStainViewModel.mAllUnderStainsForTaskMutableLD.value!!
-        val underStain =  UnderStain(
-            selectedCompleteTask.underStainsForTask.size+1,
+        val underStain = UnderStain(
+            selectedCompleteTask.underStainsForTask.size + 1,
             arguments?.get(TASK_ID) as Int,
             mBinding.addFragmentNameEditText.editText.text.toString(),
             mBinding.addFragmentDescriptionEditText.editText.text.toString(),

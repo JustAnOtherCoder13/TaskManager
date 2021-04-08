@@ -38,7 +38,7 @@ class UnderStainViewModel @Inject constructor(
             viewModelScope.launch {
                 mAddNewUnderStainInteractor.addNewUnderStain(underStain)
             }
-            completionStateMutableLD.value=Companion.CompletionState.ON_COMPLETE
+            completionStateMutableLD.value=Companion.CompletionState.UNDER_STAIN_ON_COMPLETE
         }catch (e:Exception){e.printStackTrace()}
 
     }

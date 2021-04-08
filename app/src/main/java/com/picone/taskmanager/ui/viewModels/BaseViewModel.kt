@@ -7,7 +7,8 @@ abstract class BaseViewModel : ViewModel() {
     companion object{
         enum class CompletionState{
             START_STATE,
-            ON_COMPLETE,
+            UNDER_STAIN_ON_COMPLETE,
+            TASK_ON_COMPLETE,
             ON_ERROR
         }
     }
