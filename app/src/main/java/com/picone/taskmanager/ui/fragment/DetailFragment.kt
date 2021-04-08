@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
@@ -17,8 +18,10 @@ import androidx.navigation.Navigation
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.UnderStain
+import com.picone.core.util.Constants.ADD_UNDER_STAIN
 import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.core.util.Constants.TASK_ID
+import com.picone.core.util.Constants.WHAT_IS_ADD
 import com.picone.core.util.Constants.medium
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentDetailBinding
@@ -57,7 +60,8 @@ class DetailFragment : Fragment() {
         mNavController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
         initTaskInformationView()
         initTaskDescriptionView()
-        mBinding.addButton.setOnClickListener { mNavController.navigate(R.id.addFragment) }
+        val bundle = bundleOf(WHAT_IS_ADD to ADD_UNDER_STAIN, "taskId" to mSelectedTask.task.id)
+        mBinding.addButton.setOnClickListener { mNavController.navigate(R.id.addFragment,bundle) }
         for (underStain in mSelectedTask.underStainsForTask) {
             inflateNewUnderStainView(underStain)
         }

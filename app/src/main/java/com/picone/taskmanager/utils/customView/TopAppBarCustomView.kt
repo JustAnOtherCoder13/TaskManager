@@ -1,6 +1,7 @@
 package com.picone.taskmanager.utils.customView
 
 import android.content.Context
+import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,8 +11,12 @@ import android.widget.AdapterView
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.picone.core.util.Constants.ADD_PROJECT
+import com.picone.core.util.Constants.ADD_TASK
+import com.picone.core.util.Constants.WHAT_IS_ADD
 import com.picone.taskmanager.R
 import com.picone.taskmanager.ui.main.MainActivity
 import com.picone.taskmanager.utils.Constants.showPopUp
@@ -40,8 +45,8 @@ class TopAppBarCustomView @JvmOverloads constructor(
             showPopUp(addButton,R.menu.add_menu,context) {
                 when (it.itemId) {
                     R.id.category -> Log.i("TAG", "showPopUp: category")
-                    R.id.project -> safeNavigateToAdd()
-                    R.id.task -> safeNavigateToAdd()
+                    R.id.project -> safeNavigateToAdd(ADD_PROJECT)
+                    R.id.task -> safeNavigateToAdd(ADD_TASK)
                 }
                 true
             }
@@ -49,8 +54,9 @@ class TopAppBarCustomView @JvmOverloads constructor(
     }
 
 
-    private fun safeNavigateToAdd(){
+    private fun safeNavigateToAdd(whatToAdd:Int){
+        val bundle:Bundle= bundleOf(WHAT_IS_ADD to whatToAdd)
         if (mNavController.currentDestination?.id != R.id.addFragment)
-            mNavController.navigate(R.id.addFragment)
+            mNavController.navigate(R.id.addFragment,bundle)
     }
 }
