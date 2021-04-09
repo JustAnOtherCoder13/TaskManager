@@ -15,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.picone.core.domain.entity.*
+import com.picone.core.util.Constants
 import com.picone.core.util.Constants.ADD_PROJECT
 import com.picone.core.util.Constants.ADD_TASK
 import com.picone.core.util.Constants.ADD_UNDER_STAIN
@@ -25,6 +26,7 @@ import com.picone.core.util.Constants.IMPORTANCE_UNIMPORTANT
 import com.picone.core.util.Constants.MY_DAY
 import com.picone.core.util.Constants.MY_MONTH
 import com.picone.core.util.Constants.MY_YEAR
+import com.picone.core.util.Constants.PROJECT_ID
 import com.picone.core.util.Constants.TASK_ID
 import com.picone.core.util.Constants.WHAT_IS_ADD
 import com.picone.taskmanager.R
@@ -92,6 +94,17 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
             MY_MONTH,
             MY_DAY
         )
+        if (arguments?.get(PROJECT_ID)!=null) {
+            val projectToTransform:Project = allProjects.filter {
+                it.id==arguments?.getInt(PROJECT_ID)
+            }[FIRST_ELEMENT]
+            mBinding.categorySpinner.setText( allCategories.filter {
+                it.id==projectToTransform.categoryId
+            }[FIRST_ELEMENT].name)
+            mBinding.addFragmentNameEditText.editText.setText(projectToTransform.name)
+            mBinding.addFragmentDescriptionEditText.editText.setText(projectToTransform.description)
+        }
+
         completionStateMutableLD.observe(viewLifecycleOwner, {
             when(it){
                 BaseViewModel.Companion.CompletionState.UNDER_STAIN_ON_COMPLETE ->
@@ -127,7 +140,7 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
 
     private fun addNewUnderStain() {
         val selectedCompleteTask =
-            allTasks.filter { it.task.id == arguments?.get("taskId") as Int }[FIRST_ELEMENT]
+            allTasks.filter { it.task.id == arguments?.get(TASK_ID) as Int }[FIRST_ELEMENT]
         underStainViewModel.getAllUnderStainsForTask(selectedCompleteTask.task)
         allUnderStains = underStainViewModel.mAllUnderStainsForTaskMutableLD.value!!
         val underStain = UnderStain(

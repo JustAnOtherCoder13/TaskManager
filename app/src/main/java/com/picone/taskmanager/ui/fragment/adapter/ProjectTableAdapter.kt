@@ -1,25 +1,24 @@
 package com.picone.taskmanager.ui.fragment.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.picone.core.domain.entity.Project
-import com.picone.taskmanager.databinding.TaskTableRecyclerviewItemBinding
+import com.picone.taskmanager.databinding.ProjectTableRecyclerviewItemBinding
 
 class ProjectTableAdapter(
     private var mAllProjects: List<Project>,
     val clickListener: (Project) -> Unit
 ) :
     RecyclerView.Adapter<ProjectTableAdapter.ViewHolder>() {
-    private lateinit var binding: TaskTableRecyclerviewItemBinding
+    private lateinit var binding: ProjectTableRecyclerviewItemBinding
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ProjectTableAdapter.ViewHolder {
-        binding = TaskTableRecyclerviewItemBinding.inflate(
+        binding = ProjectTableRecyclerviewItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -28,10 +27,9 @@ class ProjectTableAdapter(
     }
 
     override fun onBindViewHolder(holder: ProjectTableAdapter.ViewHolder, position: Int) {
-        Log.i("TAG", "onBindViewHolder: ${mAllProjects.size}")
         val project: Project = mAllProjects[position]
-        binding.taskItemTextView.text = project.name
-        binding.progressInformationImage.visibility = View.GONE
+        binding.projectItemName.text = project.name
+        binding.projectItemDescription.text = project.description
         if (position == 0) {
             binding.separator.visibility = View.GONE
         }
@@ -42,7 +40,7 @@ class ProjectTableAdapter(
         return mAllProjects.size
     }
 
-    inner class ViewHolder(binding: TaskTableRecyclerviewItemBinding) :
+    inner class ViewHolder(binding: ProjectTableRecyclerviewItemBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     fun updateProjects(projects: List<Project>) {

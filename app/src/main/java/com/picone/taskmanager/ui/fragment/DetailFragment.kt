@@ -65,11 +65,6 @@ class DetailFragment : Fragment() {
         mBinding.addButton.setOnClickListener { mNavController.navigate(R.id.addFragment, bundle) }
     }
 
-    private fun getAllUnderStainForTask(allTasks: MutableList<CompleteTask>) =
-        allTasks.filter {
-            it.task.id == arguments?.getInt(TASK_ID)
-        }[FIRST_ELEMENT].underStainsForTask
-
     @SuppressLint("InflateParams")
     private fun inflateNewUnderStainView(underStain: UnderStain) {
         val inflater =
