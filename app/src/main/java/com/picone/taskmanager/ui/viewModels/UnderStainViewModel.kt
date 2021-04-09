@@ -20,7 +20,6 @@ class UnderStainViewModel @Inject constructor(
 
     val mAllUnderStainsForTaskMutableLD: MutableLiveData<MutableList<UnderStain>> =
         MutableLiveData(mutableListOf())
-    var completionStateMutableLD:MutableLiveData<Companion.CompletionState> = MutableLiveData()
 
 
 

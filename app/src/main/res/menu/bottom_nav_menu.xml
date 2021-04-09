@@ -8,9 +8,9 @@
         android:title="@string/home" />
 
     <item
-        android:id="@id/detailFragment"
+        android:id="@+id/projectFragment"
         android:enabled="true"
-        android:icon="@drawable/ic_bottom_nav_bar_detail_list_24"
-        android:title="@string/detail" />
+        android:icon="@drawable/ic_bottom_nav_bar_project_24"
+        android:title="@string/project" />
 
 </menu>

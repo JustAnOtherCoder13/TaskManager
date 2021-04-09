@@ -1,6 +1,5 @@
 package com.picone.taskmanager.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.picone.core.domain.entity.Project
@@ -22,7 +21,6 @@ class ProjectViewModel @Inject constructor(
     var mAllProjectsMutableLD: MutableLiveData<MutableList<Project>> = MutableLiveData()
     var mProjectForIdMutableLD: MutableLiveData<Project> = MutableLiveData()
 
-
     fun getAllProject() {
         viewModelScope.launch {
             mGetAllProjectInteractor.allProjectsFlow
@@ -40,8 +38,11 @@ class ProjectViewModel @Inject constructor(
 
 
     fun addNewProject(project: Project) =
-        viewModelScope.launch {
-            mAddNewProjectInteractor.addNewProject(project)
-            Log.i("TAG", "addNewProject: project add")
-        }
+        try {
+            viewModelScope.launch {
+                mAddNewProjectInteractor.addNewProject(project)
+            }
+            completionStateMutableLD.value = Companion.CompletionState.PROJECT_ON_COMPLETE
+        }catch (e:Exception){e.printStackTrace()}
+
 }

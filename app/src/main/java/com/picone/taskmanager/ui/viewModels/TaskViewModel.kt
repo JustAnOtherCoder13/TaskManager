@@ -12,6 +12,7 @@ import com.picone.core.domain.interactor.task.GetTaskForIdInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -53,7 +54,11 @@ class TaskViewModel @Inject constructor(
     }
 
     fun addNewTask(task: Task) =
-        viewModelScope.launch {
-            mAddNewTaskInteractor.addNewTask(task)
-        }
+        try {
+            viewModelScope.launch {
+                mAddNewTaskInteractor.addNewTask(task)
+            }
+            completionStateMutableLD.value = Companion.CompletionState.TASK_ON_COMPLETE
+        }catch (e:Exception){e.printStackTrace()}
+
 }

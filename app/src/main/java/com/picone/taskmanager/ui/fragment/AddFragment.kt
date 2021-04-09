@@ -30,6 +30,7 @@ import com.picone.core.util.Constants.WHAT_IS_ADD
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentAddBinding
 import com.picone.taskmanager.ui.viewModels.*
+import com.picone.taskmanager.ui.viewModels.BaseViewModel.Companion.completionStateMutableLD
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -83,7 +84,7 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
         allCategories = categoryViewModel.mAllCategoriesMutableLD.value!!
         allProjects = projectViewModel.mAllProjectsMutableLD.value!!
         allTasks = taskViewModel.mAllTasksMutableLD.value!!
-        underStainViewModel.completionStateMutableLD.value = BaseViewModel.Companion.CompletionState.START_STATE
+        completionStateMutableLD.value = BaseViewModel.Companion.CompletionState.START_STATE
         datePickerDialog = DatePickerDialog(
             view.context,
             this,
@@ -91,7 +92,7 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
             MY_MONTH,
             MY_DAY
         )
-        underStainViewModel.completionStateMutableLD.observe(viewLifecycleOwner, {
+        completionStateMutableLD.observe(viewLifecycleOwner, {
             when(it){
                 BaseViewModel.Companion.CompletionState.UNDER_STAIN_ON_COMPLETE ->
                     mNavController.navigate(R.id.detailFragment,
@@ -99,6 +100,9 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
 
                 BaseViewModel.Companion.CompletionState.TASK_ON_COMPLETE ->
                     mNavController.navigate(R.id.homeFragment)
+
+                BaseViewModel.Companion.CompletionState.PROJECT_ON_COMPLETE ->
+                    mNavController.navigate(R.id.projectFragment)
                 else -> {}
             }
 
@@ -166,8 +170,8 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
             Project(
                 allProjects.size + 1,
                 allCategories.filter { it.name == mBinding.categorySpinner.text.toString() }[FIRST_ELEMENT].id,
-                mBinding.addFragmentNameEditText.editText.toString(),
-                mBinding.addFragmentDescriptionEditText.editText.toString()
+                mBinding.addFragmentNameEditText.editText.text.toString(),
+                mBinding.addFragmentDescriptionEditText.editText.text.toString()
             )
         )
     }
