@@ -14,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.picone.core.util.Constants.ADD_PROJECT
 import com.picone.core.util.Constants.ADD_TASK
 import com.picone.core.util.Constants.WHAT_IS_ADD
@@ -27,7 +28,6 @@ class TopAppBarCustomView @JvmOverloads constructor(
     defStyle: Int = 0,
     defStyleRes: Int = 0
 ) : ConstraintLayout(context, attributeSet, defStyle, defStyleRes) {
-
 
     private var addButton: ImageButton
     private lateinit var mNavController: NavController
@@ -44,13 +44,23 @@ class TopAppBarCustomView @JvmOverloads constructor(
         addButton.setOnClickListener{
             showPopUp(addButton,R.menu.add_menu,context) {
                 when (it.itemId) {
-                    R.id.category -> Log.i("TAG", "showPopUp: category")
+                    R.id.category -> initAddCategoryAlertDialog()
                     R.id.project -> safeNavigateToAdd(ADD_PROJECT)
                     R.id.task -> safeNavigateToAdd(ADD_TASK)
                 }
                 true
             }
         }
+    }
+
+    private fun initAddCategoryAlertDialog(){
+        val builder: MaterialAlertDialogBuilder? = context?.let { MaterialAlertDialogBuilder(it) }
+        builder?.setTitle("Add new Category")
+        builder?.setView(R.layout.add_category_alert_dialog_layout)
+        builder?.setPositiveButton("OK") { _, _ ->
+            //TODO implement add function
+        }
+        builder?.show()
     }
 
 

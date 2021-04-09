@@ -54,6 +54,10 @@ class AddFragment : DatePickerDialog.OnDateSetListener, Fragment() {
     private lateinit var mNavController: NavController
 
 
+    //TODO hide unused information
+    //TODO force setting obligate information
+    //TODO delete project when transform in task
+
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         var monthToPass = month + 1
         if (monthToPass == 13) monthToPass = 0

@@ -42,6 +42,7 @@ class DetailFragment : Fragment() {
     private val mUnderStainViewModel: UnderStainViewModel by activityViewModels()
     private lateinit var mNavController: NavController
 
+    //TODO implement click on tas to start task
 
     override fun onCreateView(
         inflater: LayoutInflater,
