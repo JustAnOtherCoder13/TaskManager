@@ -8,7 +8,7 @@ data class CompleteTask(
     ) {
 
     @Relation(parentColumn = "id",entityColumn = "taskId",entity = UnderStain::class)
-    lateinit var underStainsForTask:List<UnderStain>
+    var underStainsForTask:MutableList<UnderStain> = mutableListOf()
 
     @Relation(parentColumn = "categoryId",entityColumn = "id",entity = Category::class)
     lateinit var categoryForTask:Category

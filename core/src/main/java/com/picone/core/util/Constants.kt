@@ -20,5 +20,15 @@ object Constants {
     const val FIRST_ELEMENT = 0
     const val TASK_ID = "taskId"
 
+    const val WHAT_IS_ADD = "what is add"
+    const val ADD_PROJECT = 0
+    const val ADD_TASK = 1
+    const val ADD_UNDER_STAIN = 2
+
+    private val calendar: Calendar = Calendar.getInstance()
+
+    val MY_YEAR = calendar.get(Calendar.YEAR)
+    val MY_MONTH = calendar.get(Calendar.MONTH)
+    val MY_DAY = calendar.get(Calendar.DAY_OF_MONTH)
 
 }

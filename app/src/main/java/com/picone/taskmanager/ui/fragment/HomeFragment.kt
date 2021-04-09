@@ -1,6 +1,7 @@
 package com.picone.taskmanager.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -18,6 +19,7 @@ import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.util.Constants.IMPORTANCE_IMPORTANT
 import com.picone.core.util.Constants.IMPORTANCE_NORMAL
 import com.picone.core.util.Constants.IMPORTANCE_UNIMPORTANT
+import com.picone.core.util.Constants.TASK_ID
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentHomeBinding
 import com.picone.taskmanager.ui.fragment.adapter.TaskTableAdapter
@@ -46,6 +48,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i("TAG", "onViewCreated: ")
         mNavController = this.findNavController()
         initRecyclerViewAdapter()
         initRecyclerView()
@@ -109,7 +112,6 @@ class HomeFragment : Fragment() {
         })
     }
 
-
     private fun initRecyclerViewAdapter() {
         mImportantTaskAdapter =
             TaskTableAdapter(emptyList()) {mNavController.navigate(R.id.detailFragment,taskIdBundle(it)) }
@@ -120,7 +122,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun taskIdBundle(completeTask: CompleteTask):Bundle{
-        return bundleOf("taskId" to completeTask.task.id)
+        return bundleOf(TASK_ID to completeTask.task.id)
     }
 
     private fun initRecyclerView() {

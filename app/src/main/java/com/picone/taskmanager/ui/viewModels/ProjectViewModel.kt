@@ -1,5 +1,6 @@
 package com.picone.taskmanager.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.picone.core.domain.entity.Project
@@ -41,5 +42,6 @@ class ProjectViewModel @Inject constructor(
     fun addNewProject(project: Project) =
         viewModelScope.launch {
             mAddNewProjectInteractor.addNewProject(project)
+            Log.i("TAG", "addNewProject: project add")
         }
 }

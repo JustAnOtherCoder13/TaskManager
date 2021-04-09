@@ -16,15 +16,15 @@ class CustomAddTaskEditText@JvmOverloads constructor(
     defStyle: Int = 0,
     defStyleRes: Int = 0
 ) : ConstraintLayout(context, attributeSet, defStyle, defStyleRes) {
+    var editText: EditText
     init {
         LayoutInflater.from(context)
             .inflate(R.layout.custom_add_task_edit_text, this, true)
         val title: TextView = findViewById(R.id.add_fragment_information_type)
-        val editText:EditText = findViewById(R.id.add_fragment_information_edit_text)
+        editText = findViewById(R.id.add_fragment_information_edit_text)
         val attributes: TypedArray = context.obtainStyledAttributes(attributeSet,R.styleable.CustomAddTaskEditText)
 
         title.text = attributes.getText(R.styleable.CustomAddTaskEditText_title)
-        editText.setRawInputType(attributes.getInt(R.styleable.CustomAddTaskEditText_android_inputType,InputType.TYPE_CLASS_TEXT))
 
         attributes.recycle()
     }
