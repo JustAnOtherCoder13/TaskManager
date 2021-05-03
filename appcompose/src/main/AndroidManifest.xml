@@ -3,6 +3,7 @@
     package="com.picone.appcompose">
 
     <application
+        android:name=".TaskManagerComposeApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
