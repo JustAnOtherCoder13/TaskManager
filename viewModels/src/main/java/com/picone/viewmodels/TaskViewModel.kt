@@ -1,4 +1,4 @@
-package com.picone.taskmanager.ui.viewModels
+package com.picone.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -60,5 +60,4 @@ class TaskViewModel @Inject constructor(
             }
             completionStateMutableLD.value = Companion.CompletionState.TASK_ON_COMPLETE
         }catch (e:Exception){e.printStackTrace()}
-
 }

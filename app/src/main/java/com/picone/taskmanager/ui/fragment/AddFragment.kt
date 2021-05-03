@@ -8,14 +8,12 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.DatePicker
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.picone.core.domain.entity.*
-import com.picone.core.util.Constants
 import com.picone.core.util.Constants.ADD_PROJECT
 import com.picone.core.util.Constants.ADD_TASK
 import com.picone.core.util.Constants.ADD_UNDER_STAIN
@@ -31,8 +29,8 @@ import com.picone.core.util.Constants.TASK_ID
 import com.picone.core.util.Constants.WHAT_IS_ADD
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentAddBinding
-import com.picone.taskmanager.ui.viewModels.*
-import com.picone.taskmanager.ui.viewModels.BaseViewModel.Companion.completionStateMutableLD
+import com.picone.viewmodels.*
+import com.picone.viewmodels.BaseViewModel.Companion.completionStateMutableLD
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*

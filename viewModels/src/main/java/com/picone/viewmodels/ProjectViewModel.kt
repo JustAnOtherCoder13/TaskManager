@@ -1,4 +1,4 @@
-package com.picone.taskmanager.ui.viewModels
+package com.picone.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope

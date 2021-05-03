@@ -1,7 +1,6 @@
 package com.picone.taskmanager.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -23,7 +22,7 @@ import com.picone.core.util.Constants.TASK_ID
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentHomeBinding
 import com.picone.taskmanager.ui.fragment.adapter.TaskTableAdapter
-import com.picone.taskmanager.ui.viewModels.TaskViewModel
+import com.picone.viewmodels.TaskViewModel
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null

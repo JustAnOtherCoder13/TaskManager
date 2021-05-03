@@ -8,10 +8,9 @@ import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.ActivityMainBinding
-import com.picone.taskmanager.ui.viewModels.CategoryViewModel
-import com.picone.taskmanager.ui.viewModels.ProjectViewModel
-import com.picone.taskmanager.ui.viewModels.TaskViewModel
-import com.picone.taskmanager.ui.viewModels.UnderStainViewModel
+import com.picone.viewmodels.CategoryViewModel
+import com.picone.viewmodels.ProjectViewModel
+import com.picone.viewmodels.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 
@@ -21,9 +20,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mNavController:NavController
-    private val mTaskViewModel:TaskViewModel by viewModels()
-    private val mCategoryViewModel:CategoryViewModel by viewModels()
-    private val mProjectViewModel:ProjectViewModel by viewModels()
+    private val mTaskViewModel: TaskViewModel by viewModels()
+    private val mCategoryViewModel: CategoryViewModel by viewModels()
+    private val mProjectViewModel: ProjectViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

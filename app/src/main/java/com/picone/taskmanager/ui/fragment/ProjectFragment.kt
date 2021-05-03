@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -18,7 +17,7 @@ import com.picone.core.util.Constants.WHAT_IS_ADD
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentProjectBinding
 import com.picone.taskmanager.ui.fragment.adapter.ProjectTableAdapter
-import com.picone.taskmanager.ui.viewModels.ProjectViewModel
+import com.picone.viewmodels.ProjectViewModel
 
 class ProjectFragment : Fragment() {
 
