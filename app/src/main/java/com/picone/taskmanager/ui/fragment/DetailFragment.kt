@@ -25,13 +25,13 @@ import com.picone.core.util.Constants.WHAT_IS_ADD
 import com.picone.core.util.Constants.medium
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentDetailBinding
-import com.picone.taskmanager.ui.viewModels.TaskViewModel
-import com.picone.taskmanager.ui.viewModels.UnderStainViewModel
 import com.picone.taskmanager.utils.Constants.getDelayBetweenTwoDateInDaysToString
 import com.picone.taskmanager.utils.Constants.getImportanceToString
 import com.picone.taskmanager.utils.Constants.setProgressDrawable
 import com.picone.taskmanager.utils.Constants.showPopUp
 import com.picone.taskmanager.utils.customView.CustomTaskInformation
+import com.picone.viewmodels.TaskViewModel
+import com.picone.viewmodels.UnderStainViewModel
 import java.util.*
 
 class DetailFragment : Fragment() {
