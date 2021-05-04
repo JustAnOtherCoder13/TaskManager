@@ -3,7 +3,7 @@
     package="com.picone.appcompose">
 
     <application
-        android:name=".TaskManagerComposeApplication"
+        android:name=".ui.main.TaskManagerComposeApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TaskManager">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

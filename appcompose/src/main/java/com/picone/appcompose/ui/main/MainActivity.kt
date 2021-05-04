@@ -1,9 +1,10 @@
-package com.picone.appcompose
+package com.picone.appcompose.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import com.picone.appcompose.R
 import com.picone.viewmodels.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
