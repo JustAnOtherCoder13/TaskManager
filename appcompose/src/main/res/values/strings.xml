@@ -1,3 +1,39 @@
 <resources>
-    <string name="app_name">appCompose</string>
+    <string name="app_name">TaskManager</string>
+    <!--MENU-->
+    <string name="home">HOME</string>
+    <string name="detail">DETAIL</string>
+
+    <!--TEXT VIEW-->
+    <string name="task">Task</string>
+    <string name="task_name">TASK NAME</string>
+    <string name="information_type">Information type :</string>
+    <string name="information">Information</string>
+
+    <!--TABLE TITLE-->
+    <string name="important">Important</string>
+    <string name="normal">Normal</string>
+    <string name="unimportant">Unimportant</string>
+    <string name="all">All</string>
+
+
+    <!--INFORMATION TITLE-->
+    <string name="category">Category :</string>
+    <string name="importance">Importance :</string>
+    <string name="deadline">Deadline :</string>
+    <string name="start_on">Start on :</string>
+
+    <!--DESCRIPTION TITLE-->
+    <string name="expected_time">Expected Time :</string>
+    <string name="description">Description :</string>
+
+    <!--UNDER STAIN TITLE-->
+    <string name="under_stain">Under stain :</string>
+    <string name="project">Project</string>
+    <string name="close">Close</string>
+    <string name="start">Start</string>
+    <string name="add_under_stain">Add under stain</string>
+    <string name="name_info">Name :</string>
+    <string name="description_info">Description :</string>
+    <string name="add">add</string>
 </resources>

@@ -6,13 +6,13 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun TaskManagerTheme(
-    content : @Composable () -> Unit,
-    darkTheme : Boolean = isSystemInDarkTheme()
+    darkTheme : Boolean = isSystemInDarkTheme(),
+    content : @Composable () -> Unit
     ){
     MaterialTheme (
+        content = content,
         colors = if (darkTheme)DarkColors else LightColors,
         typography = TaskManagerTypography,
         shapes = TaskManagerShapes,
-        content = content
             )
 }
