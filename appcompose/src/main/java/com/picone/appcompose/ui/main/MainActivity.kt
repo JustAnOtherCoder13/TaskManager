@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         taskViewModel.getAllTasks()
+
         taskViewModel.mAllTasksMutableLD.observe(this,){
             Log.i("TAG", "onCreate: "+ (it[0]))
         }
