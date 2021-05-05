@@ -18,7 +18,7 @@ import com.picone.appcompose.R
 fun AppBar(onAddButtonClick : () -> Unit){
     TopAppBar(
         title = { Text(text = stringResource(R.string.app_name)) },
-        backgroundColor = MaterialTheme.colors.primarySurface,
+        backgroundColor = MaterialTheme.colors.primary,
         actions = { Fab { }}
     )
 
@@ -34,7 +34,7 @@ fun Fab(onAddButtonClick : () -> Unit){
         onClick = {isPopUpMenuExpanded =!isPopUpMenuExpanded},
         shape = CircleShape,
         elevation = null,
-        colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primarySurface)
+        colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -43,20 +43,33 @@ fun Fab(onAddButtonClick : () -> Unit){
                 imageVector = Icons.Rounded.AddCircle,
                 contentDescription = null,
             )
-            DropdownMenu(
-                expanded = isPopUpMenuExpanded ,
-                onDismissRequest = { isPopUpMenuExpanded = false },
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .wrapContentHeight()
-            ) {
-                addItems.forEachIndexed{
-                        _, s -> DropdownMenuItem(onClick = { isPopUpMenuExpanded = false }) {
-                    Text(text = s)
-                }
-                }
+            AddNewTaskDropDownMenu(
+                isPopUpMenuExpanded,
+                addItems,
+                closePopUp = {isPopUpMenuExpanded=false},
+                )
+        }
+    }
+}
 
+@Composable
+private fun AddNewTaskDropDownMenu(
+    isPopUpMenuExpanded: Boolean,
+    addItems: List<String>,
+    closePopUp: () -> Unit
+) {
+    DropdownMenu(
+        expanded = isPopUpMenuExpanded,
+        onDismissRequest =  closePopUp ,
+        modifier = Modifier
+            .wrapContentWidth()
+            .wrapContentHeight()
+    ) {
+        addItems.forEachIndexed { _, s ->
+            DropdownMenuItem(onClick =  closePopUp ) {
+                Text(text = s)
             }
         }
+
     }
 }

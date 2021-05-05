@@ -10,9 +10,9 @@ fun TaskManagerTheme(
     content : @Composable () -> Unit
     ){
     MaterialTheme (
-        content = content,
         colors = if (darkTheme)DarkColors else LightColors,
         typography = TaskManagerTypography,
         shapes = TaskManagerShapes,
+        content = content
             )
 }

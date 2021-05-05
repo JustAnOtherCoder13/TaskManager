@@ -6,13 +6,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.picone.appcompose.ui.component.baseComponent.AppBar
 import com.picone.appcompose.ui.component.baseComponent.Fab
+import com.picone.appcompose.ui.component.baseComponent.TaskRecyclerView
 import com.picone.appcompose.ui.values.TaskManagerTheme
+import com.picone.core.domain.entity.CompleteTask
 
-@Preview
+
 @Composable
-fun Home() {
+fun Home(items: List<CompleteTask>) {
     Scaffold(
         topBar = { AppBar() {} },
-        content = { Text(text = "test") },
+        content = { TaskRecyclerView(items,"all") },
     )
 }

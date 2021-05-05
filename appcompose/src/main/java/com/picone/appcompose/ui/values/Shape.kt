@@ -6,7 +6,7 @@ import androidx.compose.material.Shapes
 import androidx.compose.ui.unit.dp
 
 val TaskManagerShapes = Shapes(
-    small = CutCornerShape(topStart = 8.dp),
-    medium = CutCornerShape(topStart = 24.dp),
+    small = RoundedCornerShape(5.dp),
+    medium = RoundedCornerShape(5.dp),
     large = RoundedCornerShape(8.dp)
 )

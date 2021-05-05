@@ -20,6 +20,8 @@ val LightColors = lightColors(
     secondary = Blue600,
     secondaryVariant = Blue700,
     onSecondary = Color.White,
+    surface = Color.White ,
+    onSurface=Color.Black ,
     error = Red700
 )
 
@@ -28,6 +30,9 @@ val DarkColors = darkColors(
     primaryVariant = LightBlue800,
     onPrimary = Color.Black,
     secondary = LightBlue600,
+    secondaryVariant = LightBlue700 ,
     onSecondary = Color.Black,
+    surface = Color.Black ,
+    onSurface=Color.White ,
     error = Red600
 )
