@@ -10,3 +10,7 @@ val TaskManagerShapes = Shapes(
     medium = RoundedCornerShape(5.dp),
     large = RoundedCornerShape(8.dp)
 )
+
+val TopRightCornerCut = CutCornerShape(topStart = 10.dp)
+val TopLeftCornerCut = CutCornerShape(topEnd = 10.dp)
+val TopRoundedCorner = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)

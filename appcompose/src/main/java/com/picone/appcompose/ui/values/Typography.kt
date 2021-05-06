@@ -34,5 +34,10 @@ val TaskManagerTypography = Typography(
         fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp
+    ),
+    body2 = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
+        fontSize = 10.sp
     )
 )

@@ -21,7 +21,6 @@ fun AppBar(onAddButtonClick : () -> Unit){
         backgroundColor = MaterialTheme.colors.primary,
         actions = { Fab { }}
     )
-
 }
 
 @Composable
