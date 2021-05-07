@@ -17,10 +17,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
-import com.picone.appcompose.ui.MainDestinations.DETAIL
 import com.picone.appcompose.ui.SetProgressDrawable
-import com.picone.appcompose.ui.main.NavigateToDetailOnTaskClicked
+import com.picone.appcompose.ui.main.navigateToDetailOnTaskClicked
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.core.domain.entity.BaseTask
 import com.picone.core.domain.entity.Task
@@ -45,20 +43,46 @@ fun <T>ExpandableTaskItem(item: T,navController: NavController) {
             .clip(TopRightCornerCut)
             .background(MaterialTheme.colors.surface)
     ) {
-        NavigateToDetailOnTaskClicked(item, itemToShow, navController)
+        TaskTitle(item, itemToShow, navController)
         if (expanded) { Description(itemToShow) }
-        Surface(
+        ExpandIcon(expanded){ expanded = !expanded }
+    }
+}
+
+@Composable
+fun <T> TaskTitle(
+    item: T,
+    itemToShow: BaseTask,
+    navController: NavController
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .clickable(onClick = navigateToDetailOnTaskClicked(navController, item))
+            .padding(5.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = itemToShow.name,
+            style = MaterialTheme.typography.subtitle1,
+        )
+        SetProgressDrawable(start = itemToShow.start, close = itemToShow.close)
+    }
+}
+
+@Composable
+private fun ExpandIcon(expanded: Boolean, onCLick :() ->  Unit) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onCLick )
+    ) {
+        Icon(
+            imageVector = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+            contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = { expanded = !expanded })
-        ) {
-            Icon(
-                imageVector = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
+        )
     }
 }
 
