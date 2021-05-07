@@ -3,13 +3,8 @@ package com.picone.taskmanager.utils.customView
 import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.View
-import android.widget.AdapterView
 import android.widget.ImageButton
-import android.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController

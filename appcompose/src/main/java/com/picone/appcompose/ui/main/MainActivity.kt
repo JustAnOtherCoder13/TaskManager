@@ -11,10 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
-import com.picone.appcompose.ui.MainDestinations.DETAIL
-import com.picone.appcompose.ui.MainDestinations.HOME
-import com.picone.appcompose.ui.component.screen.Detail
-import com.picone.appcompose.ui.component.screen.Home
+import com.picone.appcompose.ui.component.screen.AddScreen
+import com.picone.appcompose.ui.component.screen.DetailScreen
+import com.picone.appcompose.ui.component.screen.HomeScreen
+import com.picone.appcompose.ui.navigation.MainDestinations.ADD
+import com.picone.appcompose.ui.navigation.MainDestinations.DETAIL
+import com.picone.appcompose.ui.navigation.MainDestinations.HOME
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.util.Constants.FIRST_ELEMENT
@@ -41,15 +43,15 @@ class MainActivity : AppCompatActivity() {
                 )
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = HOME) {
-                    composable(HOME) { Home(allTasks, navController = navController) }
+                    composable(HOME) { HomeScreen(allTasks, navController = navController) }
                     composable(
                         "$DETAIL/{$TASK_ID}",
                         arguments = listOf(navArgument(TASK_ID) { type = NavType.IntType })
-                    )
-                    { backStackEntry ->
+                    ) { backStackEntry ->
                         val taskId: Int = backStackEntry.arguments?.getInt(TASK_ID) ?: 0
-                        Detail(task = taskToPass(allTasks, taskId), navController = navController)
+                        DetailScreen(task = taskToPass(allTasks, taskId), navController = navController)
                     }
+                    composable(ADD){AddScreen()}
                 }
             }
         }

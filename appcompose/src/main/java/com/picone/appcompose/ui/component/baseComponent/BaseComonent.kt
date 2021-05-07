@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.picone.appcompose.ui.SetProgressDrawable
-import com.picone.appcompose.ui.main.navigateToDetailOnTaskClicked
+import com.picone.appcompose.ui.navigation.navigateToDetailOnTaskClicked
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.core.domain.entity.BaseTask
 import com.picone.core.domain.entity.Task
@@ -34,7 +34,6 @@ fun <T>ExpandableTaskItem(item: T,navController: NavController) {
         is UnderStain -> item
         else -> UnknownTask
     }
-
     Column(
         modifier = Modifier
             .animateContentSize()

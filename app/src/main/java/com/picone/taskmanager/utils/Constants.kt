@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.PopupMenu
 import androidx.core.content.res.ResourcesCompat
-import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.util.Constants
 import com.picone.taskmanager.R
 import java.util.*

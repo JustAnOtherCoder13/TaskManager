@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun Detail(task: CompleteTask, navController: NavController) {
+fun DetailScreen(task: CompleteTask, navController: NavController) {
 
     LazyColumn(
         modifier = Modifier
@@ -32,9 +32,7 @@ fun Detail(task: CompleteTask, navController: NavController) {
             .background(MaterialTheme.colors.secondary)
     ) {
 
-        item {
-            Header(task)
-        }
+        item { Header(task) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         items(items = task.underStainsForTask) { underStain ->
             ExpandableTaskItem(underStain, navController = navController)
@@ -68,11 +66,7 @@ private fun UnderStainInformation(task: CompleteTask) {
         TitleInformationText(text = "Under Stain ")
         Spacer(modifier = Modifier.height(10.dp))
         InformationText(text = "Total = " + task.underStainsForTask.size)
-        InformationText(
-            text = "Done = " +
-                    if (getCompletedUnderStainsForTask(task).isEmpty()) "0"
-                    else getCompletedUnderStainsForTask(task)
-        )
+        InformationText(text = "Done = " + getCompletedUnderStainsForTask(task = task).size)
     }
 }
 
@@ -85,7 +79,7 @@ private fun TaskInformation(task: CompleteTask) {
             .background(MaterialTheme.colors.surface)
 
     ) {
-        TitleInformationText(text = task.task.name ?: "no name for this task")
+        TitleInformationText(text = task.task.name)
         Spacer(modifier = Modifier.height(10.dp))
         InformationText(
             text = "Create on : " + SimpleDateFormat(
@@ -108,4 +102,3 @@ private fun getCompletedUnderStainsForTask(task: CompleteTask) =
     task.underStainsForTask.filter { underStain ->
         underStain.close != null
     }
-

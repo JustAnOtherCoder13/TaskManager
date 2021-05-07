@@ -1,8 +1,7 @@
-package com.picone.appcompose.ui.main
+package com.picone.appcompose.ui.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
-import com.picone.appcompose.ui.MainDestinations
 import com.picone.core.domain.entity.Task
 
 
