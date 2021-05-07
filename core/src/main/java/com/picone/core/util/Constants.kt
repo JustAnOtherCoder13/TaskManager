@@ -1,5 +1,6 @@
 package com.picone.core.util
 
+import com.picone.core.domain.entity.Task
 import java.text.DateFormat
 import java.util.*
 
@@ -33,5 +34,8 @@ object Constants {
     val MY_YEAR = calendar.get(Calendar.YEAR)
     val MY_MONTH = calendar.get(Calendar.MONTH)
     val MY_DAY = calendar.get(Calendar.DAY_OF_MONTH)
+
+    //compose const
+    val UnknownTask = Task(0, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
 
 }
