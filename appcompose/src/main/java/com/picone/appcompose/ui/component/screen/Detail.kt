@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.picone.appcompose.ui.component.baseComponent.utilsComponent.ExpandableTaskItem
 import com.picone.appcompose.ui.component.baseComponent.utilsComponent.InformationText
 import com.picone.appcompose.ui.component.baseComponent.utilsComponent.TitleInformationText
@@ -20,7 +21,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun Detail(task: CompleteTask) {
+fun Detail(task: CompleteTask, navController: NavController) {
+
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -35,7 +37,7 @@ fun Detail(task: CompleteTask) {
         }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         items(items = task.underStainsForTask) { underStain ->
-            ExpandableTaskItem(underStain)
+            ExpandableTaskItem(underStain, navController = navController)
         }
     }
 }

@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.CompleteTask
@@ -12,7 +14,17 @@ import com.picone.viewmodels.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
+import androidx.navigation.compose.rememberNavController
+import com.google.gson.Gson
+import com.picone.appcompose.R
+import com.picone.appcompose.ui.MainDestinations.DETAIL
+import com.picone.appcompose.ui.MainDestinations.HOME
 import com.picone.appcompose.ui.component.screen.Detail
+import com.picone.appcompose.ui.component.screen.Home
 import com.picone.core.domain.entity.Task
 import java.util.*
 
@@ -21,22 +33,36 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private val taskViewModel: TaskViewModel by viewModels()
-    private val task : Task = Task(0,0,"task not found","",0,Calendar.getInstance().time,null,null,null)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         taskViewModel.getAllTasks()
-        taskViewModel.mAllTasksMutableLD.observe(this) {
-            Log.i("TAG", "onCreate: " + (it.size))
-        }
-        setContent{
+
+        setContent {
             TaskManagerTheme {
-                val allTasks : List<CompleteTask> by taskViewModel.mAllTasksMutableLD.observeAsState(listOf())
-                if (allTasks.isEmpty()) Task(0,0,"task not found","",0,Calendar.getInstance().time,null,null,null)else allTasks[0]
-                //Home(allTasks)
-                Detail(if (allTasks.isEmpty()) CompleteTask(task) else allTasks[0])
+                val allTasks: List<CompleteTask> by taskViewModel.mAllTasksMutableLD.observeAsState(
+                    listOf()
+                )
+                val navController = rememberNavController()
+
+                NavHost(navController = navController, startDestination = HOME) {
+                    composable(HOME) { Home(allTasks, navController = navController) }
+                    composable(
+                        "$DETAIL/{taskId}",
+                        arguments = listOf(
+                            navArgument("taskId") { type = NavType.IntType }
+                        )
+                    ) { backStackEntry ->
+                        val taskId : Int =  backStackEntry.arguments?.getInt("taskId") ?: 0
+                        Detail(
+                            task = allTasks[taskId], navController = navController
+                           )
+
+
+                    }
+                }
             }
         }
+
     }
 }

@@ -1,5 +1,6 @@
 package com.picone.appcompose.ui.component.baseComponent
 
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -13,12 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
+import androidx.navigation.NavController
+import androidx.navigation.compose.navigate
+import com.google.gson.Gson
+import com.picone.appcompose.ui.MainDestinations.DETAIL
 import com.picone.appcompose.ui.component.baseComponent.utilsComponent.ExpandableTaskItem
+import com.picone.appcompose.ui.component.baseComponent.utilsComponent.taskIdBundle
+import com.picone.appcompose.ui.component.screen.Detail
 import com.picone.core.domain.entity.CompleteTask
+import com.picone.core.util.Constants
+import com.picone.core.util.Constants.TASK_ID
 
 @Composable
-fun TaskRecyclerView(allTasks: List<CompleteTask>, importance: String) {
-
+fun TaskRecyclerView(
+    allTasks: List<CompleteTask>,
+    importance: String,
+    navController: NavController
+) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.secondary)
@@ -48,9 +61,11 @@ fun TaskRecyclerView(allTasks: List<CompleteTask>, importance: String) {
             }
             item { Spacer(modifier = Modifier.height(16.dp)) }
             items(items = allTasks) { task ->
-                ExpandableTaskItem(task.task)
+                ExpandableTaskItem(task.task,navController = navController)
             }
         }
     }
 }
+
+
 
