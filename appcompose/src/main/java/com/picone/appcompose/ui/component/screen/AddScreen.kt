@@ -23,6 +23,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.picone.appcompose.ui.component.baseComponent.BaseEditText
 import com.picone.appcompose.ui.component.baseComponent.BaseSpinner
 import com.picone.appcompose.ui.navigation.navigateToHomeOnAddNewItem
+import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 import java.text.SimpleDateFormat
@@ -33,11 +34,22 @@ fun AddScreen(
     itemType: String,
     requireActivity: AppCompatActivity,
     navController: NavController,
-    addNewItemOnOkButtonClicked: () -> Unit
+    taskId: Int,
+    projectId: Int,
+    allCategories : List<Category>,
+    addNewProjectOnOkButtonClicked: (project: Project) -> Unit,
+    addNewTaskOnOkButtonClicked: (task: Task) -> Unit
 ) {
-    val knownCategories = listOf("category 1", "category2", "category 3")
+    var knownCategories : MutableList<String> = mutableListOf()
     val importance = listOf("important", "normal", "unimportant")
     var deadline by remember { mutableStateOf("") }
+    var importance_ by remember { mutableStateOf("") }
+    var category_ by remember { mutableStateOf("") }
+    var name_ by remember { mutableStateOf("") }
+    var description_ by remember { mutableStateOf("") }
+    allCategories.forEachIndexed { _, c ->
+        knownCategories.add(c.name!!)
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -47,28 +59,46 @@ fun AddScreen(
     ) {
         item {
             Header(knownCategories, requireActivity, importance, itemType,
-                deadLine = {},
-                importance = {},
-                category = {})
+                deadLine = { deadline = it },
+                importance = { importance_ = it },
+                category = { category_ = it })
         }
         item { Spacer(modifier = Modifier.height(10.dp)) }
         item {
             Body(
-                name = { },
-                description = { })
+                name = { name_ = it },
+                description = { description_ = it })
         }
-        item { OkButton(navController, addNewItemOnOkButtonClicked, itemType) }
+        item {
+            OkButton(navController) {
+                when (itemType) {
+                    "Project" -> addNewProjectOnOkButtonClicked(
+                        Project(projectId, knownCategories.indexOf(category_)+1, name_, description_)
+                    )
+                    "Task" -> addNewTaskOnOkButtonClicked(
+                        Task(
+                            taskId,
+                            knownCategories.indexOf(category_)+1,
+                            name_,
+                            description_,
+                            importance.indexOf(importance_)+1,
+                            Calendar.getInstance().time,
+                            null,
+                            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).parse(deadline),
+                            null
+                        )
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
 private fun OkButton(
     navController: NavController,
-    addNewItemOnOkButtonClicked: () -> Unit,
-    itemType: String
+    addNewItemOnOkButtonClicked: () -> Unit
 ) {
-    var projectToPass: Project? = null
-    var taskToPass: Task? = null
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,28 +106,8 @@ private fun OkButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = {
-                if (itemType == "Project") {
-                    projectToPass = Project(5, 1, "name", "description")
-                } else if (itemType == "Task") {
-                    taskToPass = Task(
-                        2,
-                        2,
-                        "name",
-                        "description",
-                        0,
-                        Calendar.getInstance().time,
-                        null,
-                        null,
-                        null
-                    )
-                }
-                //addNewItemOnOkButtonClicked()
-                navigateToHomeOnAddNewItem(navController)
-            }
-        ) {
-            Text(text = "OK")
-        }
+            onClick = {addNewItemOnOkButtonClicked()}
+        ) { Text(text = "OK") }
     }
 }
 
