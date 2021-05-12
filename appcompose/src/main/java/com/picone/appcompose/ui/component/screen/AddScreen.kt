@@ -18,11 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.picone.appcompose.ui.component.baseComponent.BaseEditText
 import com.picone.appcompose.ui.component.baseComponent.BaseSpinner
-import com.picone.appcompose.ui.navigation.navigateToHomeOnAddNewItem
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
@@ -34,30 +32,27 @@ import java.util.*
 fun AddScreen(
     itemType: String,
     requireActivity: AppCompatActivity,
-    navController: NavController,
     taskId: Int,
     projectId: Int,
     allCategories: List<Category>,
     addNewProjectOnOkButtonClicked: (project: Project) -> Unit,
     addNewTaskOnOkButtonClicked: (task: Task) -> Unit
 ) {
-    BaseViewModel.completionStateMutableLD.value = BaseViewModel.Companion.CompletionState.START_STATE
-    var knownCategories: MutableList<String> = mutableListOf()
-    val importance = listOf("Unimportant", "Normal","Important")
-    var deadline by remember { mutableStateOf("") }
-    var importance_ by remember { mutableStateOf("") }
-    var category_ by remember { mutableStateOf("") }
-    var name_ by remember { mutableStateOf("") }
-    var description_ by remember { mutableStateOf("") }
-    allCategories.forEachIndexed { _, c ->
-        knownCategories.add(c.name!!)
-    }
-    var isOkButtonEnabled by remember {
-        mutableStateOf(false)
-    }
-    isOkButtonEnabled = name_.trim().isNotEmpty()
-            && description_.trim().isNotEmpty()
-            && category_.trim().isNotEmpty()
+    BaseViewModel.completionStateMutableLD.value =
+        BaseViewModel.Companion.CompletionState.START_STATE
+    val knownCategories: MutableList<String> = mutableListOf()
+    val importance = listOf("Unimportant", "Normal", "Important")
+    var deadlineState by remember { mutableStateOf("") }
+    var importanceState by remember { mutableStateOf("") }
+    var categoryState by remember { mutableStateOf("") }
+    var nameState by remember { mutableStateOf("") }
+    var descriptionState by remember { mutableStateOf("") }
+    var isOkButtonEnabledState by remember { mutableStateOf(false) }
+
+    allCategories.forEachIndexed { _, c -> knownCategories.add(c.name!!) }
+
+    isOkButtonEnabledState = nameState.trim().isNotEmpty() && descriptionState.trim()
+        .isNotEmpty() && categoryState.trim().isNotEmpty()
 
     LazyColumn(
         modifier = Modifier
@@ -67,42 +62,42 @@ fun AddScreen(
     ) {
         item {
             Header(knownCategories, requireActivity, importance, itemType,
-                deadLine = { deadline = it },
-                importance = { importance_ = it },
-                category = { category_ = it })
+                deadLine = { deadlineState = it },
+                importance = { importanceState = it },
+                category = { categoryState = it })
         }
         item { Spacer(modifier = Modifier.height(10.dp)) }
         item {
             Body(
-                name = { name_ = it },
-                description = { description_ = it })
+                name = { nameState = it },
+                description = { descriptionState = it })
         }
 
         item {
-            OkButton(isOkButtonEnabled = isOkButtonEnabled) {
+            OkButton(isOkButtonEnabled = isOkButtonEnabledState) {
                 when (itemType) {
                     "Project" ->
                         addNewProjectOnOkButtonClicked(
                             Project(
                                 projectId,
-                                knownCategories.indexOf(category_) + 1,
-                                name_,
-                                description_
+                                knownCategories.indexOf(categoryState) + 1,
+                                nameState,
+                                descriptionState
                             )
                         )
                     "Task" -> addNewTaskOnOkButtonClicked(
                         Task(
                             taskId,
-                            knownCategories.indexOf(category_) + 1,
-                            name_,
-                            description_,
-                            importance.indexOf(importance_) + 1,
+                            knownCategories.indexOf(categoryState) + 1,
+                            nameState,
+                            descriptionState,
+                            importance.indexOf(importanceState) + 1,
                             Calendar.getInstance().time,
                             null,
-                            if (deadline.trim().isNotEmpty()) SimpleDateFormat(
+                            if (deadlineState.trim().isNotEmpty()) SimpleDateFormat(
                                 "dd/MM/yyyy",
                                 Locale.FRANCE
-                            ).parse(deadline) else null,
+                            ).parse(deadlineState) else null,
                             null
                         )
                     )
@@ -117,7 +112,6 @@ private fun OkButton(
     isOkButtonEnabled: Boolean,
     addNewItemOnOkButtonClicked: () -> Unit
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,27 +127,22 @@ private fun OkButton(
 
 @Composable
 private fun Body(name: (String) -> Unit, description: (String) -> Unit) {
-    var name by remember {
-        mutableStateOf("")
-    }
-    var description_ by remember {
-        mutableStateOf("")
-    }
-    name(name)
-    description(description_)
+    var nameState by remember { mutableStateOf("") }
+    var descriptionState by remember { mutableStateOf("") }
+
+    name(nameState)
+    description(descriptionState)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.secondary)
-
     ) {
-        BaseEditText("Name", MaterialTheme.colors.onSecondary) {
-            name = it
-        }
+        BaseEditText("Name", MaterialTheme.colors.onSecondary) { nameState = it }
         Spacer(modifier = Modifier.height(10.dp))
         BaseEditText(title = "Description", MaterialTheme.colors.onSecondary) {
-            description_ = it
+            descriptionState = it
         }
     }
 }
@@ -168,26 +157,19 @@ private fun Header(
     importance: (String) -> Unit,
     category: (String) -> Unit
 ) {
-    var showDatePicker by remember {
-        mutableStateOf(false)
-    }
-    var selectedDate by remember {
-        mutableStateOf("")
-    }
-    var importance_ by remember {
-        mutableStateOf("")
-    }
-    var category_ by remember {
-        mutableStateOf("")
-    }
-    deadLine(selectedDate)
-    importance(importance_)
-    category(category_)
+    var showDatePickerState by remember { mutableStateOf(false) }
+    var selectedDateState by remember { mutableStateOf("") }
+    var importanceState by remember { mutableStateOf("") }
+    var categoryState by remember { mutableStateOf("") }
 
-    if (showDatePicker) showDatePicker(
+    deadLine(selectedDateState)
+    importance(importanceState)
+    category(categoryState)
+
+    if (showDatePickerState) showDatePicker(
         requireActivity = requireActivity,
-        onDismiss = { showDatePicker = false }) { selectedDate_ ->
-        selectedDate = selectedDate_
+        onDismiss = { showDatePickerState = false }) { selectedDate_ ->
+        selectedDateState = selectedDate_
     }
     Row(
         modifier = Modifier
@@ -199,10 +181,12 @@ private fun Header(
         horizontalArrangement = if (itemType != "Project") Arrangement.SpaceBetween else Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BaseSpinner(knownCategories, "Category") { category_ = it }
+        BaseSpinner(knownCategories, "Category") { categoryState = it }
         if (itemType != "Project") {
-            DatePickerClickableIcon(selectedDate) { showDatePicker = !showDatePicker }
-            BaseSpinner(importanceList, "Importance") { importance_ = it }
+            DatePickerClickableIcon(selectedDateState) {
+                showDatePickerState = !showDatePickerState
+            }
+            BaseSpinner(importanceList, "Importance") { importanceState = it }
         }
     }
 }
@@ -217,9 +201,7 @@ private fun DatePickerClickableIcon(date: String, showDatePicker: () -> Unit) {
             .padding(5.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.surface)
-            .clickable {
-                showDatePicker()
-            },
+            .clickable { showDatePicker() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -243,7 +225,6 @@ private fun DatePickerClickableIcon(date: String, showDatePicker: () -> Unit) {
     }
 }
 
-
 private fun showDatePicker(
     requireActivity: AppCompatActivity,
     onDismiss: () -> Unit,
@@ -259,4 +240,3 @@ private fun showDatePicker(
         onDismiss()
     }
 }
-

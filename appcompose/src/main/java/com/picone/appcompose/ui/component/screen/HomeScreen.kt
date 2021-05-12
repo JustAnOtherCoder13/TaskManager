@@ -64,6 +64,7 @@ fun Fab(navController: NavController){
                 addItems,
                 closePopUp = {itemType ->
                     isPopUpMenuExpanded=false
+                    if(itemType.trim().isNotEmpty())
                     navigateToAddScreenOnAddItemClicked(navController = navController,itemType = itemType)
                              },
             )

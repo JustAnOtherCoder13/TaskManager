@@ -31,7 +31,7 @@ import com.picone.core.util.Constants.UnknownTask
 
 @Composable
 fun <T> ExpandableTaskItem(item: T, navController: NavController) {
-    var expanded: Boolean by remember { mutableStateOf(false) }
+    var expandedState: Boolean by remember { mutableStateOf(false) }
     val itemToShow = when (item) {
         is Task -> item
         is UnderStain -> item
@@ -46,10 +46,10 @@ fun <T> ExpandableTaskItem(item: T, navController: NavController) {
             .background(MaterialTheme.colors.surface)
     ) {
         TaskTitle(item, itemToShow, navController)
-        if (expanded) {
+        if (expandedState) {
             Description(itemToShow)
         }
-        ExpandIcon(expanded) { expanded = !expanded }
+        ExpandIcon(expandedState) { expandedState = !expandedState }
     }
 }
 
@@ -126,19 +126,15 @@ fun BaseSpinner(
     title: String,
     onItemSelected: (item: String) -> Unit
 ) {
-    var expanded by remember {
-        mutableStateOf(false)
-    }
-    var selectedItem by remember {
-        mutableStateOf(title)
-    }
-    Row(modifier =
-    Modifier
+    var expandedState by remember { mutableStateOf(false) }
+    var selectedItemState by remember { mutableStateOf(title) }
+
+    Row(modifier = Modifier
         .animateContentSize()
-        .clickable { expanded = !expanded }
+        .clickable { expandedState = !expandedState }
         .padding(5.dp)
         .border(
-            if (selectedItem == "Category") {
+            if (selectedItemState == "Category") {
                 BorderStroke(2.dp, MaterialTheme.colors.error)
             } else BorderStroke(0.dp, Color.Transparent)
         )
@@ -148,29 +144,27 @@ fun BaseSpinner(
 
     ) {
         Text(
-            text = selectedItem,
+            text = selectedItemState,
             modifier = Modifier
                 .padding(2.dp),
             style = MaterialTheme.typography.subtitle2
         )
         Icon(
-            imageVector = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+            imageVector = if (expandedState) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
             contentDescription = null,
         )
         DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
+            expanded = expandedState,
+            onDismissRequest = { expandedState = false },
             modifier = Modifier
                 .wrapContentWidth()
                 .wrapContentHeight()
         ) {
             itemList.forEachIndexed { _, item ->
-
                 DropdownMenuItem(onClick = {
-                    expanded = false
+                    expandedState = false
                     onItemSelected(item)
-                    selectedItem = item
-
+                    selectedItemState = item
                 }) {
                     Text(text = item)
                 }
@@ -202,9 +196,7 @@ fun BaseEditText(title: String, textColor: Color, getText: (text: String) -> Uni
     ) {
         TextField(
             value = textState,
-            onValueChange = { value ->
-                textState = value
-            },
+            onValueChange = { value -> textState = value },
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .border(
@@ -218,8 +210,7 @@ fun BaseEditText(title: String, textColor: Color, getText: (text: String) -> Uni
                     else BorderStroke(0.dp, Color.Transparent)
                 )
                 .fillMaxWidth(),
-
-            )
+        )
     }
 }
 

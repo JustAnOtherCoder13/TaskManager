@@ -7,11 +7,6 @@ import com.picone.appcompose.ui.navigation.MainDestinations.DETAIL
 import com.picone.appcompose.ui.navigation.MainDestinations.HOME
 import com.picone.core.domain.entity.Task
 
-
-fun navigateToHome(navController: NavController){
-    navController.navigate(HOME)
-}
-
 // HOME SCREEN
 fun <T>  navigateToDetailOnTaskClicked  (navController: NavController, item : T): () -> Unit{
     fun navigateToTask(task: Task) {

@@ -22,7 +22,6 @@ import java.util.*
 
 @Composable
 fun DetailScreen(task: CompleteTask, navController: NavController) {
-
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -33,9 +32,7 @@ fun DetailScreen(task: CompleteTask, navController: NavController) {
     ) {
         item { Header(task) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
-        items(items = task.underStainsForTask) { underStain ->
-            ExpandableTaskItem(underStain, navController = navController)
-        }
+        items(items = task.underStainsForTask) { underStain -> ExpandableTaskItem(underStain, navController = navController) }
     }
 }
 
