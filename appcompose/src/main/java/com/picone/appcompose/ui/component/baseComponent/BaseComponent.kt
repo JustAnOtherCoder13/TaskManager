@@ -1,7 +1,9 @@
 package com.picone.appcompose.ui.component.baseComponent
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -122,7 +124,7 @@ fun TitleInformationText(text: String) {
 fun BaseSpinner(
     itemList: List<String>,
     title: String,
-    onItemSelected : (item:String)->Unit
+    onItemSelected: (item: String) -> Unit
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -135,6 +137,11 @@ fun BaseSpinner(
         .animateContentSize()
         .clickable { expanded = !expanded }
         .padding(5.dp)
+        .border(
+            if (selectedItem == "Category") {
+                BorderStroke(2.dp, MaterialTheme.colors.error)
+            } else BorderStroke(0.dp, Color.Transparent)
+        )
         .clip(RoundedCornerShape(5.dp))
         .background(MaterialTheme.colors.surface),
         verticalAlignment = Alignment.CenterVertically
@@ -171,8 +178,9 @@ fun BaseSpinner(
         }
     }
 }
+
 @Composable
-fun BaseEditText(title: String, textColor: Color, getText : (text:String)->Unit) {
+fun BaseEditText(title: String, textColor: Color, getText: (text: String) -> Unit) {
     var textState by remember {
         mutableStateOf(TextFieldValue())
     }
@@ -180,7 +188,7 @@ fun BaseEditText(title: String, textColor: Color, getText : (text:String)->Unit)
     Text(
         text = title,
         modifier = Modifier
-            .padding(start = 5.dp,end = 5.dp, top = 10.dp, bottom = 5.dp),
+            .padding(start = 5.dp, end = 5.dp, top = 10.dp, bottom = 5.dp),
         style = MaterialTheme.typography.subtitle2,
         color = textColor
     )
@@ -196,12 +204,22 @@ fun BaseEditText(title: String, textColor: Color, getText : (text:String)->Unit)
             value = textState,
             onValueChange = { value ->
                 textState = value
-                            },
+            },
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
+                .border(
+                    if (textState.text
+                            .trim()
+                            .isEmpty()
+                    ) BorderStroke(
+                        2.dp,
+                        MaterialTheme.colors.error
+                    )
+                    else BorderStroke(0.dp, Color.Transparent)
+                )
                 .fillMaxWidth(),
 
-        )
+            )
     }
 }
 

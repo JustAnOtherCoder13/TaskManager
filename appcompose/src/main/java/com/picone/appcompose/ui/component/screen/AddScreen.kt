@@ -26,6 +26,7 @@ import com.picone.appcompose.ui.navigation.navigateToHomeOnAddNewItem
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
+import com.picone.viewmodels.BaseViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,12 +37,13 @@ fun AddScreen(
     navController: NavController,
     taskId: Int,
     projectId: Int,
-    allCategories : List<Category>,
+    allCategories: List<Category>,
     addNewProjectOnOkButtonClicked: (project: Project) -> Unit,
     addNewTaskOnOkButtonClicked: (task: Task) -> Unit
 ) {
-    var knownCategories : MutableList<String> = mutableListOf()
-    val importance = listOf("important", "normal", "unimportant")
+    BaseViewModel.completionStateMutableLD.value = BaseViewModel.Companion.CompletionState.START_STATE
+    var knownCategories: MutableList<String> = mutableListOf()
+    val importance = listOf("Unimportant", "Normal","Important")
     var deadline by remember { mutableStateOf("") }
     var importance_ by remember { mutableStateOf("") }
     var category_ by remember { mutableStateOf("") }
@@ -50,6 +52,12 @@ fun AddScreen(
     allCategories.forEachIndexed { _, c ->
         knownCategories.add(c.name!!)
     }
+    var isOkButtonEnabled by remember {
+        mutableStateOf(false)
+    }
+    isOkButtonEnabled = name_.trim().isNotEmpty()
+            && description_.trim().isNotEmpty()
+            && category_.trim().isNotEmpty()
 
     LazyColumn(
         modifier = Modifier
@@ -69,22 +77,32 @@ fun AddScreen(
                 name = { name_ = it },
                 description = { description_ = it })
         }
+
         item {
-            OkButton(navController) {
+            OkButton(isOkButtonEnabled = isOkButtonEnabled) {
                 when (itemType) {
-                    "Project" -> addNewProjectOnOkButtonClicked(
-                        Project(projectId, knownCategories.indexOf(category_)+1, name_, description_)
-                    )
+                    "Project" ->
+                        addNewProjectOnOkButtonClicked(
+                            Project(
+                                projectId,
+                                knownCategories.indexOf(category_) + 1,
+                                name_,
+                                description_
+                            )
+                        )
                     "Task" -> addNewTaskOnOkButtonClicked(
                         Task(
                             taskId,
-                            knownCategories.indexOf(category_)+1,
+                            knownCategories.indexOf(category_) + 1,
                             name_,
                             description_,
-                            importance.indexOf(importance_)+1,
+                            importance.indexOf(importance_) + 1,
                             Calendar.getInstance().time,
                             null,
-                            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).parse(deadline),
+                            if (deadline.trim().isNotEmpty()) SimpleDateFormat(
+                                "dd/MM/yyyy",
+                                Locale.FRANCE
+                            ).parse(deadline) else null,
                             null
                         )
                     )
@@ -96,9 +114,10 @@ fun AddScreen(
 
 @Composable
 private fun OkButton(
-    navController: NavController,
+    isOkButtonEnabled: Boolean,
     addNewItemOnOkButtonClicked: () -> Unit
 ) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -106,7 +125,8 @@ private fun OkButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = {addNewItemOnOkButtonClicked()}
+            onClick = { addNewItemOnOkButtonClicked() },
+            enabled = isOkButtonEnabled
         ) { Text(text = "OK") }
     }
 }

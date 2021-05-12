@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.core.os.bundleOf
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,6 +20,7 @@ import com.picone.appcompose.ui.component.screen.HomeScreen
 import com.picone.appcompose.ui.navigation.MainDestinations.ADD
 import com.picone.appcompose.ui.navigation.MainDestinations.DETAIL
 import com.picone.appcompose.ui.navigation.MainDestinations.HOME
+import com.picone.appcompose.ui.navigation.navigateToHome
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.CompleteTask
@@ -27,10 +29,8 @@ import com.picone.core.domain.entity.Task
 import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.core.util.Constants.TASK_ID
 import com.picone.core.util.Constants.UnknownTask
-import com.picone.viewmodels.CategoryViewModel
-import com.picone.viewmodels.ProjectViewModel
-import com.picone.viewmodels.TaskViewModel
-import com.picone.viewmodels.UnderStainViewModel
+import com.picone.viewmodels.*
+import com.picone.viewmodels.BaseViewModel.Companion.completionStateMutableLD
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 
@@ -62,6 +62,15 @@ class MainActivity : AppCompatActivity() {
                     listOf()
                 )
                 val navController = rememberNavController()
+
+                completionStateMutableLD.observe(this){
+                    when(it){
+                        BaseViewModel.Companion.CompletionState.TASK_ON_COMPLETE ->
+                            navigateToHome(navController = navController)
+                        else -> {}
+                    }
+                }
+
                 NavHost(navController = navController, startDestination = HOME) {
                     composable(HOME) { HomeScreen(allTasks, navController = navController) }
                     composable(
@@ -75,7 +84,6 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                     composable("$ADD/{itemType}")
-
                     { backStackEntry ->
                         val itemType: String = backStackEntry.arguments?.getString("itemType") ?: ""
                         AddScreen(requireActivity = requireActivity,
@@ -85,10 +93,11 @@ class MainActivity : AppCompatActivity() {
                             allCategories = allCategories,
                             projectId = allProjects.size+1,
                             addNewProjectOnOkButtonClicked = {
-                                Log.i("TAG", "onCreate: "+it)
+                                projectViewModel.addNewProject(it)
                             },
                             addNewTaskOnOkButtonClicked = {
-                                Log.i("TAG", "onCreate: "+it)
+                                if(it.importance==0)it.importance=3
+                                taskViewModel.addNewTask(it)
                             }
                         )
                     }
