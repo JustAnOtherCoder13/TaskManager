@@ -18,29 +18,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.picone.appcompose.R
-import com.picone.appcompose.ui.component.baseComponent.utilsComponent.ExpandableTaskItem
+import com.picone.appcompose.ui.component.baseComponent.ExpandableTaskItem
+import com.picone.appcompose.ui.navigation.navigateToAddScreenOnAddItemClicked
 import com.picone.core.domain.entity.CompleteTask
 
 
 @Composable
 fun HomeScreen(items: List<CompleteTask>, navController: NavController) {
     Scaffold(
-        topBar = { AppBar() {} },
+        topBar = { AppBar(navController)},
         content = { TaskRecyclerView(items, "all", navController) },
     )
 }
 
 @Composable
-fun AppBar(onAddButtonClick : () -> Unit){
+fun AppBar(navController: NavController){
     TopAppBar(
         title = { Text(text = stringResource(R.string.app_name)) },
         backgroundColor = MaterialTheme.colors.primary,
-        actions = { Fab { }}
+        actions = { Fab(navController)}
     )
 }
 
 @Composable
-fun Fab(onAddButtonClick : () -> Unit){
+fun Fab(navController: NavController){
     var isPopUpMenuExpanded by remember {
         mutableStateOf(false)
     }
@@ -61,7 +62,10 @@ fun Fab(onAddButtonClick : () -> Unit){
             AddNewTaskDropDownMenu(
                 isPopUpMenuExpanded,
                 addItems,
-                closePopUp = {isPopUpMenuExpanded=false},
+                closePopUp = {itemType ->
+                    isPopUpMenuExpanded=false
+                    navigateToAddScreenOnAddItemClicked(navController = navController,itemType = itemType)
+                             },
             )
         }
     }
@@ -71,19 +75,18 @@ fun Fab(onAddButtonClick : () -> Unit){
 private fun AddNewTaskDropDownMenu(
     isPopUpMenuExpanded: Boolean,
     addItems: List<String>,
-    closePopUp: () -> Unit
+    closePopUp: (itemType : String) -> Unit
 ) {
     DropdownMenu(
         expanded = isPopUpMenuExpanded,
-        onDismissRequest =  closePopUp ,
+        onDismissRequest = { closePopUp("") } ,
         modifier = Modifier
             .wrapContentWidth()
             .wrapContentHeight()
     ) {
-        addItems.forEachIndexed { _, s ->
-            //TODO here to nav to add screen
-            DropdownMenuItem(onClick =  closePopUp) {
-                Text(text = s)
+        addItems.forEachIndexed { _, itemType ->
+            DropdownMenuItem(onClick = { closePopUp(itemType) }) {
+                Text(text = itemType)
             }
         }
     }

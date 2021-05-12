@@ -36,4 +36,6 @@ class MainActivity : AppCompatActivity() {
         mCategoryViewModel.getAllCategories()
         mProjectViewModel.getAllProject()
     }
+
+
 }

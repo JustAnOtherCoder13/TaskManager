@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.picone.appcompose.ui.component.screen.AddScreen
 import com.picone.appcompose.ui.component.screen.DetailScreen
 import com.picone.appcompose.ui.component.screen.HomeScreen
@@ -31,6 +32,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 class MainActivity : AppCompatActivity() {
 
     private val taskViewModel: TaskViewModel by viewModels()
+    private val requireActivity = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +53,11 @@ class MainActivity : AppCompatActivity() {
                         val taskId: Int = backStackEntry.arguments?.getInt(TASK_ID) ?: 0
                         DetailScreen(task = taskToPass(allTasks, taskId), navController = navController)
                     }
-                    composable(ADD){AddScreen()}
+                    composable("$ADD/{itemType}")
+
+                    {backStackEntry ->
+                        val itemType: String = backStackEntry.arguments?.getString("itemType")?:""
+                        AddScreen(requireActivity = requireActivity,navController = navController,itemType = itemType,addNewItemOnOkButtonClicked = { addNewItemOnOkButtonClicked() })}
                 }
             }
         }
@@ -65,4 +71,6 @@ class MainActivity : AppCompatActivity() {
         }
         return taskToPass
     }
+
+
 }

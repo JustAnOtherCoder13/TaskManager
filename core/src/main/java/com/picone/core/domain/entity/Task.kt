@@ -26,4 +26,5 @@ data class Task(
     override var start: Date?,
     override var deadLine: Date?,
     override var close: Date?
-):BaseTask(name, description, start, deadLine, close)
+):BaseTask(start= start,deadLine = deadLine,close = close)
+

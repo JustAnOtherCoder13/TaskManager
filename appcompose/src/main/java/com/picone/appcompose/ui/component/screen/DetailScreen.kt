@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.picone.appcompose.ui.component.baseComponent.utilsComponent.ExpandableTaskItem
-import com.picone.appcompose.ui.component.baseComponent.utilsComponent.InformationText
-import com.picone.appcompose.ui.component.baseComponent.utilsComponent.TitleInformationText
+import com.picone.appcompose.ui.component.baseComponent.ExpandableTaskItem
+import com.picone.appcompose.ui.component.baseComponent.InformationText
+import com.picone.appcompose.ui.component.baseComponent.TitleInformationText
 import com.picone.appcompose.ui.values.TopLeftCornerCut
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.appcompose.ui.values.TopRoundedCorner
@@ -31,7 +31,6 @@ fun DetailScreen(task: CompleteTask, navController: NavController) {
             .clip(TopRoundedCorner)
             .background(MaterialTheme.colors.secondary)
     ) {
-
         item { Header(task) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         items(items = task.underStainsForTask) { underStain ->
