@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.picone.appcompose.ui.component.baseComponent.AppBar
 import com.picone.appcompose.ui.component.baseComponent.BottomNavBar
-import com.picone.appcompose.ui.component.baseComponent.ExpandableTaskItem
+import com.picone.appcompose.ui.component.baseComponent.ExpandableItem
 import com.picone.appcompose.ui.navigation.MainDestinations.HOME
 import com.picone.appcompose.ui.navigation.navigateToAddScreenOnAddItemClicked
 import com.picone.core.domain.entity.CompleteTask
@@ -72,7 +72,7 @@ fun Fab(navController: NavController){
 }
 
 @Composable
-private fun AddNewTaskDropDownMenu(
+fun AddNewTaskDropDownMenu(
     isPopUpMenuExpanded: Boolean,
     addItems: List<String>,
     closePopUp: (itemType : String) -> Unit
@@ -115,7 +115,7 @@ fun TaskRecyclerView(
             item { TaskImportanceSelector(importance) }
             item { Spacer(modifier = Modifier.height(16.dp)) }
             items(items = allTasks) { task ->
-                ExpandableTaskItem(task.task, navController = navController)
+                ExpandableItem(task.task, navController = navController)
             }
         }
     }

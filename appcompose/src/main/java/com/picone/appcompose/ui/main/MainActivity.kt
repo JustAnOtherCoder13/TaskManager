@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         )
                     }
-                    composable(PROJECT){ Project(navController = navController)}
+                    composable(PROJECT){ Project(allProjects = allProjects,navController = navController)}
                 }
             }
         }

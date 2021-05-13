@@ -1,5 +1,6 @@
 package com.picone.appcompose.ui.component.baseComponent
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -9,10 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.picone.appcompose.R
 import com.picone.appcompose.ui.SetProgressDrawable
+import com.picone.appcompose.ui.component.screen.AddNewTaskDropDownMenu
 import com.picone.appcompose.ui.component.screen.Fab
 import com.picone.appcompose.ui.navigation.MainDestinations
 import com.picone.appcompose.ui.navigation.navigateToDetailOnTaskClicked
@@ -32,6 +31,7 @@ import com.picone.appcompose.ui.navigation.navigateToHome
 import com.picone.appcompose.ui.navigation.navigateToProject
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.core.domain.entity.BaseTask
+import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
 import com.picone.core.util.Constants.UnknownTask
@@ -85,11 +85,12 @@ fun BottomNavBar(
 
 
 @Composable
-fun <T> ExpandableTaskItem(item: T, navController: NavController) {
+fun <T> ExpandableItem(item: T, navController: NavController) {
     var expandedState: Boolean by remember { mutableStateOf(false) }
     val itemToShow = when (item) {
         is Task -> item
         is UnderStain -> item
+        is Project -> item
         else -> UnknownTask
     }
     Column(
@@ -117,15 +118,51 @@ fun <T> TaskTitle(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .clickable(onClick = navigateToDetailOnTaskClicked(navController, item))
             .padding(5.dp)
             .fillMaxWidth()
     ) {
-        Text(
-            text = itemToShow.name,
-            style = MaterialTheme.typography.subtitle1,
-        )
-        SetProgressDrawable(start = itemToShow.start, close = itemToShow.close)
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .clickable(onClick = navigateToDetailOnTaskClicked(navController, item))
+                .weight(7f)
+        ) {
+            Text(
+                text = itemToShow.name,
+                style = MaterialTheme.typography.subtitle1,
+            )
+            if (item !is Project) {
+                SetProgressDrawable(start = itemToShow.start, close = itemToShow.close)
+            }
+        }
+
+        var isPopUpMenuExpanded by remember {
+            mutableStateOf(false)
+        }
+        val option : List<String> = when (item ){
+            is Project ->  listOf("Change to task", "delete")
+            is Task -> listOf("Edit","delete")
+            else -> listOf("start", "close", "delete")
+        }
+        Row(modifier = Modifier
+            .wrapContentWidth(align = Alignment.End)
+            .clickable { isPopUpMenuExpanded = !isPopUpMenuExpanded }
+        ){
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = null,
+                modifier = Modifier.padding(start = 10.dp)
+            )
+            AddNewTaskDropDownMenu(
+                isPopUpMenuExpanded = isPopUpMenuExpanded,
+                addItems = option ,
+                closePopUp = { itemType ->
+                    isPopUpMenuExpanded=false
+                    Log.i("TAG", "TaskTitle: $itemType")
+                }
+            )
+        }
+
     }
 }
 

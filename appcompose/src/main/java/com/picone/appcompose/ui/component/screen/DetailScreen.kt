@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.picone.appcompose.ui.component.baseComponent.ExpandableTaskItem
+import com.picone.appcompose.ui.component.baseComponent.ExpandableItem
 import com.picone.appcompose.ui.component.baseComponent.InformationText
 import com.picone.appcompose.ui.component.baseComponent.TitleInformationText
 import com.picone.appcompose.ui.values.TopLeftCornerCut
@@ -32,7 +32,7 @@ fun DetailScreen(task: CompleteTask, navController: NavController) {
     ) {
         item { Header(task) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
-        items(items = task.underStainsForTask) { underStain -> ExpandableTaskItem(underStain, navController = navController) }
+        items(items = task.underStainsForTask) { underStain -> ExpandableItem(underStain, navController = navController) }
     }
 }
 
