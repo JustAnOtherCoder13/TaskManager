@@ -11,22 +11,77 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.picone.appcompose.R
 import com.picone.appcompose.ui.SetProgressDrawable
+import com.picone.appcompose.ui.component.screen.Fab
+import com.picone.appcompose.ui.navigation.MainDestinations
 import com.picone.appcompose.ui.navigation.navigateToDetailOnTaskClicked
+import com.picone.appcompose.ui.navigation.navigateToHome
+import com.picone.appcompose.ui.navigation.navigateToProject
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.core.domain.entity.BaseTask
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
 import com.picone.core.util.Constants.UnknownTask
+
+@Composable
+fun AppBar(navController: NavController) {
+    TopAppBar(
+        title = { Text(text = stringResource(R.string.app_name)) },
+        backgroundColor = MaterialTheme.colors.primary,
+        actions = { Fab(navController) }
+    )
+}
+
+@Composable
+fun BottomNavBar(
+    navController: NavController,
+    selectedItem: String,
+    onItemSelected: (item: String) -> Unit
+) {
+    var selectedItemState by remember {
+        mutableStateOf(selectedItem)
+    }
+    onItemSelected(selectedItemState)
+    BottomAppBar(modifier = Modifier.fillMaxWidth()) {
+        BottomNavigation {
+            BottomNavigationItem(
+                icon = { Icon(Icons.Default.Home, "") },
+                label = { Text(text = "HOME") },
+                selected = selectedItemState == MainDestinations.HOME,
+                unselectedContentColor = MaterialTheme.colors.primaryVariant,
+                onClick = {
+                    if (selectedItemState != MainDestinations.HOME) {
+                        selectedItemState = MainDestinations.HOME
+                        navigateToHome(navController)
+                    }
+                })
+            BottomNavigationItem(
+                icon = { Icon(Icons.Default.Build, "") },
+                label = { Text(text = "PROJECT") },
+                selected = selectedItemState == MainDestinations.PROJECT,
+                unselectedContentColor = MaterialTheme.colors.primaryVariant,
+                onClick = {
+                    if (selectedItemState != MainDestinations.PROJECT) {
+                        selectedItemState = MainDestinations.PROJECT
+                        navigateToProject(navController)
+                    }
+                })
+        }
+    }
+}
 
 
 @Composable

@@ -16,10 +16,12 @@ import androidx.navigation.compose.rememberNavController
 import com.picone.appcompose.ui.component.screen.AddScreen
 import com.picone.appcompose.ui.component.screen.DetailScreen
 import com.picone.appcompose.ui.component.screen.HomeScreen
+import com.picone.appcompose.ui.component.screen.Project
 import com.picone.appcompose.ui.navigation.MainDestinations.ADD
 import com.picone.appcompose.ui.navigation.MainDestinations.DETAIL
 import com.picone.appcompose.ui.navigation.MainDestinations.HOME
-import com.picone.appcompose.ui.navigation.navigateToHomeOnAddNewItem
+import com.picone.appcompose.ui.navigation.MainDestinations.PROJECT
+import com.picone.appcompose.ui.navigation.navigateToHome
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.CompleteTask
@@ -90,10 +92,10 @@ class MainActivity : AppCompatActivity() {
                             }
                         )
                     }
+                    composable(PROJECT){ Project(navController = navController)}
                 }
             }
         }
-
     }
 
     @Composable
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         completionStateMutableLD.observe(this) {
             when (it) {
                 BaseViewModel.Companion.CompletionState.TASK_ON_COMPLETE ->
-                    navigateToHomeOnAddNewItem(navController = navController)
+                    navigateToHome(navController = navController)
                 else -> {
                 }
             }

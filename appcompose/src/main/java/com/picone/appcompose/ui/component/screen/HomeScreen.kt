@@ -13,32 +13,31 @@ import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.picone.appcompose.R
+import com.picone.appcompose.ui.component.baseComponent.AppBar
+import com.picone.appcompose.ui.component.baseComponent.BottomNavBar
 import com.picone.appcompose.ui.component.baseComponent.ExpandableTaskItem
+import com.picone.appcompose.ui.navigation.MainDestinations.HOME
 import com.picone.appcompose.ui.navigation.navigateToAddScreenOnAddItemClicked
 import com.picone.core.domain.entity.CompleteTask
 
 
 @Composable
 fun HomeScreen(items: List<CompleteTask>, navController: NavController) {
+    var selectedItemState by remember {
+        mutableStateOf(HOME)
+    }
     Scaffold(
         topBar = { AppBar(navController)},
         content = { TaskRecyclerView(items, "all", navController) },
+        bottomBar = { BottomNavBar(navController,selectedItemState){
+            selectedItemState=it
+        } }
     )
 }
 
-@Composable
-fun AppBar(navController: NavController){
-    TopAppBar(
-        title = { Text(text = stringResource(R.string.app_name)) },
-        backgroundColor = MaterialTheme.colors.primary,
-        actions = { Fab(navController)}
-    )
-}
 
 @Composable
 fun Fab(navController: NavController){
