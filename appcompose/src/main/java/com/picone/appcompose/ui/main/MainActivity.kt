@@ -1,6 +1,7 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -77,10 +78,15 @@ class MainActivity : AppCompatActivity() {
                             navController = navController
                         )
                     }
-                    composable("$ADD/{itemType}")
+                    composable(
+                        "$ADD/{itemType}/{projectId}"
+                    )
                     { backStackEntry ->
                         val itemType: String = backStackEntry.arguments?.getString("itemType") ?: ""
+                        val projectId : Int? = backStackEntry.arguments?.getString("projectId")?.toIntOrNull()
+                        val projectToPassInTask : Project? = if (projectId != null) allProjects[projectId-1] else null
                         AddScreen(requireActivity = requireActivity,
+                            projectToPassInTask = projectToPassInTask ,
                             itemType = itemType,
                             taskId = allTasks.size + 1,
                             allCategories = allCategories,

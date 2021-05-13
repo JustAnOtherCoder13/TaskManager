@@ -1,5 +1,6 @@
 package com.picone.appcompose.ui.component.screen
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -24,12 +25,14 @@ import com.picone.appcompose.ui.component.baseComponent.BaseSpinner
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
+import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.viewmodels.BaseViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
 fun AddScreen(
+    projectToPassInTask: Project?,
     itemType: String,
     requireActivity: AppCompatActivity,
     taskId: Int,
@@ -49,7 +52,12 @@ fun AddScreen(
     var descriptionState by remember { mutableStateOf("") }
     var isOkButtonEnabledState by remember { mutableStateOf(false) }
 
-    allCategories.forEachIndexed { _, c -> knownCategories.add(c.name!!) }
+    val categoryStr: String? =
+        if (projectToPassInTask != null)
+            allCategories.filter { category -> category.id == projectToPassInTask.categoryId }[FIRST_ELEMENT].name
+        else null
+
+    allCategories.forEachIndexed { _, category -> knownCategories.add(category.name!!) }
 
     isOkButtonEnabledState = nameState.trim().isNotEmpty() && descriptionState.trim()
         .isNotEmpty() && categoryState.trim().isNotEmpty()
@@ -61,7 +69,7 @@ fun AddScreen(
             .padding(horizontal = 10.dp)
     ) {
         item {
-            Header(knownCategories, requireActivity, importance, itemType,
+            Header(knownCategories, requireActivity, importance, itemType,categoryStr,
                 deadLine = { deadlineState = it },
                 importance = { importanceState = it },
                 category = { categoryState = it })
@@ -69,6 +77,7 @@ fun AddScreen(
         item { Spacer(modifier = Modifier.height(10.dp)) }
         item {
             Body(
+                projectToPassInTask = projectToPassInTask,
                 name = { nameState = it },
                 description = { descriptionState = it })
         }
@@ -126,9 +135,9 @@ private fun OkButton(
 }
 
 @Composable
-private fun Body(name: (String) -> Unit, description: (String) -> Unit) {
-    var nameState by remember { mutableStateOf("") }
-    var descriptionState by remember { mutableStateOf("") }
+private fun Body(projectToPassInTask: Project?,name: (String) -> Unit, description: (String) -> Unit) {
+    var nameState by remember { mutableStateOf(projectToPassInTask?.name?:"") }
+    var descriptionState by remember { mutableStateOf(projectToPassInTask?.description?:"") }
 
     name(nameState)
     description(descriptionState)
@@ -139,9 +148,9 @@ private fun Body(name: (String) -> Unit, description: (String) -> Unit) {
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.secondary)
     ) {
-        BaseEditText("Name", MaterialTheme.colors.onSecondary) { nameState = it }
+        BaseEditText("Name", MaterialTheme.colors.onSecondary,projectToPassInTask?.name) { nameState =  it }
         Spacer(modifier = Modifier.height(10.dp))
-        BaseEditText(title = "Description", MaterialTheme.colors.onSecondary) {
+        BaseEditText(title = "Description", MaterialTheme.colors.onSecondary,projectToPassInTask?.description) {
             descriptionState = it
         }
     }
@@ -153,6 +162,7 @@ private fun Header(
     requireActivity: AppCompatActivity,
     importanceList: List<String>,
     itemType: String,
+    categoryIfProjectToPass : String?,
     deadLine: (String) -> Unit,
     importance: (String) -> Unit,
     category: (String) -> Unit
@@ -161,6 +171,7 @@ private fun Header(
     var selectedDateState by remember { mutableStateOf("") }
     var importanceState by remember { mutableStateOf("") }
     var categoryState by remember { mutableStateOf("") }
+
 
     deadLine(selectedDateState)
     importance(importanceState)
@@ -181,7 +192,7 @@ private fun Header(
         horizontalArrangement = if (itemType != "Project") Arrangement.SpaceBetween else Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BaseSpinner(knownCategories, "Category") { categoryState = it }
+        BaseSpinner(knownCategories, "Category",categoryIfProjectToPass) { categoryState = it }
         if (itemType != "Project") {
             DatePickerClickableIcon(selectedDateState) {
                 showDatePickerState = !showDatePickerState

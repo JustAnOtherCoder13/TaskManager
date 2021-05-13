@@ -25,10 +25,7 @@ import com.picone.appcompose.R
 import com.picone.appcompose.ui.SetProgressDrawable
 import com.picone.appcompose.ui.component.screen.AddNewTaskDropDownMenu
 import com.picone.appcompose.ui.component.screen.Fab
-import com.picone.appcompose.ui.navigation.MainDestinations
-import com.picone.appcompose.ui.navigation.navigateToDetailOnTaskClicked
-import com.picone.appcompose.ui.navigation.navigateToHome
-import com.picone.appcompose.ui.navigation.navigateToProject
+import com.picone.appcompose.ui.navigation.*
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.core.domain.entity.BaseTask
 import com.picone.core.domain.entity.Project
@@ -140,27 +137,40 @@ fun <T> TaskTitle(
             mutableStateOf(false)
         }
         val option : List<String> = when (item ){
-            is Project ->  listOf("Change to task", "delete")
-            is Task -> listOf("Edit","delete")
-            else -> listOf("start", "close", "delete")
+            is Project ->  listOf("Change to task")
+            else -> listOf("start", "close")
         }
-        Row(modifier = Modifier
-            .wrapContentWidth(align = Alignment.End)
-            .clickable { isPopUpMenuExpanded = !isPopUpMenuExpanded }
-        ){
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = null,
-                modifier = Modifier.padding(start = 10.dp)
-            )
-            AddNewTaskDropDownMenu(
-                isPopUpMenuExpanded = isPopUpMenuExpanded,
-                addItems = option ,
-                closePopUp = { itemType ->
-                    isPopUpMenuExpanded=false
-                    Log.i("TAG", "TaskTitle: $itemType")
-                }
-            )
+        if (item !is Task) {
+            Row(modifier = Modifier
+                .wrapContentWidth(align = Alignment.End)
+                .clickable { isPopUpMenuExpanded = !isPopUpMenuExpanded }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = null,
+                    modifier = Modifier.padding(start = 10.dp)
+                )
+                AddNewTaskDropDownMenu(
+                    isPopUpMenuExpanded = isPopUpMenuExpanded,
+                    addItems = option,
+                    closePopUp = { selectedItem ->
+                        isPopUpMenuExpanded = false
+                        when (item) {
+                            is Project -> when (selectedItem) {
+                                option[0] -> navigateToAddScreenOnAddItemClicked(
+                                    navController = navController,
+                                    itemType = "Task",
+                                    projectId = item.id.toString()
+                                )
+                            }
+                            else -> when (selectedItem) {
+                                option[0] -> Log.i("TAG", "TaskTitle: start under stain")
+                                option[1] -> Log.i("TAG", "TaskTitle: close under stain")
+                            }
+                        }
+                    }
+                )
+            }
         }
 
     }
@@ -216,10 +226,12 @@ fun TitleInformationText(text: String) {
 fun BaseSpinner(
     itemList: List<String>,
     title: String,
+    categoryIfProjectToPass : String? = null,
     onItemSelected: (item: String) -> Unit
 ) {
     var expandedState by remember { mutableStateOf(false) }
-    var selectedItemState by remember { mutableStateOf(title) }
+    var selectedItemState by remember { mutableStateOf(categoryIfProjectToPass?:title) }
+    onItemSelected(categoryIfProjectToPass?:"")
 
     Row(modifier = Modifier
         .animateContentSize()
@@ -266,9 +278,9 @@ fun BaseSpinner(
 }
 
 @Composable
-fun BaseEditText(title: String, textColor: Color, getText: (text: String) -> Unit) {
+fun BaseEditText(title: String, textColor: Color,text: String?, getText: (text: String) -> Unit) {
     var textState by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue(text?:""))
     }
     getText(textState.text)
     Text(

@@ -16,8 +16,8 @@ fun <T>  navigateToDetailOnTaskClicked  (navController: NavController, item : T)
     return { if (item is Task) navigateToTask (item as Task) }
 }
 //TOP BAR ADD TO ADD SCREEN
-fun navigateToAddScreenOnAddItemClicked(navController: NavController, itemType : String){
-    navController.navigate("$ADD/$itemType")
+fun navigateToAddScreenOnAddItemClicked(navController: NavController, itemType : String, projectId :String?){
+    navController.navigate("$ADD/${itemType}/${projectId}")
 }
 
 //HOME SCREEN
