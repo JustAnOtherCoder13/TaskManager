@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -83,22 +85,45 @@ class MainActivity : AppCompatActivity() {
                     )
                     { backStackEntry ->
                         val itemType: String = backStackEntry.arguments?.getString("itemType") ?: ""
-                        val projectId : Int? = backStackEntry.arguments?.getString("projectId")?.toIntOrNull()
-                        val projectToPassInTask : Project? = if (projectId != null) allProjects[projectId-1] else null
+                        val projectId: Int? =
+                            backStackEntry.arguments?.getString("projectId")?.toIntOrNull()
+                        val projectToPassInTask: Project? =
+                            if (projectId != null) allProjects[projectId - 1] else null
                         AddScreen(requireActivity = requireActivity,
-                            projectToPassInTask = projectToPassInTask ,
+                            projectToPassInTask = projectToPassInTask,
                             itemType = itemType,
                             taskId = allTasks.size + 1,
                             allCategories = allCategories,
                             projectId = allProjects.size + 1,
                             addNewProjectOnOkButtonClicked = { projectViewModel.addNewProject(it) },
                             addNewTaskOnOkButtonClicked = {
-                                if (it.importance == 0) it.importance = 3
-                                taskViewModel.addNewTask(it)
+                                //TODO if tranform project in task delete project when task is add
+                                if (projectToPassInTask != null) {
+                                    projectViewModel.deleteProject(projectToPassInTask)
+
+                                    completionStateMutableLD.observe({ lifecycle }) { completionState ->
+                                        when (completionState) {
+                                            BaseViewModel.Companion.CompletionState.DELETE_PROJECT_ON_COMPLETE ->
+                                                taskViewModel.addNewTask(it)
+                                            else -> {
+
+                                            }
+                                        }
+
+                                    }
+                                } else {
+                                    if (it.importance == 0) it.importance = 3
+                                    taskViewModel.addNewTask(it)
+                                }
                             }
                         )
                     }
-                    composable(PROJECT){ Project(allProjects = allProjects,navController = navController)}
+                    composable(PROJECT) {
+                        Project(
+                            allProjects = allProjects,
+                            navController = navController
+                        )
+                    }
                 }
             }
         }
@@ -110,6 +135,7 @@ class MainActivity : AppCompatActivity() {
             when (it) {
                 BaseViewModel.Companion.CompletionState.TASK_ON_COMPLETE ->
                     navigateToHome(navController = navController)
+
                 else -> {
                 }
             }

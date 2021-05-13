@@ -19,4 +19,8 @@ class ProjectRepository @Inject constructor(
         projectDaoImpl.addNewProject(project)
     }
 
+    suspend fun deleteProject(project: Project){
+        projectDaoImpl.deleteProject(project)
+    }
+
 }

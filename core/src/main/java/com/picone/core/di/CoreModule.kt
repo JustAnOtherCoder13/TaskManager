@@ -13,6 +13,7 @@ import com.picone.core.data.underStain.UnderStainRepository
 import com.picone.core.domain.interactor.category.AddNewCategoryInteractor
 import com.picone.core.domain.interactor.category.GetAllCategoriesInteractor
 import com.picone.core.domain.interactor.project.AddNewProjectInteractor
+import com.picone.core.domain.interactor.project.DeleteProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.project.GetProjectForIdInteractor
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
@@ -109,6 +110,11 @@ class CoreModule {
     @Provides
     fun provideGetProjectForId(projectRepository: ProjectRepository):GetProjectForIdInteractor{
         return GetProjectForIdInteractor(projectRepository)
+    }
+
+    @Provides
+    fun provideDeleteProject(projectRepository: ProjectRepository):DeleteProjectInteractor{
+        return DeleteProjectInteractor(projectRepository)
     }
 
     @Provides

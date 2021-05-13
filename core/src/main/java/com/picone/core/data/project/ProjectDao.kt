@@ -1,6 +1,7 @@
 package com.picone.core.data.project
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.picone.core.domain.entity.Project
@@ -17,4 +18,7 @@ interface ProjectDao {
 
     @Insert
     suspend fun addNewProject(project: Project)
+
+    @Delete
+    suspend fun deleteProject(project: Project)
 }

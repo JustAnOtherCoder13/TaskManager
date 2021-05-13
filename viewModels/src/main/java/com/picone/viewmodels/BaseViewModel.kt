@@ -13,6 +13,7 @@ abstract class BaseViewModel : ViewModel() {
             UNDER_STAIN_ON_COMPLETE,
             TASK_ON_COMPLETE,
             PROJECT_ON_COMPLETE,
+            DELETE_PROJECT_ON_COMPLETE,
             ON_ERROR
         }
         var completionStateMutableLD:MutableLiveData<CompletionState> = MutableLiveData()

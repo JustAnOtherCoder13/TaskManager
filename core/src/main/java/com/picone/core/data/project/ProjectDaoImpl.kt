@@ -20,5 +20,9 @@ class ProjectDaoImpl @Inject constructor(taskDatabase: TaskDatabase) {
         projectDao.addNewProject(project)
     }
 
+    suspend fun deleteProject(project: Project){
+        projectDao.deleteProject(project)
+    }
+
 
 }

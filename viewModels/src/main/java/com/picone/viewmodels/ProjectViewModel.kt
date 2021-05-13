@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.interactor.project.AddNewProjectInteractor
+import com.picone.core.domain.interactor.project.DeleteProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.project.GetProjectForIdInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 class ProjectViewModel @Inject constructor(
     private val mGetAllProjectInteractor: GetAllProjectInteractor,
     private val mGetProjectForIdInteractor: GetProjectForIdInteractor,
-    private val mAddNewProjectInteractor: AddNewProjectInteractor
+    private val mAddNewProjectInteractor: AddNewProjectInteractor,
+    private val mDeleteProjectInteractor: DeleteProjectInteractor
 ) : BaseViewModel() {
 
     var mAllProjectsMutableLD: MutableLiveData<MutableList<Project>> = MutableLiveData()
@@ -43,6 +45,18 @@ class ProjectViewModel @Inject constructor(
                 mAddNewProjectInteractor.addNewProject(project)
             }
             completionStateMutableLD.value = Companion.CompletionState.PROJECT_ON_COMPLETE
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    fun deleteProject(project: Project) =
+        try {
+            viewModelScope.launch {
+                mDeleteProjectInteractor.deleteProject(project)
+            }
+            completionStateMutableLD.value = Companion.CompletionState.DELETE_PROJECT_ON_COMPLETE
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
 }

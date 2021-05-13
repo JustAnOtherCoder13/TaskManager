@@ -1,6 +1,5 @@
 package com.picone.appcompose.ui.component.screen
 
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -94,7 +93,9 @@ fun AddScreen(
                                 descriptionState
                             )
                         )
-                    "Task" -> addNewTaskOnOkButtonClicked(
+                    "Task" ->
+                        //TODO if project to pass is not null delete project before add new task
+                        addNewTaskOnOkButtonClicked(
                         Task(
                             taskId,
                             knownCategories.indexOf(categoryState) + 1,
@@ -194,9 +195,7 @@ private fun Header(
     ) {
         BaseSpinner(knownCategories, "Category",categoryIfProjectToPass) { categoryState = it }
         if (itemType != "Project") {
-            DatePickerClickableIcon(selectedDateState) {
-                showDatePickerState = !showDatePickerState
-            }
+            DatePickerClickableIcon(selectedDateState) { showDatePickerState = !showDatePickerState }
             BaseSpinner(importanceList, "Importance") { importanceState = it }
         }
     }
