@@ -115,7 +115,7 @@ fun TaskRecyclerView(
             item { TaskImportanceSelector(importance) }
             item { Spacer(modifier = Modifier.height(16.dp)) }
             items(items = allTasks) { task ->
-                ExpandableItem(task.task, navController = navController)
+                ExpandableItem(task.task, navController = navController){}
             }
         }
     }

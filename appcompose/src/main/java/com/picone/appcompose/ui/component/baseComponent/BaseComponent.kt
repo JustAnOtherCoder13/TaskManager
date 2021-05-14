@@ -32,6 +32,7 @@ import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
 import com.picone.core.util.Constants.UnknownTask
+import java.util.*
 
 @Composable
 fun AppBar(navController: NavController) {
@@ -82,7 +83,7 @@ fun BottomNavBar(
 
 
 @Composable
-fun <T> ExpandableItem(item: T, navController: NavController) {
+fun <T> ExpandableItem(item: T, navController: NavController, addUnderStainOnOkButtonClicked : (item:UnderStain)->Unit) {
     var expandedState: Boolean by remember { mutableStateOf(false) }
     val itemToShow = when (item) {
         is Task -> item
@@ -98,7 +99,7 @@ fun <T> ExpandableItem(item: T, navController: NavController) {
             .clip(TopRightCornerCut)
             .background(MaterialTheme.colors.surface)
     ) {
-        TaskTitle(item, itemToShow, navController)
+        TaskTitle(item, itemToShow, navController){addUnderStainOnOkButtonClicked(it)}
         if (expandedState) {
             Description(itemToShow)
         }
@@ -110,7 +111,8 @@ fun <T> ExpandableItem(item: T, navController: NavController) {
 fun <T> TaskTitle(
     item: T,
     itemToShow: BaseTask,
-    navController: NavController
+    navController: NavController,
+    addUnderStainOnOkButtonClicked : (item : UnderStain)->Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -164,7 +166,12 @@ fun <T> TaskTitle(
                                 )
                             }
                             else -> when (selectedItem) {
-                                option[0] -> Log.i("TAG", "TaskTitle: start under stain")
+                                option[0] -> {
+                                    Log.i("TAG", "TaskTitle: start under stain")
+                                    item as UnderStain
+                                    item.start = Calendar.getInstance().time
+                                    addUnderStainOnOkButtonClicked(item)
+                                }
                                 option[1] -> Log.i("TAG", "TaskTitle: close under stain")
                             }
                         }

@@ -53,87 +53,118 @@ fun DetailScreen(
                 ExpandableItem(
                     underStain,
                     navController = navController
-                )
+                ){
+                    addUnderStainOnOkButtonClicked(it)
+                    if(task.task.start==null) {
+                        task.task.start = it.start
+                    }
+                }
             }
 
         item {
             Button(
                 onClick = { showAddUnderStainItem = !showAddUnderStainItem },
-                modifier = Modifier.fillMaxWidth(),
-
-
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth(),
             ) {
                 Text(text = "Add Under Stain")
             }
         }}
         if (showAddUnderStainItem) {
             item {
-                var nameState by remember { mutableStateOf("") }
-                var descriptionState by remember { mutableStateOf("") }
-                var showDatePickerState by remember { mutableStateOf(false) }
-                var selectedDateState by remember { mutableStateOf("") }
-
-                if (showDatePickerState) showDatePicker(
-                    requireActivity = requireActivity,
-                    onDismiss = { showDatePickerState = false }) { selectedDate_ ->
-                    selectedDateState = selectedDate_
-                }
-
                 Column(
                     modifier = Modifier
-                        .background(color = MaterialTheme.colors.surface)
-                        .padding(horizontal = 10.dp)
-                        .fillMaxHeight()
+                        .padding(horizontal = 5.dp)
+
                 ) {
-                    DatePickerClickableIcon(date = selectedDateState) {
-                        showDatePickerState = !showDatePickerState
+                    AddUnderStainItem(
+                        requireActivity,
+                        addUnderStainOnOkButtonClicked,
+                        task
+                    ){
+                        showAddUnderStainItem=it
                     }
-                    BaseEditText(
-                        title = "Name",
-                        textColor = MaterialTheme.colors.onSurface,
-                        text = null
-                    ) {
-                        nameState = it
-                    }
-                    BaseEditText(
-                        title = "Description",
-                        textColor = MaterialTheme.colors.onSurface,
-                        text = null
-                    ) {
-                        descriptionState = it
-                    }
-                    Row() {
-                        Button(onClick = {
-                            showAddUnderStainItem = false
-                            addUnderStainOnOkButtonClicked(
-                                UnderStain(
-                                    id = task.underStainsForTask.size,
-                                    taskId = task.task.id,
-                                    name = nameState,
-                                    description = descriptionState,
-                                    deadLine = if (selectedDateState.trim().isNotEmpty())
-                                        SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).parse(
-                                            selectedDateState
-                                        )
-                                    else null,
-                                    close = null,
-                                    start = null
-                                )
-                            )
-                        },
-                            enabled = nameState.trim().isNotEmpty() && descriptionState.trim().isNotEmpty()
-                        )
-                        {
-                            Text(text = "OK")
-                        }
-                        Button(onClick = { showAddUnderStainItem = false }) {
-                            Text(text = "Cancel")
-                        }
-                    }
-
-
                 }
+            }
+        }
+    }
+}
 
+@Composable
+private fun AddUnderStainItem(
+    requireActivity: AppCompatActivity,
+    addUnderStainOnOkButtonClicked: (underStain: UnderStain) -> Unit,
+    task: CompleteTask,
+    showAddUnderStainItem: (isShown : Boolean)->Unit,
+) {
+
+    var nameState by remember { mutableStateOf("") }
+    var descriptionState by remember { mutableStateOf("") }
+    var showDatePickerState by remember { mutableStateOf(false) }
+    var selectedDateState by remember { mutableStateOf("") }
+
+    if (showDatePickerState) showDatePicker(
+        requireActivity = requireActivity,
+        onDismiss = { showDatePickerState = false }) { selectedDate_ ->
+        selectedDateState = selectedDate_
+    }
+
+    Column(
+        modifier = Modifier
+            .background(color = MaterialTheme.colors.surface)
+            .padding(horizontal = 10.dp)
+            .fillMaxHeight()
+    ) {
+        DatePickerClickableIcon(date = selectedDateState) {
+            showDatePickerState = !showDatePickerState
+        }
+        BaseEditText(
+            title = "Name",
+            textColor = MaterialTheme.colors.onSurface,
+            text = null
+        ) {
+            nameState = it
+        }
+        BaseEditText(
+            title = "Description",
+            textColor = MaterialTheme.colors.onSurface,
+            text = null
+        ) {
+            descriptionState = it
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 5.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(
+                onClick = {
+                    val underStainToPass = UnderStain(
+                        id = task.underStainsForTask.size,
+                        taskId = task.task.id,
+                        name = nameState,
+                        description = descriptionState,
+                        deadLine = if (selectedDateState.trim().isNotEmpty())
+                            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).parse(
+                                selectedDateState
+                            )
+                        else null,
+                        close = null,
+                        start = null
+                    )
+                    task.underStainsForTask.add(underStainToPass)
+                    showAddUnderStainItem(false)
+                    addUnderStainOnOkButtonClicked(underStainToPass)
+                },
+                enabled = nameState.trim().isNotEmpty() && descriptionState.trim().isNotEmpty()
+            )
+            {
+                Text(text = "OK")
+            }
+            Button(onClick = { showAddUnderStainItem (false )}) {
+                Text(text = "Cancel")
             }
         }
     }

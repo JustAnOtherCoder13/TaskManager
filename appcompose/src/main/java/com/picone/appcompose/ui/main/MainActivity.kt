@@ -1,15 +1,12 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -79,14 +76,7 @@ class MainActivity : AppCompatActivity() {
                             task = taskToPass(allTasks, taskId),
                             navController = navController,
                             requireActivity = requireActivity
-                        ){underStain ->
-                            Log.i("TAG", "onCreate: $underStain")
-                            underStainViewModel.addNewUnderStain(underStain)
-                            completionStateMutableLD.observe({lifecycle}){completionState ->
-                               if (completionState == BaseViewModel.Companion.CompletionState.UNDER_STAIN_ON_COMPLETE)
-                                   allTasks.filter { it.task.id==taskId }[FIRST_ELEMENT].underStainsForTask.add(underStain)
-                            }
-                        }
+                        ) { underStain -> underStainViewModel.addNewUnderStain(underStain) }
                     }
                     composable(
                         "$ADD/{itemType}/{projectId}"

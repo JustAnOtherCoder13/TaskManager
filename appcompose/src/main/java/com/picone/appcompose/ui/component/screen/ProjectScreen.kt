@@ -56,7 +56,7 @@ fun ProjectRecyclerView(
 
         ) {
             items(items = allProjects) { project ->
-                ExpandableItem(project, navController = navController)
+                ExpandableItem(project, navController = navController){}
             }
         }
     }
