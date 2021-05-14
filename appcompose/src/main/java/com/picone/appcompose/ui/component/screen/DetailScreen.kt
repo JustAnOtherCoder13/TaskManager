@@ -1,15 +1,22 @@
 package com.picone.appcompose.ui.component.screen
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.picone.appcompose.ui.component.baseComponent.BaseEditText
 import com.picone.appcompose.ui.component.baseComponent.ExpandableItem
 import com.picone.appcompose.ui.component.baseComponent.InformationText
 import com.picone.appcompose.ui.component.baseComponent.TitleInformationText
@@ -17,11 +24,20 @@ import com.picone.appcompose.ui.values.TopLeftCornerCut
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.appcompose.ui.values.TopRoundedCorner
 import com.picone.core.domain.entity.CompleteTask
+import com.picone.core.domain.entity.UnderStain
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun DetailScreen(task: CompleteTask, navController: NavController) {
+fun DetailScreen(
+    task: CompleteTask,
+    navController: NavController,
+    requireActivity: AppCompatActivity,
+    addUnderStainOnOkButtonClicked: (underStain: UnderStain) -> Unit
+) {
+    var showAddUnderStainItem by remember {
+        mutableStateOf(false)
+    }
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -32,7 +48,94 @@ fun DetailScreen(task: CompleteTask, navController: NavController) {
     ) {
         item { Header(task) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
-        items(items = task.underStainsForTask) { underStain -> ExpandableItem(underStain, navController = navController) }
+        if(!showAddUnderStainItem) {
+            items(items = task.underStainsForTask) { underStain ->
+                ExpandableItem(
+                    underStain,
+                    navController = navController
+                )
+            }
+
+        item {
+            Button(
+                onClick = { showAddUnderStainItem = !showAddUnderStainItem },
+                modifier = Modifier.fillMaxWidth(),
+
+
+            ) {
+                Text(text = "Add Under Stain")
+            }
+        }}
+        if (showAddUnderStainItem) {
+            item {
+                var nameState by remember { mutableStateOf("") }
+                var descriptionState by remember { mutableStateOf("") }
+                var showDatePickerState by remember { mutableStateOf(false) }
+                var selectedDateState by remember { mutableStateOf("") }
+
+                if (showDatePickerState) showDatePicker(
+                    requireActivity = requireActivity,
+                    onDismiss = { showDatePickerState = false }) { selectedDate_ ->
+                    selectedDateState = selectedDate_
+                }
+
+                Column(
+                    modifier = Modifier
+                        .background(color = MaterialTheme.colors.surface)
+                        .padding(horizontal = 10.dp)
+                        .fillMaxHeight()
+                ) {
+                    DatePickerClickableIcon(date = selectedDateState) {
+                        showDatePickerState = !showDatePickerState
+                    }
+                    BaseEditText(
+                        title = "Name",
+                        textColor = MaterialTheme.colors.onSurface,
+                        text = null
+                    ) {
+                        nameState = it
+                    }
+                    BaseEditText(
+                        title = "Description",
+                        textColor = MaterialTheme.colors.onSurface,
+                        text = null
+                    ) {
+                        descriptionState = it
+                    }
+                    Row() {
+                        Button(onClick = {
+                            showAddUnderStainItem = false
+                            addUnderStainOnOkButtonClicked(
+                                UnderStain(
+                                    id = task.underStainsForTask.size,
+                                    taskId = task.task.id,
+                                    name = nameState,
+                                    description = descriptionState,
+                                    deadLine = if (selectedDateState.trim().isNotEmpty())
+                                        SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).parse(
+                                            selectedDateState
+                                        )
+                                    else null,
+                                    close = null,
+                                    start = null
+                                )
+                            )
+                        },
+                            enabled = nameState.trim().isNotEmpty() && descriptionState.trim().isNotEmpty()
+                        )
+                        {
+                            Text(text = "OK")
+                        }
+                        Button(onClick = { showAddUnderStainItem = false }) {
+                            Text(text = "Cancel")
+                        }
+                    }
+
+
+                }
+
+            }
+        }
     }
 }
 
@@ -46,8 +149,18 @@ private fun Header(task: CompleteTask) {
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TaskInformation(task)
-        UnderStainInformation(task)
+        Row(
+            modifier = Modifier
+                .weight(4f)
+        ) {
+            TaskInformation(task)
+        }
+        Row(
+            modifier = Modifier
+                .weight(3f)
+        ) {
+            UnderStainInformation(task)
+        }
     }
 }
 

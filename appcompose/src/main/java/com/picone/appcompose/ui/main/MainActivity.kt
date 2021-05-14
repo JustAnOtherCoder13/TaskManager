@@ -77,8 +77,16 @@ class MainActivity : AppCompatActivity() {
                         val taskId: Int = backStackEntry.arguments?.getInt(TASK_ID) ?: 0
                         DetailScreen(
                             task = taskToPass(allTasks, taskId),
-                            navController = navController
-                        )
+                            navController = navController,
+                            requireActivity = requireActivity
+                        ){underStain ->
+                            Log.i("TAG", "onCreate: $underStain")
+                            underStainViewModel.addNewUnderStain(underStain)
+                            completionStateMutableLD.observe({lifecycle}){completionState ->
+                               if (completionState == BaseViewModel.Companion.CompletionState.UNDER_STAIN_ON_COMPLETE)
+                                   allTasks.filter { it.task.id==taskId }[FIRST_ELEMENT].underStainsForTask.add(underStain)
+                            }
+                        }
                     }
                     composable(
                         "$ADD/{itemType}/{projectId}"
@@ -88,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                         val projectId: Int? =
                             backStackEntry.arguments?.getString("projectId")?.toIntOrNull()
                         val projectToPassInTask: Project? =
-                            if (projectId != null) allProjects[projectId - 1] else null
+                            if (projectId != null) allProjects.filter { it.id == projectId }[FIRST_ELEMENT] else null
                         AddScreen(requireActivity = requireActivity,
                             projectToPassInTask = projectToPassInTask,
                             itemType = itemType,
@@ -97,7 +105,6 @@ class MainActivity : AppCompatActivity() {
                             projectId = allProjects.size + 1,
                             addNewProjectOnOkButtonClicked = { projectViewModel.addNewProject(it) },
                             addNewTaskOnOkButtonClicked = {
-                                //TODO if tranform project in task delete project when task is add
                                 if (projectToPassInTask != null) {
                                     projectViewModel.deleteProject(projectToPassInTask)
 
@@ -106,10 +113,8 @@ class MainActivity : AppCompatActivity() {
                                             BaseViewModel.Companion.CompletionState.DELETE_PROJECT_ON_COMPLETE ->
                                                 taskViewModel.addNewTask(it)
                                             else -> {
-
                                             }
                                         }
-
                                     }
                                 } else {
                                     if (it.importance == 0) it.importance = 3

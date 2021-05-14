@@ -29,6 +29,7 @@ import com.picone.viewmodels.BaseViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 @Composable
 fun AddScreen(
     projectToPassInTask: Project?,
@@ -94,7 +95,6 @@ fun AddScreen(
                             )
                         )
                     "Task" ->
-                        //TODO if project to pass is not null delete project before add new task
                         addNewTaskOnOkButtonClicked(
                         Task(
                             taskId,
@@ -202,7 +202,7 @@ private fun Header(
 }
 
 @Composable
-private fun DatePickerClickableIcon(date: String, showDatePicker: () -> Unit) {
+fun DatePickerClickableIcon(date: String, showDatePicker: () -> Unit) {
     Column(
         modifier = Modifier
             .animateContentSize()
@@ -235,7 +235,7 @@ private fun DatePickerClickableIcon(date: String, showDatePicker: () -> Unit) {
     }
 }
 
-private fun showDatePicker(
+fun showDatePicker(
     requireActivity: AppCompatActivity,
     onDismiss: () -> Unit,
     onDateSelected: (String) -> Unit
