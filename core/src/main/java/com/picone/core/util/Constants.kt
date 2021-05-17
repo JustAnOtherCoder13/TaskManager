@@ -13,9 +13,6 @@ object Constants {
     const val TASK_TABLE_NAME = "task_table"
     const val UNDER_STAIN_TABLE_NAME = "under_stain_table"
 
-    val Date.medium:String
-        get() = DateFormat.getDateInstance(DateFormat.MEDIUM).format(this)
-
     const val IMPORTANCE_IMPORTANT = 0
     const val IMPORTANCE_NORMAL = 1
     const val IMPORTANCE_UNIMPORTANT = 2
@@ -36,6 +33,9 @@ object Constants {
     val MY_DAY = calendar.get(Calendar.DAY_OF_MONTH)
 
     //compose const
+    const val CATEGORY = "Category"
+    const val TASK = "Task"
+    const val PROJECT = "Project"
     val UnknownTask = Task(0, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
 
 }

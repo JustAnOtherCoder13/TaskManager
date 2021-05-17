@@ -14,7 +14,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ProjectViewModel @Inject constructor(
     private val mGetAllProjectInteractor: GetAllProjectInteractor,
-    private val mGetProjectForIdInteractor: GetProjectForIdInteractor,
     private val mAddNewProjectInteractor: AddNewProjectInteractor,
     private val mDeleteProjectInteractor: DeleteProjectInteractor
 ) : BaseViewModel() {
@@ -28,12 +27,6 @@ class ProjectViewModel @Inject constructor(
                 .collect {
                     mAllProjectsMutableLD.value = it.toMutableList()
                 }
-        }
-    }
-
-    fun getProjectForId(id: Int) {
-        viewModelScope.launch {
-            mProjectForIdMutableLD.value = mGetProjectForIdInteractor.getProjectForId(id)
         }
     }
 

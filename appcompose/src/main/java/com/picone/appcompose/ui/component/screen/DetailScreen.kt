@@ -3,37 +3,30 @@ package com.picone.appcompose.ui.component.screen
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.picone.appcompose.ui.component.baseComponent.BaseEditText
-import com.picone.appcompose.ui.component.baseComponent.ExpandableItem
 import com.picone.appcompose.ui.component.baseComponent.InformationText
 import com.picone.appcompose.ui.component.baseComponent.TitleInformationText
 import com.picone.appcompose.ui.values.TopLeftCornerCut
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.appcompose.ui.values.TopRoundedCorner
+import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Composable
 fun DetailScreen(
-    task: CompleteTask,
-    navController: NavController,
-    requireActivity: AppCompatActivity,
-    addUnderStainOnOkButtonClicked: (underStain: UnderStain) -> Unit
+    task: Task,
 ) {
+
+    Text(text = "task : ${task.name}")
+
+/*
     var showAddUnderStainItem by remember {
         mutableStateOf(false)
     }
@@ -87,14 +80,14 @@ fun DetailScreen(
                 }
             }
         }
-    }
+    }*/
 }
 
 @Composable
 private fun AddUnderStainItem(
     requireActivity: AppCompatActivity,
     addUnderStainOnOkButtonClicked: (underStain: UnderStain) -> Unit,
-    task: CompleteTask,
+    task: Task,
     showAddUnderStainItem: (isShown : Boolean)->Unit,
 ) {
 
@@ -138,7 +131,7 @@ private fun AddUnderStainItem(
                 .padding(horizontal = 5.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(
+            /*Button(
                 onClick = {
                     val underStainToPass = UnderStain(
                         id = task.underStainsForTask.size,
@@ -164,13 +157,13 @@ private fun AddUnderStainItem(
             }
             Button(onClick = { showAddUnderStainItem (false )}) {
                 Text(text = "Cancel")
-            }
+            }*/
         }
     }
 }
 
 @Composable
-private fun Header(task: CompleteTask) {
+private fun Header(task: Task) {
     Row(
         modifier = Modifier
             .clip(TopRoundedCorner)
@@ -195,7 +188,7 @@ private fun Header(task: CompleteTask) {
 }
 
 @Composable
-private fun UnderStainInformation(task: CompleteTask) {
+private fun UnderStainInformation(task: Task) {
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -204,13 +197,13 @@ private fun UnderStainInformation(task: CompleteTask) {
     ) {
         TitleInformationText(text = "Under Stain ")
         Spacer(modifier = Modifier.height(10.dp))
-        InformationText(text = "Total = " + task.underStainsForTask.size)
-        InformationText(text = "Done = " + getCompletedUnderStainsForTask(task = task).size)
+       // InformationText(text = "Total = " + task.underStainsForTask.size)
+        //InformationText(text = "Done = " + getCompletedUnderStainsForTask(task = task).size)
     }
 }
 
 @Composable
-private fun TaskInformation(task: CompleteTask) {
+private fun TaskInformation(task: Task) {
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -218,26 +211,26 @@ private fun TaskInformation(task: CompleteTask) {
             .background(MaterialTheme.colors.surface)
 
     ) {
-        TitleInformationText(text = task.task.name)
+        //TitleInformationText(text = task.task.name)
         Spacer(modifier = Modifier.height(10.dp))
-        InformationText(
+       /* InformationText(
             text = "Create on : " + SimpleDateFormat(
                 "dd/MM/yyy",
                 Locale.FRANCE
             ).format(task.task.creation)
-        )
+        )*/
         InformationText(
             text =
-            "Deadline on : " +
+            "Deadline on : "/* +
                     if (task.task.deadLine == null) "none"
                     else SimpleDateFormat("dd/MM/yyy", Locale.FRANCE)
-                        .format(task.task.deadLine!!)
+                        .format(task.task.deadLine!!)*/
         )
     }
 }
 
 @Composable
-private fun getCompletedUnderStainsForTask(task: CompleteTask) =
-    task.underStainsForTask.filter { underStain ->
+private fun getCompletedUnderStainsForTask(task: Task) =
+    /*task.underStainsForTask.filter { underStain ->
         underStain.close != null
-    }
+    }*/null

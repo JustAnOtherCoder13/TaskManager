@@ -22,7 +22,7 @@ class TaskViewModel @Inject constructor(
     private val mAddNewTaskInteractor: AddNewTaskInteractor
 ) : BaseViewModel() {
 
-    val mAllTasksMutableLD: MutableLiveData<MutableList<CompleteTask>> = MutableLiveData()
+    val mAllTasksMutableLD: MutableLiveData<MutableList<Task>> = MutableLiveData()
     val mTaskForIdMutableLD: MutableLiveData<Task> = MutableLiveData()
     val mTasksForCategoryMutableLD: MutableLiveData<MutableList<Task>> = MutableLiveData()
 
@@ -35,9 +35,9 @@ class TaskViewModel @Inject constructor(
         }
     }
 
-    fun getTaskForId(id: Int) {
+   /* fun getTaskForId(id: Int) {
         viewModelScope.launch {
-            mTaskForIdMutableLD.value = mDeleteTaskInteractor.getTaskForId(id)
+            mTaskForIdMutableLD.value = mDeleteTaskInteractor.deleteTask(id)
         }
     }
 
@@ -49,7 +49,7 @@ class TaskViewModel @Inject constructor(
                     mTasksForCategoryMutableLD.value = it.toMutableList()
                 }
         }
-    }
+    }*/
 
     fun addNewTask(task: Task) =
         try {
