@@ -6,7 +6,6 @@ import com.picone.core.domain.entity.Project
 import com.picone.core.domain.interactor.project.AddNewProjectInteractor
 import com.picone.core.domain.interactor.project.DeleteProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
-import com.picone.core.domain.interactor.project.GetProjectForIdInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

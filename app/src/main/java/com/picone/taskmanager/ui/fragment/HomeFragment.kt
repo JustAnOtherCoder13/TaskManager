@@ -14,7 +14,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.util.Constants.IMPORTANCE_IMPORTANT
 import com.picone.core.util.Constants.IMPORTANCE_NORMAL
 import com.picone.core.util.Constants.IMPORTANCE_UNIMPORTANT

@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.picone.core.domain.entity.CompleteTask
 import com.picone.taskmanager.databinding.TaskTableRecyclerviewItemBinding
 import com.picone.taskmanager.utils.Constants.setProgressDrawable
 

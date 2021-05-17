@@ -27,7 +27,6 @@ import com.picone.appcompose.ui.component.screen.AddNewTaskDropDownMenu
 import com.picone.appcompose.ui.component.screen.Fab
 import com.picone.appcompose.ui.navigation.*
 import com.picone.appcompose.ui.values.TopRightCornerCut
-import com.picone.core.domain.entity.BaseTask
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain

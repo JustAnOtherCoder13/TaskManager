@@ -3,12 +3,11 @@ package com.picone.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.picone.core.domain.entity.Category
-import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
-import com.picone.core.domain.interactor.task.GetAllTasksForCategoryIdInteractor
+import com.picone.core.domain.interactor.task.UpdateTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
-import com.picone.core.domain.interactor.task.GetTaskForIdInteractor
+import com.picone.core.domain.interactor.task.DeleteTaskInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -18,8 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     private val mGetAllTasksInteractor: GetAllTasksInteractor,
-    private val mGetTaskForIdInteractor: GetTaskForIdInteractor,
-    private val mGetAllTasksForCategoryIdInteractor: GetAllTasksForCategoryIdInteractor,
+    private val mDeleteTaskInteractor: DeleteTaskInteractor,
+    private val mUpdateTaskInteractor: UpdateTaskInteractor,
     private val mAddNewTaskInteractor: AddNewTaskInteractor
 ) : BaseViewModel() {
 
@@ -38,14 +37,14 @@ class TaskViewModel @Inject constructor(
 
     fun getTaskForId(id: Int) {
         viewModelScope.launch {
-            mTaskForIdMutableLD.value = mGetTaskForIdInteractor.getTaskForId(id)
+            mTaskForIdMutableLD.value = mDeleteTaskInteractor.getTaskForId(id)
         }
     }
 
 
     fun getTasksForCategory(category: Category) {
         viewModelScope.launch {
-            mGetAllTasksForCategoryIdInteractor.getAllTasksForCategoryId(category.id)
+            mUpdateTaskInteractor.getAllTasksForCategoryId(category.id)
                 .collect {
                     mTasksForCategoryMutableLD.value = it.toMutableList()
                 }

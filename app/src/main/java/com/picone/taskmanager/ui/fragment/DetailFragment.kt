@@ -16,13 +16,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.UnderStain
 import com.picone.core.util.Constants.ADD_UNDER_STAIN
 import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.core.util.Constants.TASK_ID
 import com.picone.core.util.Constants.WHAT_IS_ADD
-import com.picone.core.util.Constants.medium
 import com.picone.taskmanager.R
 import com.picone.taskmanager.databinding.FragmentDetailBinding
 import com.picone.taskmanager.utils.Constants.getDelayBetweenTwoDateInDaysToString

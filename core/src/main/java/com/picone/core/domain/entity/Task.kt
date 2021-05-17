@@ -19,12 +19,12 @@ data class Task(
     @PrimaryKey(autoGenerate = true) val id: Int,
 
     @ColumnInfo(index = true) val categoryId: Int,
-    override val name: String = UNKNOWN,
-    override val description: String = UNKNOWN,
+    override val name: String,
+    override val description: String,
     var importance: Int,
     val creation: Date,
     override var start: Date?,
     override var deadLine: Date?,
     override var close: Date?
-):BaseTask(start= start,deadLine = deadLine,close = close)
+):BaseTask()
 

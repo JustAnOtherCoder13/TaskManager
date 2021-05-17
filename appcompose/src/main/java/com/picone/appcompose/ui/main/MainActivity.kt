@@ -24,7 +24,6 @@ import com.picone.appcompose.ui.navigation.MainDestinations.PROJECT
 import com.picone.appcompose.ui.navigation.navigateToHome
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Category
-import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.Project
 import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.core.util.Constants.TASK_ID

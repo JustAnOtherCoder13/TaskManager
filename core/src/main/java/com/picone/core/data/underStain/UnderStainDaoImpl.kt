@@ -17,5 +17,11 @@ class UnderStainDaoImpl @Inject constructor(taskDatabase: TaskDatabase) {
         underStainDao.addNewUnderStain(underStain)
     }
 
+    suspend fun deleteUnderStain(underStain: UnderStain){
+        underStainDao.deleteUnderStain(underStain)
+    }
 
+    suspend fun updateUnderStain(underStain: UnderStain){
+        underStainDao.updateUnderStain(underStain)
+    }
 }

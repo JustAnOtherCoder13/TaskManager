@@ -15,13 +15,15 @@ import com.picone.core.domain.interactor.category.GetAllCategoriesInteractor
 import com.picone.core.domain.interactor.project.AddNewProjectInteractor
 import com.picone.core.domain.interactor.project.DeleteProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
-import com.picone.core.domain.interactor.project.GetProjectForIdInteractor
+import com.picone.core.domain.interactor.project.UpdateProjectInteractor
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
-import com.picone.core.domain.interactor.task.GetAllTasksForCategoryIdInteractor
+import com.picone.core.domain.interactor.task.UpdateTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
-import com.picone.core.domain.interactor.task.GetTaskForIdInteractor
+import com.picone.core.domain.interactor.task.DeleteTaskInteractor
 import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
+import com.picone.core.domain.interactor.underStain.DeleteUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
+import com.picone.core.domain.interactor.underStain.UpdateUnderStainInteractor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -108,11 +110,6 @@ class CoreModule {
     }
 
     @Provides
-    fun provideGetProjectForId(projectRepository: ProjectRepository):GetProjectForIdInteractor{
-        return GetProjectForIdInteractor(projectRepository)
-    }
-
-    @Provides
     fun provideDeleteProject(projectRepository: ProjectRepository):DeleteProjectInteractor{
         return DeleteProjectInteractor(projectRepository)
     }
@@ -120,6 +117,11 @@ class CoreModule {
     @Provides
     fun provideAddNewProject(projectRepository: ProjectRepository):AddNewProjectInteractor{
         return AddNewProjectInteractor(projectRepository)
+    }
+
+    @Provides
+    fun provideUpdateProject(projectRepository: ProjectRepository):UpdateProjectInteractor{
+        return UpdateProjectInteractor(projectRepository)
     }
 
     //TASK
@@ -130,13 +132,13 @@ class CoreModule {
     }
 
     @Provides
-    fun provideGetTaskForId(taskRepository: TaskRepository):GetTaskForIdInteractor{
-        return GetTaskForIdInteractor(taskRepository)
+    fun provideDeleteTask(taskRepository: TaskRepository):DeleteTaskInteractor{
+        return DeleteTaskInteractor(taskRepository)
     }
 
     @Provides
-    fun provideGetAllTasksForCategoryId(taskRepository: TaskRepository):GetAllTasksForCategoryIdInteractor{
-        return GetAllTasksForCategoryIdInteractor(taskRepository)
+    fun provideUpdateTask(taskRepository: TaskRepository):UpdateTaskInteractor{
+        return UpdateTaskInteractor(taskRepository)
     }
 
     @Provides
@@ -153,5 +155,15 @@ class CoreModule {
     @Provides
     fun provideAddNewUnderStain(underStainRepository: UnderStainRepository):AddNewUnderStainInteractor{
         return AddNewUnderStainInteractor(underStainRepository)
+    }
+
+    @Provides
+    fun provideDeleteUnderStain(underStainRepository: UnderStainRepository):DeleteUnderStainInteractor{
+        return DeleteUnderStainInteractor(underStainRepository)
+    }
+
+    @Provides
+    fun provideUpdateUnderStain(underStainRepository: UnderStainRepository):UpdateUnderStainInteractor{
+        return UpdateUnderStainInteractor(underStainRepository)
     }
 }

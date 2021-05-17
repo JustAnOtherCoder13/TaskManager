@@ -23,7 +23,6 @@ import com.picone.appcompose.ui.component.baseComponent.TitleInformationText
 import com.picone.appcompose.ui.values.TopLeftCornerCut
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.appcompose.ui.values.TopRoundedCorner
-import com.picone.core.domain.entity.CompleteTask
 import com.picone.core.domain.entity.UnderStain
 import java.text.SimpleDateFormat
 import java.util.*

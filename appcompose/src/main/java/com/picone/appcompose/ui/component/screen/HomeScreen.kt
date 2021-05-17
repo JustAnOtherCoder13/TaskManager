@@ -21,7 +21,6 @@ import com.picone.appcompose.ui.component.baseComponent.BottomNavBar
 import com.picone.appcompose.ui.component.baseComponent.ExpandableItem
 import com.picone.appcompose.ui.navigation.MainDestinations.HOME
 import com.picone.appcompose.ui.navigation.navigateToAddScreenOnAddItemClicked
-import com.picone.core.domain.entity.CompleteTask
 
 
 @Composable

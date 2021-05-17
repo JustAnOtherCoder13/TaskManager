@@ -13,4 +13,12 @@ class UnderStainRepository @Inject constructor(private val underStainDaoImpl: Un
     suspend fun addNewUnderStain(underStain: UnderStain){
         underStainDaoImpl.addNewUnderStain(underStain)
     }
+
+    suspend fun deleteUnderStain(underStain: UnderStain){
+        underStainDaoImpl.deleteUnderStain(underStain)
+    }
+
+    suspend fun updateUnderStain(underStain: UnderStain){
+        underStainDaoImpl.updateUnderStain(underStain)
+    }
 }

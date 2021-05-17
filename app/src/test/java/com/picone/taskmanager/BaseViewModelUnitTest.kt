@@ -15,11 +15,10 @@ import com.picone.core.domain.interactor.category.AddNewCategoryInteractor
 import com.picone.core.domain.interactor.category.GetAllCategoriesInteractor
 import com.picone.core.domain.interactor.project.AddNewProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
-import com.picone.core.domain.interactor.project.GetProjectForIdInteractor
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
-import com.picone.core.domain.interactor.task.GetAllTasksForCategoryIdInteractor
+import com.picone.core.domain.interactor.task.UpdateTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
-import com.picone.core.domain.interactor.task.GetTaskForIdInteractor
+import com.picone.core.domain.interactor.task.DeleteTaskInteractor
 import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
 import com.picone.taskmanager.ui.viewModels.CategoryViewModel
@@ -137,10 +136,10 @@ open class BaseViewModelUnitTest {
     private lateinit var getAllTasksInteractor: GetAllTasksInteractor
 
     @InjectMocks
-    private lateinit var getTaskForIdInteractor: GetTaskForIdInteractor
+    private lateinit var deleteTaskInteractor: DeleteTaskInteractor
 
     @InjectMocks
-    private lateinit var getTasksForCategoryInteractor: GetAllTasksForCategoryIdInteractor
+    private lateinit var getTasksForCategoryInteractor: UpdateTaskInteractor
 
     @InjectMocks
     private lateinit var addNewTaskInteractor: AddNewTaskInteractor
@@ -219,7 +218,7 @@ open class BaseViewModelUnitTest {
 
         taskViewModel = TaskViewModel(
             getAllTasksInteractor,
-            getTaskForIdInteractor,
+            deleteTaskInteractor,
             getTasksForCategoryInteractor,
             addNewTaskInteractor
         )
