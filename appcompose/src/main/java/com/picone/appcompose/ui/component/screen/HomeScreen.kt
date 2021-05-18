@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.SetProgressDrawable
 import com.picone.appcompose.ui.component.baseComponent.*
-import com.picone.appcompose.ui.component.manager.action.nav.NavigationDirections
+import com.picone.appcompose.ui.component.manager.action.navAction.NavigationDirections
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 

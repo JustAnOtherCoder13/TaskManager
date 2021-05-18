@@ -1,8 +1,6 @@
 package com.picone.appcompose.ui.di
 
-import com.picone.appcompose.ui.component.manager.action.nav.NavActionManager
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 

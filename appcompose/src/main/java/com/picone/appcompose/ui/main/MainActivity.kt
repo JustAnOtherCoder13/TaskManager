@@ -1,7 +1,6 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -12,9 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.gson.Gson
-import com.picone.appcompose.ui.component.manager.action.nav.NavActionManager
+import com.picone.appcompose.ui.component.manager.action.navAction.NavActionManager
 import com.picone.appcompose.ui.component.screen.*
-import com.picone.appcompose.ui.component.manager.action.nav.NavigationDirections
+import com.picone.appcompose.ui.component.manager.action.navAction.NavigationDirections
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
@@ -51,7 +50,7 @@ class MainActivity : AppCompatActivity() {
                     navController = navController,
                     startDestination = NavigationDirections.Home.destination
                 ) {
-                    composable(NavigationDirections.Home.destination) {
+                    composable(NavigationDirections.Home.getRoute()) {
                         var bottomNavSelectedItemState by remember {
                             mutableStateOf(NavigationDirections.Home.destination)
                         }
@@ -75,13 +74,13 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                     composable(
-                        route = "${NavigationDirections.Detail.destination}/{${KEY_TASK}}",
+                        route = NavigationDirections.Detail.getRoute(),
                         arguments = NavigationDirections.Detail.arguments
                     ) { backStackEntry ->
                         DetailScreen(task = getTaskOrNull(backStackEntry)?: UnknownTask)
 
                     }
-                    composable(NavigationDirections.Add.destination)
+                    composable(NavigationDirections.Add.getRoute())
                     {
                         AddScreen()
                     }

@@ -1,4 +1,4 @@
-package com.picone.appcompose.ui.component.manager.action.nav
+package com.picone.appcompose.ui.component.manager.action.navAction
 
 import androidx.navigation.NavType
 import androidx.navigation.compose.NamedNavArgument
@@ -19,12 +19,14 @@ object NavigationDirections {
     }
 
     val Detail = object : NavigationCommand {
-        override val arguments: List<NamedNavArgument> = listOf(navArgument(KEY_TASK){type = NavType.StringType})
+        override val KEY: String = KEY_TASK
+        override val arguments: List<NamedNavArgument> = listOf(navArgument(KEY){type = NavType.StringType})
         override val destination: String = "detail"
     }
 
     val Add = object : NavigationCommand {
-        override val arguments: List<NamedNavArgument> = listOf(navArgument(KEY_ITEM){type = NavType.StringType})
+        override val KEY: String = KEY_ITEM
+        override val arguments: List<NamedNavArgument> = listOf(navArgument(KEY){type = NavType.StringType})
         override val destination: String = "add"
     }
 }

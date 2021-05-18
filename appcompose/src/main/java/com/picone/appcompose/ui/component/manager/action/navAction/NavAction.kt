@@ -1,4 +1,4 @@
-package com.picone.appcompose.ui.component.manager.action.nav
+package com.picone.appcompose.ui.component.manager.action.navAction
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate

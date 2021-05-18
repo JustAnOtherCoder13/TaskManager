@@ -11,7 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.picone.appcompose.R
-import com.picone.appcompose.ui.component.manager.action.nav.NavigationDirections
+import com.picone.appcompose.ui.component.manager.action.navAction.NavigationDirections
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
