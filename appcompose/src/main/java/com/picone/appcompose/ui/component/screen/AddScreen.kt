@@ -32,16 +32,18 @@ import java.util.*
 
 @Composable
 fun AddScreen(
-    projectToPassInTask: Project?,
+   /* projectToPassInTask: Project?,
     itemType: String,
     requireActivity: AppCompatActivity,
     taskId: Int,
     projectId: Int,
     allCategories: List<Category>,
     addNewProjectOnOkButtonClicked: (project: Project) -> Unit,
-    addNewTaskOnOkButtonClicked: (task: Task) -> Unit
+    addNewTaskOnOkButtonClicked: (task: Task) -> Unit*/
 ) {
-    BaseViewModel.completionStateMutableLD.value =
+
+    Text(text = "add screen")
+    /*BaseViewModel.completionStateMutableLD.value =
         BaseViewModel.Companion.CompletionState.START_STATE
     val knownCategories: MutableList<String> = mutableListOf()
     val importance = listOf("Unimportant", "Normal", "Important")
@@ -114,7 +116,7 @@ fun AddScreen(
                 }
             }
         }
-    }
+    }*/
 }
 
 @Composable

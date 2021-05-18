@@ -3,7 +3,9 @@ package com.picone.appcompose.ui.component.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -11,7 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.SetProgressDrawable
 import com.picone.appcompose.ui.component.baseComponent.*
-import com.picone.appcompose.ui.navigation.MainDestinations.HOME
+import com.picone.appcompose.ui.component.manager.action.nav.NavigationDirections
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 
@@ -23,7 +25,7 @@ fun HomeScreen(
     onBottomNavItemSelected: (item: String) -> Unit
 ) {
     var selectedItemState by remember {
-        mutableStateOf(HOME)
+        mutableStateOf(NavigationDirections.Home.destination)
     }
     Scaffold(
         topBar = { TaskManagerTopAppBar { itemTypeToAdd -> onAddItemSelected(itemTypeToAdd) } },

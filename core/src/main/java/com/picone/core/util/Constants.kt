@@ -36,6 +36,10 @@ object Constants {
     const val CATEGORY = "Category"
     const val TASK = "Task"
     const val PROJECT = "Project"
+
+    const val KEY_TASK = "task"
+    const val KEY_ITEM = "item"
+
     val UnknownTask = Task(0, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
 
 }

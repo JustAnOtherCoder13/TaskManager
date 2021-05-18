@@ -11,8 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.picone.appcompose.R
-import com.picone.appcompose.ui.navigation.MainDestinations
-import com.picone.appcompose.ui.navigation.NavigationDirections
+import com.picone.appcompose.ui.component.manager.action.nav.NavigationDirections
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
@@ -107,11 +106,11 @@ fun BottomNavBar(
             BottomNavigationItem(
                 icon = { Icon(Icons.Default.Build, "") },
                 label = { Text(text = "PROJECT") },
-                selected = selectedItemState == MainDestinations.PROJECT,
+                selected = selectedItemState == NavigationDirections.Project.destination,
                 unselectedContentColor = MaterialTheme.colors.primaryVariant,
                 onClick = {
-                    onBottomNavItemSelected(MainDestinations.PROJECT)
-                    selectedItemState = MainDestinations.PROJECT
+                    onBottomNavItemSelected(NavigationDirections.Project.destination)
+                    selectedItemState = NavigationDirections.Project.destination
                 })
         }
     }
