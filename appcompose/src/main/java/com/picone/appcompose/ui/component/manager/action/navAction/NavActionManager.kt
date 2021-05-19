@@ -1,5 +1,6 @@
 package com.picone.appcompose.ui.component.manager.action.navAction
 
+import android.util.Log
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.picone.core.domain.entity.Task
@@ -10,10 +11,18 @@ class NavActionManager(private val navController: NavController) {
 
     fun navigateToDetail(task: Task) {
         val taskToJson = Gson().toJson(task)
-        return navActionImpl.navigateToDetail(taskToJson = taskToJson).doNavAction(navController = navController )
+        navActionImpl.navigateToDetail(taskToJson = taskToJson).doNavAction(navController = navController )
     }
 
     fun navigateToAdd(){
-        return navActionImpl.navigateToAdd().doNavAction(navController = navController)
+        navActionImpl.navigateToAdd().doNavAction(navController = navController)
+    }
+
+    fun navigateToHome(){
+        navActionImpl.navigateToHome().doNavAction(navController = navController)
+    }
+
+    fun navigateToProject(){
+        navActionImpl.navigateToProject().doNavAction(navController = navController)
     }
 }

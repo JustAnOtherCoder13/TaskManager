@@ -1,4 +1,4 @@
-package com.picone.appcompose.ui.component.screen
+package com.picone.appcompose.ui.component.screen.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.picone.appcompose.ui.SetProgressDrawable
 import com.picone.appcompose.ui.component.baseComponent.*
-import com.picone.appcompose.ui.component.manager.action.navAction.NavigationDirections
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 
@@ -21,19 +21,29 @@ import com.picone.core.domain.entity.Task
 @Composable
 fun HomeScreen(
     mainContent :  @Composable () -> Unit,
-    onAddItemSelected: (itemTypeToAdd: String) -> Unit,
-    onBottomNavItemSelected: (item: String) -> Unit
+    topAppBarAddItemButtonPopUpItems: List<String>,
+    topAppBarAddItemButtonIsPopUpMenuExpanded: Boolean,
+    topAppBarAddItemButtonOnAddItemSelected: (itemTypeToAdd: String) -> Unit,
+    topAppBarAddItemButtonOnAddButtonClick: () -> Unit,
+    topAppBarAddItemButtonOnClosePopUp: () -> Unit,
+    bottomNavBarSelectedNavItem: String,
+    bottomNavBarOnNavItemSelected: (item: String) -> Unit,
+    navController: NavController
 ) {
-    var selectedItemState by remember {
-        mutableStateOf(NavigationDirections.Home.destination)
-    }
     Scaffold(
-        topBar = { TaskManagerTopAppBar { itemTypeToAdd -> onAddItemSelected(itemTypeToAdd) } },
+        topBar = { TaskManagerTopAppBar (
+            topAppBarAddItemButtonPopUpItems,
+            topAppBarAddItemButtonIsPopUpMenuExpanded,
+            topAppBarAddItemButtonOnAddItemSelected,
+            topAppBarAddItemButtonOnAddButtonClick,
+            topAppBarAddItemButtonOnClosePopUp
+                ) },
         content = { mainContent() },
         bottomBar = {
             BottomNavBar(
-                selectedItemState,
-                onBottomNavItemSelected = { selectedItem -> onBottomNavItemSelected(selectedItem) }
+                bottomNavBarSelectedNavItem = bottomNavBarSelectedNavItem,
+                bottomNavBarOnNavItemSelected = bottomNavBarOnNavItemSelected,
+                navController
             )
         }
     )
@@ -43,7 +53,7 @@ fun HomeScreen(
 fun TaskRecyclerView(
     allTasks: List<Task>,
     importance: String,
-    onTaskSelected: (item: Task) -> Unit,
+    taskRecyclerViewOnTaskSelected: (item: Task) -> Unit,
 ) {
     BaseRecyclerView(
         items = allTasks,
@@ -51,7 +61,7 @@ fun TaskRecyclerView(
         itemView = {task->
             TaskExpandableItem(
             task,
-            onTaskSelected = { selectedTask -> onTaskSelected(selectedTask) }
+            onTaskSelected = { selectedTask -> taskRecyclerViewOnTaskSelected(selectedTask) }
         ) }
     )
 }

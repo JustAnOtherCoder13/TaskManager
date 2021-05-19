@@ -23,6 +23,8 @@ class HomeScreenViewModel  @Inject constructor(
 
     val mAllTasksMutableLD: MutableLiveData<MutableList<Task>> = MutableLiveData()
     val mAllProjectMutableLD : MutableLiveData<MutableList<Project>> = MutableLiveData()
+    val mPopUpStateMutableLD : MutableLiveData<Boolean> = MutableLiveData(false)
+    val mBottomNavSelectedItem : MutableLiveData<String> = MutableLiveData("home")
 
     fun getAllTasks() {
         viewModelScope.launch {
@@ -46,5 +48,17 @@ class HomeScreenViewModel  @Inject constructor(
                     mAllProjectMutableLD.value = it.toMutableList()
                 }
         }
+    }
+
+    fun topAppBarAddItemButtonOpenPopUp(){
+        mPopUpStateMutableLD.value = true
+    }
+
+    fun topAppBarAddItemButtonClosePopUp(){
+        mPopUpStateMutableLD.value = false
+    }
+
+    fun updateBottomNavSelectedItem(selectedItem: String){
+        mBottomNavSelectedItem.value = selectedItem
     }
 }

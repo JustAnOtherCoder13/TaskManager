@@ -1,5 +1,8 @@
 package com.picone.appcompose.ui.component.manager.action.navAction
 
+import android.util.Log
+import androidx.navigation.NavController
+
 
 class NavActionImpl : NavAction{
 
@@ -13,6 +16,18 @@ class NavActionImpl : NavAction{
     fun navigateToAdd():NavAction{
         return object : NavAction{
             override val destination: String = NavigationDirections.Add.destination
+        }
+    }
+
+    fun navigateToHome():NavAction{
+        return object :NavAction{
+            override val destination: String= NavigationDirections.Home.destination
+        }
+    }
+
+    fun navigateToProject():NavAction{
+        return object :NavAction{
+            override val destination: String= NavigationDirections.Project.destination
         }
     }
 }

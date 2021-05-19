@@ -1,5 +1,6 @@
 package com.picone.appcompose.ui.component.baseComponent
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -10,33 +11,49 @@ import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
+import androidx.navigation.compose.KEY_ROUTE
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.picone.appcompose.R
 import com.picone.appcompose.ui.component.manager.action.navAction.NavigationDirections
-import com.picone.core.util.Constants.CATEGORY
-import com.picone.core.util.Constants.PROJECT
-import com.picone.core.util.Constants.TASK
 
 @Composable
-fun TaskManagerTopAppBar(onAddItemSelected: (itemTypeToAdd: String) -> Unit) {
+fun TaskManagerTopAppBar(
+    TopAppBarAddItemButtonPopUpItems: List<String>,
+    TopAppBarAddItemButtonIsPopUpMenuExpanded: Boolean,
+    TopAppBarAddItemButtonOnAddItemSelected: (itemTypeToAdd: String) -> Unit,
+    TopAppBarAddItemButtonOnAddButtonClick: () -> Unit,
+    TopAppBarAddItemButtonOnClosePopUp: () -> Unit
+) {
     TopAppBar(
         title = { Text(text = stringResource(R.string.app_name)) },
         backgroundColor = MaterialTheme.colors.primary,
         actions = {
-            TopAppBarAddItemButton { itemTypeToAdd ->
-                onAddItemSelected(itemTypeToAdd)
-            }
+            TopAppBarAddItemButton(
+                TopAppBarAddItemButtonPopUpItems,
+                TopAppBarAddItemButtonIsPopUpMenuExpanded,
+                TopAppBarAddItemButtonOnAddItemSelected,
+                TopAppBarAddItemButtonOnAddButtonClick,
+                TopAppBarAddItemButtonOnClosePopUp
+            )
         }
     )
 }
 
 @Composable
-private fun TopAppBarAddItemButton(onAddItemSelected: (itemTypeToAdd: String) -> Unit) {
-    var isPopUpMenuExpanded by remember {
+private fun TopAppBarAddItemButton(
+    topAppBarAddItemButtonPopUpItems: List<String>,
+    topAppBarAddItemButtonIsPopUpMenuExpanded: Boolean,
+    topAppBarAddItemButtonOnAddItemSelected: (itemTypeToAdd: String) -> Unit,
+    topAppBarAddItemButtonOnAddButtonClick: () -> Unit,
+    topAppBarAddItemButtonOnClosePopUp: () -> Unit
+) {
+    /*var isPopUpMenuExpanded by remember {
         mutableStateOf(false)
     }
-    val addItems = listOf(CATEGORY, PROJECT, TASK)
+    val addItems = listOf(CATEGORY, PROJECT, TASK)*/
     Button(
-        onClick = { isPopUpMenuExpanded = !isPopUpMenuExpanded },
+        onClick = { topAppBarAddItemButtonOnAddButtonClick() },
         shape = CircleShape,
         elevation = null,
         colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
@@ -48,13 +65,13 @@ private fun TopAppBarAddItemButton(onAddItemSelected: (itemTypeToAdd: String) ->
                 imageVector = Icons.Rounded.AddCircle,
                 contentDescription = null,
             )
-            AddNewTaskDropDownMenu(
-                isPopUpMenuExpanded,
-                addItems,
-                onClosePopUp = { itemType ->
-                    isPopUpMenuExpanded = false
-                    if (itemType.trim().isNotEmpty()) {
-                        onAddItemSelected(itemType)
+            BaseDropDownMenu(
+                topAppBarAddItemButtonIsPopUpMenuExpanded,
+                topAppBarAddItemButtonPopUpItems,
+                onClosePopUp = { popUpItem ->
+                    topAppBarAddItemButtonOnClosePopUp()
+                    if (popUpItem.trim().isNotEmpty()) {
+                        topAppBarAddItemButtonOnAddItemSelected(popUpItem)
                     }
                 },
             )
@@ -62,55 +79,34 @@ private fun TopAppBarAddItemButton(onAddItemSelected: (itemTypeToAdd: String) ->
     }
 }
 
-@Composable
-private fun AddNewTaskDropDownMenu(
-    isPopUpMenuExpanded: Boolean,
-    addItems: List<String>,
-    onClosePopUp: (itemType: String) -> Unit
-) {
-    DropdownMenu(
-        expanded = isPopUpMenuExpanded,
-        onDismissRequest = { onClosePopUp("") },
-        modifier = Modifier
-            .wrapContentWidth()
-            .wrapContentHeight()
-    ) {
-        addItems.forEachIndexed { _, itemType ->
-            DropdownMenuItem(onClick = { onClosePopUp(itemType) }) {
-                Text(text = itemType)
-            }
-        }
-    }
-}
 
 @Composable
 fun BottomNavBar(
-    selectedItem: String,
-    onBottomNavItemSelected: (item: String) -> Unit
+    bottomNavBarSelectedNavItem: String,
+    bottomNavBarOnNavItemSelected: (item: String) -> Unit,
+    navController: NavController
 ) {
-    var selectedItemState by remember {
-        mutableStateOf(selectedItem)
-    }
     BottomAppBar(modifier = Modifier.fillMaxWidth()) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
         BottomNavigation {
             BottomNavigationItem(
                 icon = { Icon(Icons.Default.Home, "") },
                 label = { Text(text = "HOME") },
-                selected = selectedItemState == NavigationDirections.Home.destination,
+                selected = currentRoute == NavigationDirections.Home.destination,
                 unselectedContentColor = MaterialTheme.colors.primaryVariant,
                 onClick = {
-                    onBottomNavItemSelected(NavigationDirections.Home.destination)
-                    selectedItemState = NavigationDirections.Home.destination
-
+                    Log.i("TAG", "BottomNavBar: $currentRoute")
+                    bottomNavBarOnNavItemSelected(NavigationDirections.Home.destination)
                 })
             BottomNavigationItem(
                 icon = { Icon(Icons.Default.Build, "") },
                 label = { Text(text = "PROJECT") },
-                selected = selectedItemState == NavigationDirections.Project.destination,
+                selected = currentRoute == NavigationDirections.Project.destination,
                 unselectedContentColor = MaterialTheme.colors.primaryVariant,
                 onClick = {
-                    onBottomNavItemSelected(NavigationDirections.Project.destination)
-                    selectedItemState = NavigationDirections.Project.destination
+                    Log.i("TAG", "BottomNavBar project: $bottomNavBarSelectedNavItem")
+                    bottomNavBarOnNavItemSelected(NavigationDirections.Project.destination)
                 })
         }
     }

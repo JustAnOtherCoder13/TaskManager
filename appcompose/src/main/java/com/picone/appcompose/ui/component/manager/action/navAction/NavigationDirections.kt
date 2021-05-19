@@ -25,8 +25,8 @@ object NavigationDirections {
     }
 
     val Add = object : NavigationCommand {
-        override val KEY: String = KEY_ITEM
-        override val arguments: List<NamedNavArgument> = listOf(navArgument(KEY){type = NavType.StringType})
+        //override val KEY: String = KEY_ITEM
+        override val arguments: List<NamedNavArgument> = emptyList() //listOf(navArgument(KEY){type = NavType.StringType})
         override val destination: String = "add"
     }
 }

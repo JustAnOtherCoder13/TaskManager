@@ -304,3 +304,23 @@ fun BaseEditText(title: String, textColor: Color, text: String?, getText: (text:
     }
 }
 
+@Composable
+fun BaseDropDownMenu(
+    isPopUpMenuExpanded: Boolean,
+    addItems: List<String>,
+    onClosePopUp: (itemType: String) -> Unit
+) {
+    DropdownMenu(
+        expanded = isPopUpMenuExpanded,
+        onDismissRequest = { onClosePopUp("") },
+        modifier = Modifier
+            .wrapContentWidth()
+            .wrapContentHeight()
+    ) {
+        addItems.forEachIndexed { _, itemType ->
+            DropdownMenuItem(onClick = { onClosePopUp(itemType) }) {
+                Text(text = itemType)
+            }
+        }
+    }
+}

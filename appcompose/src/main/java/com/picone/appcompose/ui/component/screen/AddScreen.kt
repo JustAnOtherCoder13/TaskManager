@@ -160,7 +160,7 @@ private fun Body(projectToPassInTask: Project?,name: (String) -> Unit, descripti
 }
 
 @Composable
-private fun Header(
+private fun DetailHeader(
     knownCategories: List<String>,
     requireActivity: AppCompatActivity,
     importanceList: List<String>,

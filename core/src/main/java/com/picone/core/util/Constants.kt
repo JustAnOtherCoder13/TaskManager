@@ -42,4 +42,11 @@ object Constants {
 
     val UnknownTask = Task(0, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
 
+    enum class COMPLETION_STATE{
+        DEFAULT,
+        ON_LOADING,
+        ON_SUCCESS,
+        ON_ERROR
+    }
+
 }
