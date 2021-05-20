@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.picone.appcompose.ui.SetProgressDrawable
 import com.picone.appcompose.ui.component.baseComponent.*
 import com.picone.core.domain.entity.Project
@@ -28,7 +27,7 @@ fun HomeScreen(
     topAppBarAddItemButtonOnClosePopUp: () -> Unit,
     bottomNavBarSelectedNavItem: String,
     bottomNavBarOnNavItemSelected: (item: String) -> Unit,
-    navController: NavController
+    currentRoute : String?
 ) {
     Scaffold(
         topBar = { TaskManagerTopAppBar (
@@ -43,7 +42,7 @@ fun HomeScreen(
             BottomNavBar(
                 bottomNavBarSelectedNavItem = bottomNavBarSelectedNavItem,
                 bottomNavBarOnNavItemSelected = bottomNavBarOnNavItemSelected,
-                navController
+                currentRoute = currentRoute?:""
             )
         }
     )
@@ -56,14 +55,14 @@ fun TaskRecyclerView(
     taskRecyclerViewOnTaskSelected: (item: Task) -> Unit,
 ) {
     BaseRecyclerView(
-        items = allTasks,
-        tableHeaderView = { TaskImportanceSelector(importance = importance) },
-        itemView = {task->
-            TaskExpandableItem(
+        items = allTasks ,
+        tableHeaderView = { TaskImportanceSelector(importance = importance) }
+    ) { task ->
+        TaskExpandableItem(
             task,
             onTaskSelected = { selectedTask -> taskRecyclerViewOnTaskSelected(selectedTask) }
-        ) }
-    )
+        )
+    }
 }
 
 @Composable
@@ -118,14 +117,15 @@ private fun TaskImportanceSelector(importance: String) {
 fun ProjectRecyclerView(
     allProjects: List<Project>
 ) {
-    BaseRecyclerView(items = allProjects,
-        tableHeaderView = { null },
-        itemView = {project ->
+    BaseRecyclerView(
+        items = allProjects,
+        tableHeaderView = null,
+        itemView = { project ->
             BaseExpandableItem(itemDescription = project.description) {
                 BaseExpandableItemTitle(
                     itemName = project.name,
-                    optionIcon = { null },
-                    onTaskSelected = { null }
+                    optionIcon = { },
+                    onTaskSelected = { }
                 )
             }
         }

@@ -3,6 +3,7 @@ package com.picone.appcompose.ui.component.screen.home.homeTask
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.picone.appcompose.ui.component.screen.home.HomeScreen
+import com.picone.appcompose.ui.component.screen.home.HomeTaskUiStates
 import com.picone.appcompose.ui.component.screen.home.TaskRecyclerView
 import com.picone.core.domain.entity.Task
 
@@ -17,8 +18,9 @@ fun HomeTaskScreen(
     topAppBarAddItemButtonOnClosePopUp: () -> Unit,
     bottomNavBarSelectedNavItem: String,
     bottomNavBarOnNavItemSelected: (item: String) -> Unit,
-    navController: NavController
+    currentRoute : String?
 ){
+
 
     HomeScreen(
         mainContent = { TaskRecyclerView(
@@ -33,6 +35,6 @@ fun HomeTaskScreen(
         topAppBarAddItemButtonOnClosePopUp ,
         bottomNavBarSelectedNavItem,
         bottomNavBarOnNavItemSelected,
-        navController
+        currentRoute
     )
 }

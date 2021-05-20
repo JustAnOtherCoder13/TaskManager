@@ -7,14 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import com.google.gson.Gson
 import com.picone.appcompose.ui.component.manager.action.navAction.NavActionManager
 import com.picone.appcompose.ui.component.screen.*
 import com.picone.appcompose.ui.component.manager.action.navAction.NavigationDirections
-import com.picone.appcompose.ui.component.screen.home.HomeActionManager
+import com.picone.appcompose.ui.component.screen.HomeActionManager
+import com.picone.appcompose.ui.component.screen.home.HomeTaskEvents
+import com.picone.appcompose.ui.component.screen.home.HomeTaskUiStates
 import com.picone.appcompose.ui.component.screen.home.homeProject.HomeProjectScreen
 import com.picone.appcompose.ui.component.screen.home.homeTask.*
 import com.picone.appcompose.ui.values.TaskManagerTheme
@@ -46,36 +46,63 @@ class MainActivity : AppCompatActivity() {
                 val navController = rememberNavController()
                 val navActionManager = NavActionManager(navController)
                 val homeActionManager = HomeActionManager(homeScreenViewModel, navActionManager)
+                val homeStateManager = HomeStateManager(homeScreenViewModel)
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 NavHost(
                     navController = navController,
                     startDestination = NavigationDirections.Home.destination
                 ) {
                     composable(NavigationDirections.Home.getRoute()) {
+
+                        homeStateManager.updateState(event = HomeTaskEvents.GET_INITIAL_STATE).state
+
                         HomeTaskScreen(
-                            allTasks = homeScreenViewModel.mAllTasksMutableLD.observeAsState(listOf()).value,
-                            taskRecyclerViewOnTaskSelected = { selectedTask -> homeActionManager.navigateToDetailOnTaskClicked(selectedTask)},
+                            allTasks = homeStateManager.getState(HomeTaskUiStates.ALL_TASKS),
+                            taskRecyclerViewOnTaskSelected = { selectedTask ->
+                                homeActionManager.navigateToDetailOnTaskClicked(
+                                    selectedTask
+                                )
+                            },
                             topAppBarAddItemButtonPopUpItems = listOf(CATEGORY, PROJECT, TASK),
-                            topAppBarAddItemButtonIsPopUpMenuExpanded = homeScreenViewModel.mPopUpStateMutableLD.observeAsState(false).value,
+                            topAppBarAddItemButtonIsPopUpMenuExpanded = homeScreenViewModel.mPopUpStateMutableLD.observeAsState(
+                                false
+                            ).value,
                             topAppBarAddItemButtonOnAddButtonClick = { homeActionManager.topAppBarOpenPopUp() },
                             topAppBarAddItemButtonOnClosePopUp = { homeActionManager.topAppBarClosePopUp() },
                             topAppBarAddItemButtonOnAddItemSelected = { selectedAddItem -> homeActionManager.navigateToAddOnPopUpItemSelected() },
-                            bottomNavBarSelectedNavItem = homeScreenViewModel.mBottomNavSelectedItem.observeAsState("").value,
-                            bottomNavBarOnNavItemSelected = { selectedNavItem -> homeActionManager.onBottomNavItemSelected(selectedNavItem) },
-                            navController = navController
+                            bottomNavBarSelectedNavItem = homeScreenViewModel.mBottomNavSelectedItem.observeAsState(
+                                ""
+                            ).value,
+                            bottomNavBarOnNavItemSelected = { selectedNavItem ->
+                                homeActionManager.onBottomNavItemSelected(
+                                    selectedNavItem
+                                )
+                            },
+                            currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                         )
                     }
                     composable(NavigationDirections.Project.getRoute()) {
                         HomeProjectScreen(
-                            allProjects = homeScreenViewModel.mAllProjectMutableLD.observeAsState(listOf()).value,
+                            allProjects = homeScreenViewModel.mAllProjectMutableLD.observeAsState(
+                                listOf()
+                            ).value,
                             topAppBarAddItemButtonPopUpItems = listOf(CATEGORY, PROJECT, TASK),
-                            topAppBarAddItemButtonIsPopUpMenuExpanded = homeScreenViewModel.mPopUpStateMutableLD.observeAsState(false).value,
+                            topAppBarAddItemButtonIsPopUpMenuExpanded = homeScreenViewModel.mPopUpStateMutableLD.observeAsState(
+                                false
+                            ).value,
                             topAppBarAddItemButtonOnAddButtonClick = { homeActionManager.topAppBarOpenPopUp() },
                             topAppBarAddItemButtonOnClosePopUp = { homeActionManager.topAppBarClosePopUp() },
                             topAppBarAddItemButtonOnAddItemSelected = { selectedAddItem -> homeActionManager.navigateToAddOnPopUpItemSelected() },
-                            bottomNavBarSelectedNavItem = homeScreenViewModel.mBottomNavSelectedItem.observeAsState(NavigationDirections.Home.destination).value,
-                            bottomNavBarOnNavItemSelected = { selectedNavItem -> homeActionManager.onBottomNavItemSelected(selectedNavItem) },
-                            navController = navController
+                            bottomNavBarSelectedNavItem = homeScreenViewModel.mBottomNavSelectedItem.observeAsState(
+                                NavigationDirections.Home.destination
+                            ).value,
+                            bottomNavBarOnNavItemSelected = { selectedNavItem ->
+                                homeActionManager.onBottomNavItemSelected(
+                                    selectedNavItem
+                                )
+                            },
+                            currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                         )
                     }
                     composable(
@@ -86,11 +113,18 @@ class MainActivity : AppCompatActivity() {
                             getTaskOrNull(backStackEntry) ?: UnknownTask
                         )
                         DetailScreen(
-                            task = getTaskOrNull(backStackEntry) ?: UnknownTask,
-                            allUnderStainsForTask = detailScreenViewModel.allUnderStainsForTaskMutableLD.observeAsState(
-                                listOf()
-                            ).value,
-                            onAddUnderStainEvent = { nameState, descriptionState -> }
+                            state_Task = getTaskOrNull(backStackEntry) ?: UnknownTask,
+                            state_allUnderStainsForTask = detailScreenViewModel.allUnderStainsForTaskMutableLD.observeAsState(listOf()).value,
+                            state_isAddUnderStainComponentVisible = false,
+                            state_isOkButtonEnable = false,
+                            state_addUnderStainItemName = "",
+                            state_addUnderStainItemDescription = "",
+                            state_datePickerIconDateText = "",
+                            event_onAddUnderStainButtonClick = {},
+                            event_AddUnderStainButtonOnOkButtonClicked = {},
+                            event_AddUnderStainButtonOnCancelButtonClicked = {},
+                            event_baseEditTextOnTextChange = {},
+                            event_onDatePickerIconClicked = {}
                         )
 
                     }

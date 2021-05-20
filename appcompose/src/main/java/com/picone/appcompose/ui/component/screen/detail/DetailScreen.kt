@@ -22,13 +22,19 @@ import java.util.*
 
 @Composable
 fun DetailScreen(
-    task: Task,
-    allUnderStainsForTask: List<UnderStain>,
-    onAddUnderStainEvent: (nameState: String, descriptionState: String) -> Unit,
+    state_Task: Task,
+    state_allUnderStainsForTask: List<UnderStain>,
+    state_isAddUnderStainComponentVisible: Boolean,
+    state_isOkButtonEnable: Boolean,
+    state_addUnderStainItemName: String,
+    state_addUnderStainItemDescription: String,
+    state_datePickerIconDateText: String,
+    event_onAddUnderStainButtonClick: () -> Unit,
+    event_AddUnderStainButtonOnOkButtonClicked: () -> Unit,
+    event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit,
+    event_baseEditTextOnTextChange: (text: String) -> Unit,
+    event_onDatePickerIconClicked: () -> Unit
 ) {
-    var showAddUnderStainItem by remember {
-        mutableStateOf(false)
-    }
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -37,23 +43,23 @@ fun DetailScreen(
             .clip(TopRoundedCorner)
             .background(MaterialTheme.colors.secondary)
     ) {
-        item { DetailHeader(task, allUnderStainsForTask) }
+        item { DetailHeader(state_Task, state_allUnderStainsForTask) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
-        if (!showAddUnderStainItem) {
-            items(items = allUnderStainsForTask) { underStain ->
+        if (!state_isAddUnderStainComponentVisible) {
+            items(items = state_allUnderStainsForTask) { underStain ->
                 BaseExpandableItem(
                     underStain.description,
                 ) {
                     BaseExpandableItemTitle(
                         itemName = underStain.name,
-                        optionIcon = {  },
-                        onTaskSelected = {  }
+                        optionIcon = { },
+                        onTaskSelected = { }
                     )
                 }
             }
             item {
                 Button(
-                    onClick = { showAddUnderStainItem = !showAddUnderStainItem },
+                    onClick = { event_onAddUnderStainButtonClick() },
                     modifier = Modifier
                         .padding(5.dp)
                         .fillMaxWidth(),
@@ -62,21 +68,21 @@ fun DetailScreen(
                 }
             }
         }
-        if (showAddUnderStainItem) {
+        if (state_isAddUnderStainComponentVisible) {
             item {
                 Column(
                     modifier = Modifier.padding(horizontal = 5.dp)
                 ) {
                     AddUnderStainItem(
-                        onAddUnderStainEvent = { name, description ->
-                            onAddUnderStainEvent(
-                                name,
-                                description
-                            )
-                        },
-                    ) {
-                        showAddUnderStainItem = it
-                    }
+                        state_isOkButtonEnable,
+                        state_addUnderStainItemName,
+                        state_addUnderStainItemDescription,
+                        state_datePickerIconDateText,
+                        event_AddUnderStainButtonOnOkButtonClicked,
+                        event_AddUnderStainButtonOnCancelButtonClicked,
+                        event_baseEditTextOnTextChange,
+                        event_onDatePickerIconClicked
+                    )
                 }
             }
         }
@@ -85,14 +91,15 @@ fun DetailScreen(
 
 @Composable
 private fun AddUnderStainItem(
-    onAddUnderStainEvent: (nameState: String, descriptionState: String) -> Unit,
-    showAddUnderStainItem: (isShown: Boolean) -> Unit,
+    state_isOkButtonEnable: Boolean,
+    state_addUnderStainItemName: String,
+    state_addUnderStainItemDescription: String,
+    state_datePickerIconDateText: String,
+    event_AddUnderStainButtonOnOkButtonClicked: () -> Unit,
+    event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit,
+    event_baseEditTextOnTextChange: (text: String) -> Unit,
+    event_onDatePickerIconClicked: () -> Unit
 ) {
-
-    var nameState by remember { mutableStateOf("") }
-    var descriptionState by remember { mutableStateOf("") }
-    var showDatePickerState by remember { mutableStateOf(false) }
-    var selectedDateState by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -100,37 +107,35 @@ private fun AddUnderStainItem(
             .padding(horizontal = 10.dp)
             .fillMaxHeight()
     ) {
-        DatePickerClickableIcon(date = selectedDateState) {
-            showDatePickerState = !showDatePickerState
-        }
+        DatePickerClickableIcon(
+            state_datePickerIconDateText = state_datePickerIconDateText,
+            event_onDatePickerIconClicked = event_onDatePickerIconClicked
+        )
         BaseEditText(
             title = "Name",
             textColor = MaterialTheme.colors.onSurface,
-            text = null
-        ) {
-            nameState = it
-        }
+            state_text = state_addUnderStainItemName,
+            event_baseEditTextOnTextChange = { text -> event_baseEditTextOnTextChange(text) }
+        )
         BaseEditText(
             title = "Description",
             textColor = MaterialTheme.colors.onSurface,
-            text = null
-        ) {
-            descriptionState = it
-        }
+            state_text = state_addUnderStainItemDescription,
+            event_baseEditTextOnTextChange = { text -> event_baseEditTextOnTextChange(text) }
+        )
         AddUnderStainButtons(
-            onAddUnderStainEvent = { onAddUnderStainEvent(nameState, descriptionState) },
-            isOkButtonEnabled = nameState.trim().isNotEmpty() && descriptionState.trim()
-                .isNotEmpty(),
-            showAddUnderStainItem
+            event_AddUnderStainButtonOnOkButtonClicked = event_AddUnderStainButtonOnOkButtonClicked,
+            event_AddUnderStainButtonOnCancelButtonClicked = event_AddUnderStainButtonOnCancelButtonClicked,
+            state_isOkButtonEnable = state_isOkButtonEnable,
         )
     }
 }
 
 @Composable
 private fun AddUnderStainButtons(
-    onAddUnderStainEvent: () -> Unit,
-    isOkButtonEnabled: Boolean,
-    showAddUnderStainItem: (isShown: Boolean) -> Unit
+    state_isOkButtonEnable: Boolean,
+    event_AddUnderStainButtonOnOkButtonClicked: () -> Unit,
+    event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -138,14 +143,17 @@ private fun AddUnderStainButtons(
             .padding(horizontal = 5.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        //positive button
         Button(
-            onClick = { onAddUnderStainEvent() },
-            enabled = isOkButtonEnabled
+            onClick = { event_AddUnderStainButtonOnOkButtonClicked() },
+            enabled = state_isOkButtonEnable
         )
-        {
-            Text(text = "OK")
-        }
-        Button(onClick = { showAddUnderStainItem(false) }) {
+        { Text(text = "OK") }
+
+        //cancel button
+        Button(onClick = {
+            event_AddUnderStainButtonOnCancelButtonClicked()
+        }) {
             Text(text = "Cancel")
         }
     }

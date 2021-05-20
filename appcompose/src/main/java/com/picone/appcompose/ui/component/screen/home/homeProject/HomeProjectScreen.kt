@@ -18,7 +18,7 @@ fun HomeProjectScreen(
     topAppBarAddItemButtonOnClosePopUp: () -> Unit,
     bottomNavBarSelectedNavItem: String,
     bottomNavBarOnNavItemSelected: (item: String) -> Unit,
-    navController: NavController
+    currentRoute : String?
 ){
 
     HomeScreen(
@@ -30,6 +30,6 @@ fun HomeProjectScreen(
         topAppBarAddItemButtonOnClosePopUp ,
         bottomNavBarSelectedNavItem,
         bottomNavBarOnNavItemSelected,
-        navController
+        currentRoute
     )
 }

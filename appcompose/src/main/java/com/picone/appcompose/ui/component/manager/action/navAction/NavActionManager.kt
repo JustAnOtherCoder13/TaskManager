@@ -1,28 +1,32 @@
 package com.picone.appcompose.ui.component.manager.action.navAction
 
-import android.util.Log
 import androidx.navigation.NavController
 import com.google.gson.Gson
-import com.picone.core.domain.entity.Task
 
 class NavActionManager(private val navController: NavController) {
 
-    private val navActionImpl: NavActionImpl = NavActionImpl()
-
-    fun navigateToDetail(task: Task) {
-        val taskToJson = Gson().toJson(task)
-        navActionImpl.navigateToDetail(taskToJson = taskToJson).doNavAction(navController = navController )
+    fun navigate(navAction : NavActions){
+        when(navAction){
+            NavActions.NAV_TO_HOME -> navigateToHome()
+            NavActions.NAV_TO_PROJECT-> navigateToProject()
+            NavActions.NAV_TO_ADD -> navigateToAdd()
+            else -> throw Exception("Unknown nav action in ${this.javaClass.simpleName}")
+        }
+    }
+    fun <T> navigate(navAction : NavActions, argument : T){
+        val argumentToJson = Gson().toJson(argument)
+        when(navAction){
+            NavActions.NAV_TO_DETAIL -> navigateToDetail(taskToJson = argumentToJson )
+            else -> throw Exception("Unknown nav action in ${this.javaClass.simpleName}")
+        }
     }
 
-    fun navigateToAdd(){
-        navActionImpl.navigateToAdd().doNavAction(navController = navController)
-    }
+    private fun navigateToHome() { NavActions.NAV_TO_HOME.getNavAction().doNavAction(navController) }
 
-    fun navigateToHome(){
-        navActionImpl.navigateToHome().doNavAction(navController = navController)
-    }
+    private fun navigateToProject() { NavActions.NAV_TO_PROJECT.getNavAction().doNavAction(navController) }
 
-    fun navigateToProject(){
-        navActionImpl.navigateToProject().doNavAction(navController = navController)
-    }
+    private fun navigateToDetail(taskToJson: String) { NavActions.NAV_TO_DETAIL.getNavAction().doNavAction(navController,taskToJson) }
+
+    private fun navigateToAdd() { NavActions.NAV_TO_ADD.getNavAction().doNavAction(navController) }
+
 }

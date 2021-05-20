@@ -25,7 +25,7 @@ import com.picone.appcompose.ui.values.TopRightCornerCut
 
 
 @Composable
-fun  BaseExpandableItem(
+fun BaseExpandableItem(
     itemDescription: String,
     itemHeader: @Composable () -> Unit
 ) {
@@ -39,11 +39,12 @@ fun  BaseExpandableItem(
             .background(MaterialTheme.colors.surface)
     ) {
         itemHeader()
-        if (expandedState) { Description(itemDescription) }
+        if (expandedState) {
+            Description(itemDescription)
+        }
         ExpandIcon(expandedState) { expandedState = !expandedState }
     }
 }
-
 
 
 @Composable
@@ -74,7 +75,11 @@ fun BaseExpandableItemTitle(
 }
 
 @Composable
-fun <T> BaseRecyclerView(items: List<T>, tableHeaderView: @Composable () -> Unit, itemView : @Composable (item : T) -> Unit ) {
+fun <T> BaseRecyclerView(
+    items: List<T>,
+    tableHeaderView: @Composable (() -> Unit?)?,
+    itemView: @Composable (item: T) -> Unit
+) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.secondary)
@@ -89,8 +94,10 @@ fun <T> BaseRecyclerView(items: List<T>, tableHeaderView: @Composable () -> Unit
                 .background(MaterialTheme.colors.secondaryVariant)
 
         ) {
-            item { tableHeaderView() }
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+            if (tableHeaderView != null) {
+                item { tableHeaderView() }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+            }
             items(items) { item -> itemView(item) }
         }
     }
@@ -264,11 +271,12 @@ fun BaseSpinner(
 }
 
 @Composable
-fun BaseEditText(title: String, textColor: Color, text: String?, getText: (text: String) -> Unit) {
-    var textState by remember {
-        mutableStateOf(TextFieldValue(text ?: ""))
-    }
-    getText(textState.text)
+fun BaseEditText(
+    title: String,
+    textColor: Color,
+    state_text: String,
+    event_baseEditTextOnTextChange: (text: String) -> Unit
+) {
     Text(
         text = title,
         modifier = Modifier
@@ -285,24 +293,25 @@ fun BaseEditText(title: String, textColor: Color, text: String?, getText: (text:
             )
     ) {
         TextField(
-            value = textState,
-            onValueChange = { value -> textState = value },
+            value = state_text,
+            onValueChange = { value -> event_baseEditTextOnTextChange(value) },
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
-                .border(
-                    if (textState.text
-                            .trim()
-                            .isEmpty()
-                    ) BorderStroke(
-                        2.dp,
-                        MaterialTheme.colors.error
-                    )
-                    else BorderStroke(0.dp, Color.Transparent)
-                )
+                .border(setBorderStrokeOnEmpty(state_text))
                 .fillMaxWidth(),
         )
     }
 }
+
+@Composable
+private fun setBorderStrokeOnEmpty(state_text: String) = if (state_text
+        .trim()
+        .isEmpty()
+) BorderStroke(
+    2.dp,
+    MaterialTheme.colors.error
+)
+else BorderStroke(0.dp, Color.Transparent)
 
 @Composable
 fun BaseDropDownMenu(

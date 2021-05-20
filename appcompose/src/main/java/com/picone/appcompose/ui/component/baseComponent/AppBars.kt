@@ -48,10 +48,6 @@ private fun TopAppBarAddItemButton(
     topAppBarAddItemButtonOnAddButtonClick: () -> Unit,
     topAppBarAddItemButtonOnClosePopUp: () -> Unit
 ) {
-    /*var isPopUpMenuExpanded by remember {
-        mutableStateOf(false)
-    }
-    val addItems = listOf(CATEGORY, PROJECT, TASK)*/
     Button(
         onClick = { topAppBarAddItemButtonOnAddButtonClick() },
         shape = CircleShape,
@@ -84,11 +80,9 @@ private fun TopAppBarAddItemButton(
 fun BottomNavBar(
     bottomNavBarSelectedNavItem: String,
     bottomNavBarOnNavItemSelected: (item: String) -> Unit,
-    navController: NavController
+    currentRoute : String
 ) {
     BottomAppBar(modifier = Modifier.fillMaxWidth()) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
         BottomNavigation {
             BottomNavigationItem(
                 icon = { Icon(Icons.Default.Home, "") },

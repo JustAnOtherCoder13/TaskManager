@@ -5,7 +5,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -21,11 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.picone.appcompose.ui.component.baseComponent.BaseEditText
 import com.picone.appcompose.ui.component.baseComponent.BaseSpinner
-import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
-import com.picone.core.domain.entity.Task
-import com.picone.core.util.Constants.FIRST_ELEMENT
-import com.picone.viewmodels.BaseViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -145,7 +140,7 @@ private fun Body(projectToPassInTask: Project?,name: (String) -> Unit, descripti
     name(nameState)
     description(descriptionState)
 
-    Column(
+    /*Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
@@ -156,7 +151,7 @@ private fun Body(projectToPassInTask: Project?,name: (String) -> Unit, descripti
         BaseEditText(title = "Description", MaterialTheme.colors.onSecondary,projectToPassInTask?.description) {
             descriptionState = it
         }
-    }
+    }*/
 }
 
 @Composable
@@ -204,7 +199,10 @@ private fun DetailHeader(
 }
 
 @Composable
-fun DatePickerClickableIcon(date: String, showDatePicker: () -> Unit) {
+fun DatePickerClickableIcon(
+    state_datePickerIconDateText: String,
+    event_onDatePickerIconClicked: () -> Unit
+) {
     Column(
         modifier = Modifier
             .animateContentSize()
@@ -213,7 +211,7 @@ fun DatePickerClickableIcon(date: String, showDatePicker: () -> Unit) {
             .padding(5.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.surface)
-            .clickable { showDatePicker() },
+            .clickable { event_onDatePickerIconClicked() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -227,9 +225,9 @@ fun DatePickerClickableIcon(date: String, showDatePicker: () -> Unit) {
             modifier = Modifier
                 .padding(5.dp)
         )
-        if (date.trim().isNotEmpty()) {
+        if (state_datePickerIconDateText.trim().isNotEmpty()) {
             Text(
-                text = date,
+                text = state_datePickerIconDateText,
                 modifier = Modifier.padding(5.dp),
                 style = MaterialTheme.typography.subtitle2
             )
