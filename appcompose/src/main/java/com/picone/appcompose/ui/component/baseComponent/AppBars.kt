@@ -11,11 +11,8 @@ import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.compose.KEY_ROUTE
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.picone.appcompose.R
-import com.picone.appcompose.ui.component.manager.action.navAction.NavigationDirections
+import com.picone.appcompose.ui.component.manager.navAction.NavigationDirections
 
 @Composable
 fun TaskManagerTopAppBar(
