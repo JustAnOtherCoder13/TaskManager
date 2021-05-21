@@ -1,0 +1,38 @@
+package com.picone.appcompose.ui.component.navAction
+
+import androidx.navigation.NavController
+import androidx.navigation.compose.NamedNavArgument
+import androidx.navigation.compose.navigate
+import com.picone.appcompose.ui.utils.interfaces.Action
+import com.picone.core.util.Constants
+
+interface NavAction : Action {
+
+    val destination: String
+    val arguments: List<NamedNavArgument>
+    val KEY: String
+        get() = ""
+
+    fun doNavAction(navController: NavController) {
+        doAction {
+            navController.navigate(destination) {
+                popUpTo(navController.graph.startDestination) {}
+                launchSingleTop = true
+            }
+        }
+    }
+
+    fun doNavAction(navController: NavController, argument: String) {
+        navController.navigate("$destination/${argument}") {
+            popUpTo(navController.graph.startDestination) {}
+            launchSingleTop = true
+        }
+    }
+
+    fun getRoute(): String =
+        if (KEY.trim().isNotEmpty()) {
+            "${destination}/{${Constants.KEY_TASK}}"
+        } else {
+            destination
+        }
+}

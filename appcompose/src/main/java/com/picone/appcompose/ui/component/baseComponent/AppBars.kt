@@ -12,7 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.picone.appcompose.R
-import com.picone.appcompose.ui.component.manager.navAction.NavigationDirections
+import com.picone.appcompose.ui.component.navAction.NavObjects
 
 @Composable
 fun TaskManagerTopAppBar(
@@ -84,20 +84,20 @@ fun BottomNavBar(
             BottomNavigationItem(
                 icon = { Icon(Icons.Default.Home, "") },
                 label = { Text(text = "HOME") },
-                selected = currentRoute == NavigationDirections.Home.destination,
+                selected = currentRoute == NavObjects.Home.destination,
                 unselectedContentColor = MaterialTheme.colors.primaryVariant,
                 onClick = {
                     Log.i("TAG", "BottomNavBar: $currentRoute")
-                    bottomNavBarOnNavItemSelected(NavigationDirections.Home.destination)
+                    bottomNavBarOnNavItemSelected(NavObjects.Home.destination)
                 })
             BottomNavigationItem(
                 icon = { Icon(Icons.Default.Build, "") },
                 label = { Text(text = "PROJECT") },
-                selected = currentRoute == NavigationDirections.Project.destination,
+                selected = currentRoute == NavObjects.Project.destination,
                 unselectedContentColor = MaterialTheme.colors.primaryVariant,
                 onClick = {
                     Log.i("TAG", "BottomNavBar project: $bottomNavBarSelectedNavItem")
-                    bottomNavBarOnNavItemSelected(NavigationDirections.Project.destination)
+                    bottomNavBarOnNavItemSelected(NavObjects.Project.destination)
                 })
         }
     }

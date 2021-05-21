@@ -14,5 +14,4 @@ object HomeEvents {
         }
     }
 
-    val topAppBarEvents : List<Event> = listOf()
 }

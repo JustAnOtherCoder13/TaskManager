@@ -9,17 +9,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.*
 import com.google.gson.Gson
-import com.picone.appcompose.ui.component.manager.navAction.NavActionManager
+import com.picone.appcompose.ui.component.navAction.NavActionManager
+import com.picone.appcompose.ui.component.navAction.NavObjects
 import com.picone.appcompose.ui.main.screen.*
-import com.picone.appcompose.ui.component.manager.navAction.NavigationDirections
 import com.picone.appcompose.ui.main.screen.home.homeTask.actions.HomeActionManager
-import com.picone.appcompose.ui.main.screen.home.homeTask.events.HomeTaskEvents
 import com.picone.appcompose.ui.main.screen.home.homeTask.states.HomeTaskUiStates
 import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
 import com.picone.appcompose.ui.main.screen.home.homeTask.*
 import com.picone.appcompose.ui.main.screen.home.homeTask.events.HomeEvents
 import com.picone.appcompose.ui.main.screen.home.homeTask.events.HomeTaskEventManager
-import com.picone.appcompose.ui.main.screen.home.homeTask.screens.TestScreen
 import com.picone.appcompose.ui.main.screen.home.homeTask.states.HomeStateManager
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Task
@@ -46,8 +44,7 @@ class MainActivity : AppCompatActivity() {
         homeScreenViewModel.getAllProjects()
 
         setContent {
-            TestScreen()
-            /*TaskManagerTheme {
+            TaskManagerTheme {
                 val navController = rememberNavController()
                 val navActionManager = NavActionManager(navController)
                 val homeActionManager = HomeActionManager(navActionManager)
@@ -57,9 +54,9 @@ class MainActivity : AppCompatActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = NavigationDirections.Home.destination
+                    startDestination = NavObjects.Home.destination
                 ) {
-                    composable(NavigationDirections.Home.getRoute()) {
+                    composable(NavObjects.Home.getRoute()) {
 
                         homeEventManager.TriggerEvent(event = HomeEvents.onScreenCreated)
 
@@ -91,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                             currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                         )
                     }
-                    composable(NavigationDirections.Project.getRoute()) {
+                    composable(NavObjects.Project.getRoute()) {
                         HomeProjectScreen(
                             allProjects = homeScreenViewModel.mAllProjectMutableLD.observeAsState(
                                 listOf()
@@ -104,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                             topAppBarAddItemButtonOnClosePopUp = { homeActionManager.topAppBarClosePopUp(homeScreenViewModel) },
                             topAppBarAddItemButtonOnAddItemSelected = { selectedAddItem -> homeActionManager.navigateToAddOnPopUpItemSelected() },
                             bottomNavBarSelectedNavItem = homeScreenViewModel.mBottomNavSelectedItem.observeAsState(
-                                NavigationDirections.Home.destination
+                                NavObjects.Home.destination
                             ).value,
                             bottomNavBarOnNavItemSelected = { selectedNavItem ->
                                 homeActionManager.onBottomNavItemSelected(
@@ -116,8 +113,8 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                     composable(
-                        route = NavigationDirections.Detail.getRoute(),
-                        arguments = NavigationDirections.Detail.arguments
+                        route = NavObjects.Detail.getRoute(),
+                        arguments = NavObjects.Detail.arguments
                     ) { backStackEntry ->
                         detailScreenViewModel.getAllUnderStainForTask(
                             getTaskOrNull(backStackEntry) ?: UnknownTask
@@ -138,14 +135,14 @@ class MainActivity : AppCompatActivity() {
                         )
 
                     }
-                    composable(NavigationDirections.Add.getRoute())
+                    composable(NavObjects.Add.getRoute())
                     {
                         AddScreen()
                     }
 
                 }
 
-            }*/
+            }
         }
     }
 

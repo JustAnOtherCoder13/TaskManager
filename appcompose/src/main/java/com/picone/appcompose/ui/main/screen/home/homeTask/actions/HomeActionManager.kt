@@ -1,13 +1,11 @@
 package com.picone.appcompose.ui.main.screen.home.homeTask.actions
 
-import com.picone.appcompose.ui.component.manager.navAction.NavActionManager
-import com.picone.appcompose.ui.component.manager.navAction.NavActions
-import com.picone.appcompose.ui.component.manager.navAction.NavigationDirections
+import com.picone.appcompose.ui.component.navAction.NavActionManager
+import com.picone.appcompose.ui.component.navAction.NavObjects
 import com.picone.core.domain.entity.Task
 import com.picone.newArchitectureViewModels.HomeScreenViewModel
 
 class HomeActionManager(
-    //private val homeScreenViewModel: HomeScreenViewModel,
     private val navActionManager: NavActionManager
 ) {
     //val homeEventManager : HomeEventManager = HomeEventManager()
@@ -34,21 +32,21 @@ class HomeActionManager(
 
     fun navigateToAddOnPopUpItemSelected() {
         HomeActions.navigateToAddOnPopUpItemSelected.doAction {
-            navActionManager.navigate(NavActions.NAV_TO_ADD)
+            navActionManager.navigate(NavObjects.Add)
         }
     }
 
     fun navigateToDetailOnTaskClicked(selectedTask:Task){
         HomeActions.navigateToDetailOnTaskClicked.doAction {
-            navActionManager.navigate(NavActions.NAV_TO_DETAIL,selectedTask)
+            navActionManager.navigate(NavObjects.Detail,selectedTask)
         }
     }
 
     fun onBottomNavItemSelected(selectedItem : String,homeScreenViewModel: HomeScreenViewModel){
         homeScreenViewModel.updateBottomNavSelectedItem(selectedItem)
-        if (selectedItem == NavigationDirections.Home.destination){
+        if (selectedItem == NavObjects.Home.destination){
             navigateToHomeOnNavItemClicked()
-        }else if (selectedItem == NavigationDirections.Project.destination){
+        }else if (selectedItem == NavObjects.Project.destination){
             navigateToProjectOnNavItemClicked()
         }else run {
             throw Exception("not allowed destination")
@@ -56,13 +54,13 @@ class HomeActionManager(
     }
     private fun navigateToHomeOnNavItemClicked(){
         HomeActions.navigateToHomeTaskOnNavItemClicked.doAction {
-            navActionManager.navigate(NavActions.NAV_TO_HOME)
+            navActionManager.navigate(NavObjects.Home)
         }
     }
 
     private fun navigateToProjectOnNavItemClicked(){
         HomeActions.navigateToProjectOnNavItemClicked.doAction {
-            navActionManager.navigate(NavActions.NAV_TO_PROJECT)
+            navActionManager.navigate(NavObjects.Project)
         }
     }
 }
