@@ -8,13 +8,17 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.*
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.picone.appcompose.ui.main.navAction.NavActionManager
 import com.picone.appcompose.ui.main.navAction.NavObjects
 import com.picone.appcompose.ui.main.screen.*
+import com.picone.appcompose.ui.main.screen.add.AddScreen
+import com.picone.appcompose.ui.main.screen.detail.DetailScreen
 import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
 import com.picone.appcompose.ui.main.screen.home.homeTask.screens.HomeTaskScreen
 import com.picone.appcompose.ui.values.TaskManagerTheme
+import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Task
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.KEY_TASK
@@ -25,6 +29,8 @@ import com.picone.newArchitectureViewModels.DetailScreenViewModel
 import com.picone.newArchitectureViewModels.HomeScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
+import java.text.SimpleDateFormat
+import java.util.*
 
 @ActivityScoped
 @AndroidEntryPoint
@@ -87,22 +93,36 @@ class MainActivity : AppCompatActivity() {
                             state_allUnderStainsForTask = detailScreenViewModel.allUnderStainsForTaskMutableLD.observeAsState(
                                 listOf()
                             ).value,
-                            state_isAddUnderStainComponentVisible = false,
-                            state_isOkButtonEnable = false,
+                            state_isAddUnderStainComponentVisible = true,
                             state_addUnderStainItemName = "",
-                            state_addUnderStainItemDescription = "",
-                            state_datePickerIconDateText = "",
                             event_onAddUnderStainButtonClick = {},
                             event_AddUnderStainButtonOnOkButtonClicked = {},
                             event_AddUnderStainButtonOnCancelButtonClicked = {},
-                            event_baseEditTextOnTextChange = {},
+                            event_nameEditTextOnTextChange = {},
+                            event_descriptionEditTextOnTextChange ={},
                             event_onDatePickerIconClicked = {}
                         )
 
                     }
                     composable(NavObjects.Add.getRoute())
                     {
-                        AddScreen()
+                        AddScreen(
+                            state_nullableProjectToPassInTask=null,
+                            state_addScreenDeadlineSelectedDate="",
+                            state_addScreenAllCategories = listOf(),
+                            state_isOkButtonEnabled = false,
+                            event_onAddScreenImportanceSelected= {},
+                            event_onAddScreenCategorySelected= {  },
+                            event_showDatePicker = {
+                                showDatePicker(
+                                    onDismiss = {},
+                                    onDateSelected = { selectedDate -> }
+                                )
+                            },
+                            event_addScreenOnNameChange = {},
+                            event_addScreenOnDescriptionChange = {},
+                            event_addScreenAddNewItemOnOkButtonClicked ={}
+                        )
                     }
 
                 }
@@ -118,6 +138,21 @@ class MainActivity : AppCompatActivity() {
             task = Gson().fromJson(json, Task::class.java)
         }
         return task
+    }
+
+    fun showDatePicker(
+        onDismiss: () -> Unit,
+        onDateSelected: (String) -> Unit
+    ){
+        val picker = MaterialDatePicker.Builder.datePicker().build()
+        picker.show(supportFragmentManager, picker.toString())
+
+        picker.addOnPositiveButtonClickListener {
+            onDateSelected(SimpleDateFormat("dd/MM/yyy", Locale.FRANCE).format(it))
+        }
+        picker.addOnDismissListener {
+            onDismiss()
+        }
     }
 }
 

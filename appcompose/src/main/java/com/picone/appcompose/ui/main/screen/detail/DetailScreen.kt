@@ -1,4 +1,4 @@
-package com.picone.appcompose.ui.main.screen
+package com.picone.appcompose.ui.main.screen.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.main.baseComponent.*
+import com.picone.appcompose.ui.main.screen.add.BaseDatePickerClickableIcon
 import com.picone.appcompose.ui.values.TopLeftCornerCut
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.appcompose.ui.values.TopRoundedCorner
@@ -25,14 +26,12 @@ fun DetailScreen(
     state_Task: Task,
     state_allUnderStainsForTask: List<UnderStain>,
     state_isAddUnderStainComponentVisible: Boolean,
-    state_isOkButtonEnable: Boolean,
     state_addUnderStainItemName: String,
-    state_addUnderStainItemDescription: String,
-    state_datePickerIconDateText: String,
     event_onAddUnderStainButtonClick: () -> Unit,
     event_AddUnderStainButtonOnOkButtonClicked: () -> Unit,
     event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit,
-    event_baseEditTextOnTextChange: (text: String) -> Unit,
+    event_nameEditTextOnTextChange: (text: String) -> Unit,
+    event_descriptionEditTextOnTextChange: (text: String) -> Unit,
     event_onDatePickerIconClicked: () -> Unit
 ) {
     LazyColumn(
@@ -74,13 +73,11 @@ fun DetailScreen(
                     modifier = Modifier.padding(horizontal = 5.dp)
                 ) {
                     AddUnderStainItem(
-                        state_isOkButtonEnable,
                         state_addUnderStainItemName,
-                        state_addUnderStainItemDescription,
-                        state_datePickerIconDateText,
                         event_AddUnderStainButtonOnOkButtonClicked,
                         event_AddUnderStainButtonOnCancelButtonClicked,
-                        event_baseEditTextOnTextChange,
+                        event_nameEditTextOnTextChange,
+                        event_descriptionEditTextOnTextChange,
                         event_onDatePickerIconClicked
                     )
                 }
@@ -91,15 +88,18 @@ fun DetailScreen(
 
 @Composable
 private fun AddUnderStainItem(
-    state_isOkButtonEnable: Boolean,
-    state_addUnderStainItemName: String,
-    state_addUnderStainItemDescription: String,
     state_datePickerIconDateText: String,
     event_AddUnderStainButtonOnOkButtonClicked: () -> Unit,
     event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit,
-    event_baseEditTextOnTextChange: (text: String) -> Unit,
+    event_nameEditTextOnTextChange: (text: String) -> Unit,
+    event_descriptionEditTextOnTextChange: (text: String) -> Unit,
     event_onDatePickerIconClicked: () -> Unit
 ) {
+    var innerStateName by remember { mutableStateOf( "") }
+    var innerStateDescription by remember { mutableStateOf( "") }
+
+    event_nameEditTextOnTextChange(innerStateName)
+    event_descriptionEditTextOnTextChange(innerStateDescription)
 
     Column(
         modifier = Modifier
@@ -107,26 +107,26 @@ private fun AddUnderStainItem(
             .padding(horizontal = 10.dp)
             .fillMaxHeight()
     ) {
-        DatePickerClickableIcon(
+        BaseDatePickerClickableIcon(
             state_datePickerIconDateText = state_datePickerIconDateText,
             event_onDatePickerIconClicked = event_onDatePickerIconClicked
         )
         BaseEditText(
-            title = "Name",
-            textColor = MaterialTheme.colors.onSurface,
-            state_text = state_addUnderStainItemName,
-            event_baseEditTextOnTextChange = { text -> event_baseEditTextOnTextChange(text) }
+            state_title = "Name",
+            state_textColor = MaterialTheme.colors.onSurface,
+            state_text = innerStateName,
+            event_baseEditTextOnTextChange = { text -> innerStateName = text }
         )
         BaseEditText(
-            title = "Description",
-            textColor = MaterialTheme.colors.onSurface,
-            state_text = state_addUnderStainItemDescription,
-            event_baseEditTextOnTextChange = { text -> event_baseEditTextOnTextChange(text) }
+            state_title = "Description",
+            state_textColor = MaterialTheme.colors.onSurface,
+            state_text = innerStateDescription,
+            event_baseEditTextOnTextChange = { text -> innerStateDescription = text }
         )
         AddUnderStainButtons(
             event_AddUnderStainButtonOnOkButtonClicked = event_AddUnderStainButtonOnOkButtonClicked,
             event_AddUnderStainButtonOnCancelButtonClicked = event_AddUnderStainButtonOnCancelButtonClicked,
-            state_isOkButtonEnable = state_isOkButtonEnable,
+            state_isOkButtonEnable = innerStateName.trim().isNotEmpty() && innerStateDescription.trim().isNotEmpty(),
         )
     }
 }
@@ -147,20 +147,18 @@ private fun AddUnderStainButtons(
         Button(
             onClick = { event_AddUnderStainButtonOnOkButtonClicked() },
             enabled = state_isOkButtonEnable
-        )
-        { Text(text = "OK") }
+        ) { Text(text = "OK") }
 
         //cancel button
-        Button(onClick = {
-            event_AddUnderStainButtonOnCancelButtonClicked()
-        }) {
-            Text(text = "Cancel")
-        }
+        Button(onClick = { event_AddUnderStainButtonOnCancelButtonClicked() }
+        ) { Text(text = "Cancel") }
     }
 }
 
 @Composable
-private fun DetailHeader(task: Task, allUnderStainsForTask: List<UnderStain>) {
+private fun DetailHeader(
+    state_task: Task,
+    state_allUnderStainsForTask: List<UnderStain>) {
     Row(
         modifier = Modifier
             .clip(TopRoundedCorner)
@@ -173,34 +171,34 @@ private fun DetailHeader(task: Task, allUnderStainsForTask: List<UnderStain>) {
             modifier = Modifier
                 .weight(4f)
         ) {
-            TaskInformation(task)
+            TaskInformation(state_task)
         }
         Row(
             modifier = Modifier
                 .weight(3f)
         ) {
-            UnderStainInformation(allUnderStainsForTask)
+            UnderStainInformation(state_allUnderStainsForTask)
         }
     }
 }
 
 @Composable
-private fun UnderStainInformation(allUnderStainsForTask: List<UnderStain>) {
+private fun UnderStainInformation(state_allUnderStainsForTask: List<UnderStain>) {
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
             .clip(TopLeftCornerCut)
             .background(MaterialTheme.colors.surface)
     ) {
-        TitleInformationText(text = "Under Stain ")
+        BaseTitleInformationText(titleText = "Under Stain ")
         Spacer(modifier = Modifier.height(10.dp))
-        InformationText(text = "Total = " + allUnderStainsForTask.size)
-        InformationText(text = "Done = " + getCompletedUnderStainsForTask(allUnderStainsForTask).size)
+        BaseInformationText(informationText = "Total = " + state_allUnderStainsForTask.size)
+        BaseInformationText(informationText = "Done = " + getCompletedUnderStainsForTask(state_allUnderStainsForTask).size)
     }
 }
 
 @Composable
-private fun TaskInformation(task: Task) {
+private fun TaskInformation(state_task: Task) {
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -208,19 +206,19 @@ private fun TaskInformation(task: Task) {
             .background(MaterialTheme.colors.surface)
 
     ) {
-        TitleInformationText(text = task.name)
+        BaseTitleInformationText(titleText = state_task.name)
         Spacer(modifier = Modifier.height(10.dp))
-        InformationText(
-            text = "Create on : " + SimpleDateFormat(
+        BaseInformationText(
+            informationText = "Create on : " + SimpleDateFormat(
                 "dd/MM/yyy",
                 Locale.FRANCE
-            ).format(task.creation)
+            ).format(state_task.creation)
         )
-        InformationText(
-            text = "Deadline on : " +
-                    if (task.deadLine == null) "none"
+        BaseInformationText(
+            informationText = "Deadline on : " +
+                    if (state_task.deadLine == null) "none"
                     else SimpleDateFormat("dd/MM/yyy", Locale.FRANCE)
-                        .format(task.deadLine!!)
+                        .format(state_task.deadLine!!)
         )
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +44,7 @@ fun BaseExpandableItem(
     ) {
         itemHeader()
         if (expandedState) {
-            Description(itemDescription)
+            BaseDescriptionText(itemDescription)
         }
         ExpandIcon(expandedState) { expandedState = !expandedState }
     }
@@ -189,20 +190,20 @@ private fun ExpandIcon(expanded: Boolean, onCLick: () -> Unit) {
 }
 
 @Composable
-private fun Description(itemDescription: String) {
+private fun BaseDescriptionText(descriptionText: String) {
     Spacer(modifier = Modifier.height(10.dp))
     Row(modifier = Modifier.padding(5.dp)) {
         Text(
-            text = itemDescription,
+            text = descriptionText,
             style = MaterialTheme.typography.body1
         )
     }
 }
 
 @Composable
-fun InformationText(text: String) {
+fun BaseInformationText(informationText: String) {
     Text(
-        text = text,
+        text = informationText,
         modifier = Modifier.padding(horizontal = 5.dp),
         style = MaterialTheme.typography.body1,
         textAlign = TextAlign.Justify
@@ -210,9 +211,9 @@ fun InformationText(text: String) {
 }
 
 @Composable
-fun TitleInformationText(text: String) {
+fun BaseTitleInformationText(titleText: String) {
     Text(
-        text = text,
+        text = titleText,
         modifier = Modifier.padding(horizontal = 10.dp),
         style = MaterialTheme.typography.h2,
     )
@@ -220,51 +221,54 @@ fun TitleInformationText(text: String) {
 
 @Composable
 fun BaseSpinner(
-    itemList: List<String>,
-    title: String,
-    categoryIfProjectToPass: String? = null,
-    onItemSelected: (item: String) -> Unit
+    state_BaseSpinnerItemList: List<String>,
+    state_baseSpinnerHint: String,
+    state_nullablePreselectedItem: String?,
+    state_nullableErrorItem : String?,
+    event_onItemSelected: (item: String) -> Unit
 ) {
-    var expandedState by remember { mutableStateOf(false) }
-    var selectedItemState by remember { mutableStateOf(categoryIfProjectToPass ?: title) }
-    onItemSelected(categoryIfProjectToPass ?: "")
+    var innerStateIsExpanded by remember { mutableStateOf(false) }
+    var innerStateSelectedItem by remember { mutableStateOf(state_nullablePreselectedItem ?: state_baseSpinnerHint) }
+
+    event_onItemSelected(innerStateSelectedItem)
 
     Row(modifier = Modifier
         .animateContentSize()
-        .clickable { expandedState = !expandedState }
+        .clickable { innerStateIsExpanded = !innerStateIsExpanded }
         .padding(5.dp)
+        .clip(RoundedCornerShape(5.dp))
+        .background(MaterialTheme.colors.surface)
         .border(
-            if (selectedItemState == "Category") {
+
+            if (state_nullableErrorItem != null
+                && innerStateSelectedItem == state_nullableErrorItem) {
                 BorderStroke(2.dp, MaterialTheme.colors.error)
             } else BorderStroke(0.dp, Color.Transparent)
-        )
-        .clip(RoundedCornerShape(5.dp))
-        .background(MaterialTheme.colors.surface),
+        ),
         verticalAlignment = Alignment.CenterVertically
 
     ) {
         Text(
-            text = selectedItemState,
+            text = innerStateSelectedItem,
             modifier = Modifier
                 .padding(2.dp),
             style = MaterialTheme.typography.subtitle2
         )
         Icon(
-            imageVector = if (expandedState) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+            imageVector = if (innerStateIsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
             contentDescription = null,
         )
         DropdownMenu(
-            expanded = expandedState,
-            onDismissRequest = { expandedState = false },
+            expanded = innerStateIsExpanded,
+            onDismissRequest = { innerStateIsExpanded = false },
             modifier = Modifier
                 .wrapContentWidth()
                 .wrapContentHeight()
         ) {
-            itemList.forEachIndexed { _, item ->
+            state_BaseSpinnerItemList.forEachIndexed { _, item ->
                 DropdownMenuItem(onClick = {
-                    expandedState = false
-                    onItemSelected(item)
-                    selectedItemState = item
+                    innerStateIsExpanded = false
+                    innerStateSelectedItem = item
                 }) {
                     Text(text = item)
                 }
@@ -274,24 +278,61 @@ fun BaseSpinner(
 }
 
 @Composable
+fun BaseDatePickerClickableIcon(
+    state_datePickerIconDateText: String,
+    event_onDatePickerIconClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .animateContentSize()
+            .wrapContentWidth()
+            .wrapContentHeight()
+            .padding(5.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colors.surface)
+            .clickable { event_onDatePickerIconClicked() },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Dead line",
+            modifier = Modifier.padding(2.dp),
+            style = MaterialTheme.typography.subtitle2
+        )
+        Icon(
+            imageVector = Icons.Default.CalendarToday,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(5.dp)
+        )
+        if (state_datePickerIconDateText.trim().isNotEmpty()) {
+            Text(
+                text = state_datePickerIconDateText,
+                modifier = Modifier.padding(5.dp),
+                style = MaterialTheme.typography.subtitle2
+            )
+        }
+    }
+}
+
+@Composable
 fun BaseEditText(
-    title: String,
-    textColor: Color,
+    state_title: String,
+    state_textColor: Color,
     state_text: String,
     event_baseEditTextOnTextChange: (text: String) -> Unit
 ) {
     Text(
-        text = title,
+        text = state_title,
         modifier = Modifier
             .padding(start = 5.dp, end = 5.dp, top = 10.dp, bottom = 5.dp),
         style = MaterialTheme.typography.subtitle2,
-        color = textColor
+        color = state_textColor
     )
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                if (title == "Name") PaddingValues(horizontal = 5.dp)
+                if (state_title == "Name") PaddingValues(horizontal = 5.dp)
                 else PaddingValues(start = 5.dp, end = 5.dp, bottom = 10.dp)
             )
     ) {

@@ -1,63 +1,67 @@
-package com.picone.appcompose.ui.main.screen
+package com.picone.appcompose.ui.main.screen.add
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.picone.appcompose.ui.main.baseComponent.BaseDatePickerClickableIcon
+import com.picone.appcompose.ui.main.baseComponent.BaseEditText
 import com.picone.appcompose.ui.main.baseComponent.BaseSpinner
+import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
-import java.text.SimpleDateFormat
-import java.util.*
+import com.picone.core.util.Constants.FIRST_ELEMENT
+import com.picone.viewmodels.BaseViewModel
 
 
 @Composable
 fun AddScreen(
-   /* projectToPassInTask: Project?,
-    itemType: String,
-    requireActivity: AppCompatActivity,
-    taskId: Int,
-    projectId: Int,
-    allCategories: List<Category>,
-    addNewProjectOnOkButtonClicked: (project: Project) -> Unit,
+    state_nullableProjectToPassInTask: Project?,
+    /*itemType: String,*/
+    state_addScreenDeadlineSelectedDate: String,
+    event_onAddScreenImportanceSelected: (String) -> Unit,
+    event_onAddScreenCategorySelected: (String) -> Unit,
+    event_showDatePicker: (isVisible: Boolean) -> Unit,
+    /*taskId: Int,
+    projectId: Int,*/
+    state_addScreenAllCategories: List<Category>,
+    state_isOkButtonEnabled : Boolean,
+    event_addScreenOnNameChange : (name : String)->Unit,
+    event_addScreenOnDescriptionChange : (description : String) -> Unit,
+    event_addScreenAddNewItemOnOkButtonClicked : ()->Unit,
+    /*addNewProjectOnOkButtonClicked: (project: Project) -> Unit,
     addNewTaskOnOkButtonClicked: (task: Task) -> Unit*/
 ) {
 
-    Text(text = "add screen")
-    /*BaseViewModel.completionStateMutableLD.value =
+    val categoriesToStringList : MutableList<String> = mutableListOf()
+
+
+    BaseViewModel.completionStateMutableLD.value =
         BaseViewModel.Companion.CompletionState.START_STATE
-    val knownCategories: MutableList<String> = mutableListOf()
-    val importance = listOf("Unimportant", "Normal", "Important")
-    var deadlineState by remember { mutableStateOf("") }
-    var importanceState by remember { mutableStateOf("") }
-    var categoryState by remember { mutableStateOf("") }
+
+   /* var categoryState by remember { mutableStateOf("") }
     var nameState by remember { mutableStateOf("") }
-    var descriptionState by remember { mutableStateOf("") }
-    var isOkButtonEnabledState by remember { mutableStateOf(false) }
+    var descriptionState by remember { mutableStateOf("") }*/
+    //var isOkButtonEnabledState by remember { mutableStateOf(false) }
 
     val categoryStr: String? =
-        if (projectToPassInTask != null)
-            allCategories.filter { category -> category.id == projectToPassInTask.categoryId }[FIRST_ELEMENT].name
+        if (state_nullableProjectToPassInTask != null)
+            state_addScreenAllCategories.filter { category -> category.id == state_nullableProjectToPassInTask.categoryId }[FIRST_ELEMENT].name
         else null
 
-    allCategories.forEachIndexed { _, category -> knownCategories.add(category.name!!) }
+    state_addScreenAllCategories.forEachIndexed { _, category -> categoriesToStringList.add(category.name!!) }
 
-    isOkButtonEnabledState = nameState.trim().isNotEmpty() && descriptionState.trim()
+    /*isOkButtonEnabledState = nameState.trim().isNotEmpty() && descriptionState.trim()
         .isNotEmpty() && categoryState.trim().isNotEmpty()
-
+*/
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
@@ -65,58 +69,70 @@ fun AddScreen(
             .padding(horizontal = 10.dp)
     ) {
         item {
-            Header(knownCategories, requireActivity, importance, itemType,categoryStr,
-                deadLine = { deadlineState = it },
-                importance = { importanceState = it },
-                category = { categoryState = it })
+            AddScreenHeader(
+                state_addScreenCategoryDropDownMenuItemList = categoriesToStringList,
+                state_addScreenIsDatePickerClickableIconVisible = false,
+                state_addScreenNullableCategoryPreselectedItem =categoryStr,
+                state_addScreenDeadlineSelectedDate = state_addScreenDeadlineSelectedDate,
+                event_onAddScreenImportanceSelected = event_onAddScreenImportanceSelected,
+                event_onAddScreenCategorySelected = event_onAddScreenCategorySelected,
+                event_showDatePicker = event_showDatePicker
+            )
         }
         item { Spacer(modifier = Modifier.height(10.dp)) }
         item {
             Body(
-                projectToPassInTask = projectToPassInTask,
-                name = { nameState = it },
-                description = { descriptionState = it })
+                state_nullableProjectToPassInTask = state_nullableProjectToPassInTask,
+                event_nameEditTextOnTextChange = event_addScreenOnNameChange,
+                event_descriptionEditTextOnTextChange = event_addScreenOnDescriptionChange
+            )
         }
 
         item {
-            OkButton(isOkButtonEnabled = isOkButtonEnabledState) {
+            OkButton(
+                state_isOkButtonEnabled = state_isOkButtonEnabled,
+                event_addNewItemOnOkButtonClicked = event_addScreenAddNewItemOnOkButtonClicked
+            ) /*{
+                 val importance = listOf("Unimportant", "Normal", "Important")
+                var importanceState by remember { mutableStateOf("") }
+
                 when (itemType) {
                     "Project" ->
                         addNewProjectOnOkButtonClicked(
                             Project(
                                 projectId,
-                                knownCategories.indexOf(categoryState) + 1,
+                                categoriesToStringList.indexOf(categoryState) + 1,
                                 nameState,
                                 descriptionState
                             )
                         )
                     "Task" ->
                         addNewTaskOnOkButtonClicked(
-                        Task(
-                            taskId,
-                            knownCategories.indexOf(categoryState) + 1,
-                            nameState,
-                            descriptionState,
-                            importance.indexOf(importanceState) + 1,
-                            Calendar.getInstance().time,
-                            null,
-                            if (deadlineState.trim().isNotEmpty()) SimpleDateFormat(
-                                "dd/MM/yyyy",
-                                Locale.FRANCE
-                            ).parse(deadlineState) else null,
-                            null
+                            Task(
+                                taskId,
+                                categoriesToStringList.indexOf(categoryState) + 1,
+                                nameState,
+                                descriptionState,
+                                importance.indexOf(importanceState) + 1,
+                                Calendar.getInstance().time,
+                                null,
+                                if (state_addScreenDeadlineSelectedDate.trim().isNotEmpty()) SimpleDateFormat(
+                                    "dd/MM/yyyy",
+                                    Locale.FRANCE
+                                ).parse(state_addScreenDeadlineSelectedDate) else null,
+                                null
+                            )
                         )
-                    )
                 }
-            }
+            }*/
         }
-    }*/
+    }
 }
 
 @Composable
 private fun OkButton(
-    isOkButtonEnabled: Boolean,
-    addNewItemOnOkButtonClicked: () -> Unit
+    state_isOkButtonEnabled: Boolean,
+    event_addNewItemOnOkButtonClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -125,60 +141,67 @@ private fun OkButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = { addNewItemOnOkButtonClicked() },
-            enabled = isOkButtonEnabled
+            onClick = { event_addNewItemOnOkButtonClicked() },
+            enabled = state_isOkButtonEnabled
         ) { Text(text = "OK") }
     }
 }
 
 @Composable
-private fun Body(projectToPassInTask: Project?,name: (String) -> Unit, description: (String) -> Unit) {
-    var nameState by remember { mutableStateOf(projectToPassInTask?.name?:"") }
-    var descriptionState by remember { mutableStateOf(projectToPassInTask?.description?:"") }
+private fun Body(
+    state_nullableProjectToPassInTask: Project?,
+    event_nameEditTextOnTextChange: (String) -> Unit,
+    event_descriptionEditTextOnTextChange: (String) -> Unit
+) {
+    var innerStateName by remember { mutableStateOf(state_nullableProjectToPassInTask?.name ?: "") }
+    var innerStateDescription by remember {
+        mutableStateOf(
+            state_nullableProjectToPassInTask?.description ?: ""
+        )
+    }
 
-    name(nameState)
-    description(descriptionState)
+    event_nameEditTextOnTextChange(innerStateName)
+    event_descriptionEditTextOnTextChange(innerStateDescription)
 
-    /*Column(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.secondary)
     ) {
-        BaseEditText("Name", MaterialTheme.colors.onSecondary,projectToPassInTask?.name) { nameState =  it }
+        BaseEditText(
+            state_title = "Name",
+            state_textColor = MaterialTheme.colors.onSecondary,
+            state_text = state_nullableProjectToPassInTask?.name ?: "",
+            event_baseEditTextOnTextChange = { innerStateName = it })
         Spacer(modifier = Modifier.height(10.dp))
-        BaseEditText(title = "Description", MaterialTheme.colors.onSecondary,projectToPassInTask?.description) {
-            descriptionState = it
-        }
-    }*/
+        BaseEditText(
+            state_title = "Description",
+            state_textColor = MaterialTheme.colors.onSecondary,
+            state_text = state_nullableProjectToPassInTask?.description ?: "",
+            event_baseEditTextOnTextChange = { innerStateDescription = it }
+        )
+    }
 }
 
 @Composable
-private fun DetailHeader(
-    knownCategories: List<String>,
-    requireActivity: AppCompatActivity,
-    importanceList: List<String>,
-    itemType: String,
-    categoryIfProjectToPass : String?,
-    deadLine: (String) -> Unit,
-    importance: (String) -> Unit,
-    category: (String) -> Unit
+private fun AddScreenHeader(
+    state_addScreenCategoryDropDownMenuItemList: List<String>,
+    state_addScreenIsDatePickerClickableIconVisible: Boolean,
+    state_addScreenNullableCategoryPreselectedItem: String?,
+    state_addScreenDeadlineSelectedDate: String,
+    event_onAddScreenImportanceSelected: (String) -> Unit,
+    event_onAddScreenCategorySelected: (String) -> Unit,
+    event_showDatePicker: (isVisible: Boolean) -> Unit
 ) {
-    var showDatePickerState by remember { mutableStateOf(false) }
-    var selectedDateState by remember { mutableStateOf("") }
-    var importanceState by remember { mutableStateOf("") }
-    var categoryState by remember { mutableStateOf("") }
+    var innerStateIsDatePickerVisible by remember { mutableStateOf(false) }
+    var innerStateImportance by remember { mutableStateOf("") }
+    var innerStateCategory by remember { mutableStateOf("") }
 
+    event_showDatePicker(innerStateIsDatePickerVisible)
+    event_onAddScreenImportanceSelected(innerStateImportance)
+    event_onAddScreenCategorySelected(innerStateCategory)
 
-    deadLine(selectedDateState)
-    importance(importanceState)
-    category(categoryState)
-
-    if (showDatePickerState) showDatePicker(
-        requireActivity = requireActivity,
-        onDismiss = { showDatePickerState = false }) { selectedDate_ ->
-        selectedDateState = selectedDate_
-    }
     Row(
         modifier = Modifier
             .animateContentSize()
@@ -186,54 +209,37 @@ private fun DetailHeader(
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colors.secondaryVariant, RoundedCornerShape(10.dp)),
-        horizontalArrangement = if (itemType != "Project") Arrangement.SpaceBetween else Arrangement.Center,
+        horizontalArrangement = if (state_addScreenIsDatePickerClickableIconVisible) Arrangement.SpaceBetween else Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BaseSpinner(knownCategories, "Category",categoryIfProjectToPass) { categoryState = it }
-        if (itemType != "Project") {
-            DatePickerClickableIcon(selectedDateState) { showDatePickerState = !showDatePickerState }
-            BaseSpinner(importanceList, "Importance") { importanceState = it }
-        }
-    }
-}
+        BaseSpinner(
+            state_BaseSpinnerItemList = state_addScreenCategoryDropDownMenuItemList,
+            state_baseSpinnerHint = "Category",
+            state_nullablePreselectedItem = state_addScreenNullableCategoryPreselectedItem,
+            state_nullableErrorItem = "Category",
+            event_onItemSelected = { innerStateCategory = it }
+        )
 
-@Composable
-fun DatePickerClickableIcon(
-    state_datePickerIconDateText: String,
-    event_onDatePickerIconClicked: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .animateContentSize()
-            .wrapContentWidth()
-            .wrapContentHeight()
-            .padding(5.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colors.surface)
-            .clickable { event_onDatePickerIconClicked() },
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Dead line",
-            modifier = Modifier.padding(2.dp),
-            style = MaterialTheme.typography.subtitle2
-        )
-        Icon(
-            imageVector = Icons.Default.CalendarToday,
-            contentDescription = null,
-            modifier = Modifier
-                .padding(5.dp)
-        )
-        if (state_datePickerIconDateText.trim().isNotEmpty()) {
-            Text(
-                text = state_datePickerIconDateText,
-                modifier = Modifier.padding(5.dp),
-                style = MaterialTheme.typography.subtitle2
+        if (state_addScreenIsDatePickerClickableIconVisible) {
+            BaseDatePickerClickableIcon(
+                state_datePickerIconDateText = state_addScreenDeadlineSelectedDate,
+                event_onDatePickerIconClicked = {
+                    innerStateIsDatePickerVisible = !innerStateIsDatePickerVisible
+                }
+            )
+            BaseSpinner(
+                state_BaseSpinnerItemList = listOf("Unimportant", "Normal", "Important"),//todo pass with external list
+                state_baseSpinnerHint = "Importance",
+                state_nullablePreselectedItem = null,
+                state_nullableErrorItem = null,
+                event_onItemSelected = { innerStateImportance = it }
             )
         }
     }
 }
 
+
+/*
 fun showDatePicker(
     requireActivity: AppCompatActivity,
     onDismiss: () -> Unit,
@@ -248,4 +254,4 @@ fun showDatePicker(
     picker.addOnDismissListener {
         onDismiss()
     }
-}
+}*/
