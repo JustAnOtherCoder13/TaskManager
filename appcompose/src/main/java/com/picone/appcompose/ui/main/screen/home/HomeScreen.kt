@@ -12,37 +12,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.SetProgressDrawable
-import com.picone.appcompose.ui.component.baseComponent.*
+import com.picone.appcompose.ui.main.baseComponent.*
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 
 
 @Composable
 fun HomeScreen(
-    mainContent :  @Composable () -> Unit,
-    topAppBarAddItemButtonPopUpItems: List<String>,
-    topAppBarAddItemButtonIsPopUpMenuExpanded: Boolean,
-    topAppBarAddItemButtonOnAddItemSelected: (itemTypeToAdd: String) -> Unit,
-    topAppBarAddItemButtonOnAddButtonClick: () -> Unit,
-    topAppBarAddItemButtonOnClosePopUp: () -> Unit,
-    bottomNavBarSelectedNavItem: String,
-    bottomNavBarOnNavItemSelected: (item: String) -> Unit,
-    currentRoute : String?
+    state_topBarAddMenuItems: List<String>,
+    event_topBarOnMenuItemSelected: (itemTypeToAdd: String) -> Unit,
+    event_bottomNavBarOnNavItemSelected: (item: String) -> Unit,
+    state_currentRoute : String?,
+    mainContent :  @Composable () -> Unit
 ) {
     Scaffold(
         topBar = { TaskManagerTopAppBar (
-            topAppBarAddItemButtonPopUpItems,
-            topAppBarAddItemButtonIsPopUpMenuExpanded,
-            topAppBarAddItemButtonOnAddItemSelected,
-            topAppBarAddItemButtonOnAddButtonClick,
-            topAppBarAddItemButtonOnClosePopUp
+            state_topBarAddMenuItems,
+            event_topBarOnMenuItemSelected,
                 ) },
         content = { mainContent() },
         bottomBar = {
             BottomNavBar(
-                bottomNavBarSelectedNavItem = bottomNavBarSelectedNavItem,
-                bottomNavBarOnNavItemSelected = bottomNavBarOnNavItemSelected,
-                currentRoute = currentRoute?:""
+                event_bottomNavBarOnNavItemSelected = event_bottomNavBarOnNavItemSelected,
+                state_currentRoute = state_currentRoute?:""
             )
         }
     )

@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.picone.appcompose.ui.component.baseComponent.BaseSpinner
+import com.picone.appcompose.ui.main.baseComponent.BaseSpinner
 import com.picone.core.domain.entity.Project
 import java.text.SimpleDateFormat
 import java.util.*

@@ -9,16 +9,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.*
 import com.google.gson.Gson
-import com.picone.appcompose.ui.component.navAction.NavActionManager
-import com.picone.appcompose.ui.component.navAction.NavObjects
+import com.picone.appcompose.ui.main.navAction.NavActionManager
+import com.picone.appcompose.ui.main.navAction.NavObjects
 import com.picone.appcompose.ui.main.screen.*
-import com.picone.appcompose.ui.main.screen.home.homeTask.actions.HomeActionManager
-import com.picone.appcompose.ui.main.screen.home.homeTask.states.HomeTaskUiStates
 import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
-import com.picone.appcompose.ui.main.screen.home.homeTask.*
-import com.picone.appcompose.ui.main.screen.home.homeTask.events.HomeEvents
-import com.picone.appcompose.ui.main.screen.home.homeTask.events.HomeTaskEventManager
-import com.picone.appcompose.ui.main.screen.home.homeTask.states.HomeStateManager
+import com.picone.appcompose.ui.main.screen.home.homeTask.screens.HomeTaskScreen
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Task
 import com.picone.core.util.Constants.CATEGORY
@@ -47,9 +42,6 @@ class MainActivity : AppCompatActivity() {
             TaskManagerTheme {
                 val navController = rememberNavController()
                 val navActionManager = NavActionManager(navController)
-                val homeActionManager = HomeActionManager(navActionManager)
-                val homeStateManager = HomeStateManager(homeScreenViewModel)
-                val homeEventManager = HomeTaskEventManager(homeStateManager)
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 NavHost(
@@ -57,59 +49,30 @@ class MainActivity : AppCompatActivity() {
                     startDestination = NavObjects.Home.destination
                 ) {
                     composable(NavObjects.Home.getRoute()) {
-
-                        homeEventManager.TriggerEvent(event = HomeEvents.onScreenCreated)
-
-                        //homeStateManager.updateState(event = HomeTaskEvents.GET_INITIAL_STATE).state
-
                         HomeTaskScreen(
-                            allTasks = homeStateManager.getState(HomeTaskUiStates.ALL_TASKS),
-                            taskRecyclerViewOnTaskSelected = { selectedTask ->
-                                homeActionManager.navigateToDetailOnTaskClicked(
-                                    selectedTask
-                                )
+                            state_allTasks = homeScreenViewModel.mAllTasksMutableLD.observeAsState(listOf()).value,
+                            event_taskRecyclerViewOnTaskSelected = { selectedTask -> navActionManager.navigate(NavObjects.Detail,selectedTask) },
+                            state_topBarAddMenuItems = listOf(CATEGORY, PROJECT, TASK),
+                            event_topBarOnMenuItemSelected = { selectedAddItem -> navActionManager.navigate(NavObjects.Add) },
+                            event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
+                                homeScreenViewModel.updateBottomNavSelectedItem(selectedNavItem)
+                                navActionManager.onBottomNavItemSelected(selectedNavItem)
                             },
-                            topAppBarAddItemButtonPopUpItems = listOf(CATEGORY, PROJECT, TASK),
-                            topAppBarAddItemButtonIsPopUpMenuExpanded = homeScreenViewModel.mPopUpStateMutableLD.observeAsState(
-                                false
-                            ).value,
-                            topAppBarAddItemButtonOnAddButtonClick = { homeActionManager.topAppBarOpenPopUp(homeScreenViewModel) },
-                            topAppBarAddItemButtonOnClosePopUp = { homeActionManager.topAppBarClosePopUp(homeScreenViewModel) },
-                            topAppBarAddItemButtonOnAddItemSelected = { selectedAddItem -> homeActionManager.navigateToAddOnPopUpItemSelected() },
-                            bottomNavBarSelectedNavItem = homeScreenViewModel.mBottomNavSelectedItem.observeAsState(
-                                ""
-                            ).value,
-                            bottomNavBarOnNavItemSelected = { selectedNavItem ->
-                                homeActionManager.onBottomNavItemSelected(
-                                    selectedNavItem,
-                                    homeScreenViewModel
-                                )
-                            },
-                            currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                            state_currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                         )
                     }
                     composable(NavObjects.Project.getRoute()) {
                         HomeProjectScreen(
-                            allProjects = homeScreenViewModel.mAllProjectMutableLD.observeAsState(
+                            state_allProjects = homeScreenViewModel.mAllProjectMutableLD.observeAsState(
                                 listOf()
                             ).value,
-                            topAppBarAddItemButtonPopUpItems = listOf(CATEGORY, PROJECT, TASK),
-                            topAppBarAddItemButtonIsPopUpMenuExpanded = homeScreenViewModel.mPopUpStateMutableLD.observeAsState(
-                                false
-                            ).value,
-                            topAppBarAddItemButtonOnAddButtonClick = { homeActionManager.topAppBarOpenPopUp(homeScreenViewModel) },
-                            topAppBarAddItemButtonOnClosePopUp = { homeActionManager.topAppBarClosePopUp(homeScreenViewModel) },
-                            topAppBarAddItemButtonOnAddItemSelected = { selectedAddItem -> homeActionManager.navigateToAddOnPopUpItemSelected() },
-                            bottomNavBarSelectedNavItem = homeScreenViewModel.mBottomNavSelectedItem.observeAsState(
-                                NavObjects.Home.destination
-                            ).value,
-                            bottomNavBarOnNavItemSelected = { selectedNavItem ->
-                                homeActionManager.onBottomNavItemSelected(
-                                    selectedNavItem,
-                                    homeScreenViewModel
-                                )
+                            state_topBarAddMenuItems = listOf(CATEGORY, PROJECT, TASK),
+                            event_topBarOnMenuItemSelected = { selectedAddItem -> navActionManager.navigate(NavObjects.Add) },
+                            event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
+                                homeScreenViewModel.updateBottomNavSelectedItem(selectedNavItem)
+                                navActionManager.onBottomNavItemSelected(selectedNavItem)
                             },
-                            currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                            state_currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                         )
                     }
                     composable(
@@ -121,7 +84,9 @@ class MainActivity : AppCompatActivity() {
                         )
                         DetailScreen(
                             state_Task = getTaskOrNull(backStackEntry) ?: UnknownTask,
-                            state_allUnderStainsForTask = detailScreenViewModel.allUnderStainsForTaskMutableLD.observeAsState(listOf()).value,
+                            state_allUnderStainsForTask = detailScreenViewModel.allUnderStainsForTaskMutableLD.observeAsState(
+                                listOf()
+                            ).value,
                             state_isAddUnderStainComponentVisible = false,
                             state_isOkButtonEnable = false,
                             state_addUnderStainItemName = "",

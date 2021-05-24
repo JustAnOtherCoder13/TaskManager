@@ -1,4 +1,4 @@
-package com.picone.appcompose.ui.component.baseComponent
+package com.picone.appcompose.ui.main.baseComponent
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,7 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.values.TopRightCornerCut
@@ -314,21 +317,70 @@ private fun setBorderStrokeOnEmpty(state_text: String) = if (state_text
 else BorderStroke(0.dp, Color.Transparent)
 
 @Composable
+fun <T> PopUpMenuButton(
+    state_menuItems: List<String>,
+    state_icon : T,
+    event_onMenuItemSelected: (item: String) -> Unit,
+) {
+    var isPopUpMenuExpanded by remember { mutableStateOf(false) }
+
+    val iconToPass : @Composable ()->Unit = {
+        when (state_icon) {
+            is ImageVector -> Icon(
+                imageVector = state_icon,
+                contentDescription = null,
+            )
+            is ImageBitmap ->Icon(
+                bitmap = state_icon,
+                contentDescription = null,
+            )
+            is Painter -> Icon(
+                painter = state_icon,
+                contentDescription = null,
+            )
+            else -> throw Exception("pass only Painter, ImageVector or ImageBitmap for icon value")
+        }
+    }
+    Button(
+        onClick = { isPopUpMenuExpanded=true },
+        shape = CircleShape,
+        elevation = null,
+        colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            if (state_icon is ImageVector)
+                iconToPass()
+            BaseDropDownMenu(
+                isPopUpMenuExpanded,
+                state_menuItems = state_menuItems,
+                event_onMenuItemSelected = { menuItem ->
+                    isPopUpMenuExpanded = false
+                    if (menuItem.trim().isNotEmpty()) {
+                        event_onMenuItemSelected(menuItem)
+                    }
+                },
+            )
+        }
+    }
+}
+@Composable
 fun BaseDropDownMenu(
-    isPopUpMenuExpanded: Boolean,
-    addItems: List<String>,
-    onClosePopUp: (itemType: String) -> Unit
+    state_isPopUpMenuExpanded: Boolean,
+    state_menuItems: List<String>,
+    event_onMenuItemSelected: (itemType: String) -> Unit
 ) {
     DropdownMenu(
-        expanded = isPopUpMenuExpanded,
-        onDismissRequest = { onClosePopUp("") },
+        expanded = state_isPopUpMenuExpanded,
+        onDismissRequest = { event_onMenuItemSelected("") },
         modifier = Modifier
             .wrapContentWidth()
             .wrapContentHeight()
     ) {
-        addItems.forEachIndexed { _, itemType ->
-            DropdownMenuItem(onClick = { onClosePopUp(itemType) }) {
-                Text(text = itemType)
+        state_menuItems.forEachIndexed { _, item ->
+            DropdownMenuItem(onClick = { event_onMenuItemSelected(item) }) {
+                Text(text = item)
             }
         }
     }

@@ -1,0 +1,61 @@
+package com.picone.appcompose.ui.main.baseComponent
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import com.picone.appcompose.R
+import com.picone.appcompose.ui.main.navAction.NavObjects
+
+@Composable
+fun TaskManagerTopAppBar(
+    state_topBarAddMenuItems: List<String>,
+    event_topBarOnMenuItemSelected: (itemTypeToAdd: String) -> Unit,
+) {
+    TopAppBar(
+        title = { Text(text = stringResource(R.string.app_name)) },
+        backgroundColor = MaterialTheme.colors.primary,
+        actions = {
+            PopUpMenuButton(
+                state_menuItems = state_topBarAddMenuItems,
+                state_icon = Icons.Rounded.AddCircle ,
+                event_onMenuItemSelected = event_topBarOnMenuItemSelected,
+            )
+        }
+    )
+}
+
+
+
+
+@Composable
+fun BottomNavBar(
+    event_bottomNavBarOnNavItemSelected: (item: String) -> Unit,
+    state_currentRoute : String
+) {
+    BottomAppBar(modifier = Modifier.fillMaxWidth()) {
+        BottomNavigation {
+            BottomNavigationItem(
+                icon = { Icon(Icons.Default.Home, "") },
+                label = { Text(text = "HOME") },
+                selected = state_currentRoute == NavObjects.Home.destination,
+                unselectedContentColor = MaterialTheme.colors.primaryVariant,
+                onClick = { event_bottomNavBarOnNavItemSelected(NavObjects.Home.destination) })
+            BottomNavigationItem(
+                icon = { Icon(Icons.Default.Build, "") },
+                label = { Text(text = "PROJECT") },
+                selected = state_currentRoute == NavObjects.Project.destination,
+                unselectedContentColor = MaterialTheme.colors.primaryVariant,
+                onClick = { event_bottomNavBarOnNavItemSelected(NavObjects.Project.destination) })
+        }
+    }
+}

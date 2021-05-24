@@ -7,26 +7,18 @@ import com.picone.core.domain.entity.Project
 
 @Composable
 fun HomeProjectScreen(
-    allProjects: List<Project>,
-    topAppBarAddItemButtonPopUpItems: List<String>,
-    topAppBarAddItemButtonIsPopUpMenuExpanded: Boolean,
-    topAppBarAddItemButtonOnAddItemSelected: (itemTypeToAdd: String) -> Unit,
-    topAppBarAddItemButtonOnAddButtonClick: () -> Unit,
-    topAppBarAddItemButtonOnClosePopUp: () -> Unit,
-    bottomNavBarSelectedNavItem: String,
-    bottomNavBarOnNavItemSelected: (item: String) -> Unit,
-    currentRoute : String?
+    state_allProjects: List<Project>,
+    state_topBarAddMenuItems: List<String>,
+    event_topBarOnMenuItemSelected: (selectedItem : String) -> Unit,
+    event_bottomNavBarOnNavItemSelected: (item: String) -> Unit,
+    state_currentRoute : String?
 ){
 
     HomeScreen(
-        mainContent = { ProjectRecyclerView(allProjects = allProjects) },
-        topAppBarAddItemButtonPopUpItems  ,
-        topAppBarAddItemButtonIsPopUpMenuExpanded  ,
-        topAppBarAddItemButtonOnAddItemSelected ,
-        topAppBarAddItemButtonOnAddButtonClick ,
-        topAppBarAddItemButtonOnClosePopUp ,
-        bottomNavBarSelectedNavItem,
-        bottomNavBarOnNavItemSelected,
-        currentRoute
+        mainContent = { ProjectRecyclerView(allProjects = state_allProjects) },
+        state_topBarAddMenuItems = state_topBarAddMenuItems,
+        event_topBarOnMenuItemSelected = event_topBarOnMenuItemSelected,
+        event_bottomNavBarOnNavItemSelected = event_bottomNavBarOnNavItemSelected,
+        state_currentRoute = state_currentRoute
     )
 }
