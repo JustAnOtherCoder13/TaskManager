@@ -22,10 +22,7 @@ import com.picone.core.util.Constants.KEY_TASK
 import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
 import com.picone.core.util.Constants.UnknownTask
-import com.picone.newArchitectureViewModels.DetailActions
-import com.picone.newArchitectureViewModels.DetailViewModel
-import com.picone.newArchitectureViewModels.HomeActions
-import com.picone.newArchitectureViewModels.HomeViewModel
+import com.picone.newArchitectureViewModels.*
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 import java.text.SimpleDateFormat
@@ -37,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     private val homeViewModel: HomeViewModel by viewModels()
     private val detailViewModel: DetailViewModel by viewModels()
+    private val addViewModel: AddViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,21 +160,58 @@ class MainActivity : AppCompatActivity() {
                     }
                     composable(NavObjects.Add.getRoute())
                     {
+                        addViewModel.dispatchEvent(AddActions.OnAddCreated)
                         AddScreen(
                             state_nullableProjectToPassInTask = null,
-                            state_addScreenDeadlineSelectedDate = "",
-                            state_addScreenAllCategories = listOf(),
-                            state_isOkButtonEnabled = false,
-                            event_onAddScreenImportanceSelected = {},
-                            event_onAddScreenCategorySelected = { },
-                            event_showDatePicker = {
-                                showDatePicker(
-                                    onDateSelected = { selectedDate -> }
+                            state_addScreenDeadlineSelectedDate = addViewModel.mNewTaskSelectedDeadLine.value,
+                            state_addScreenAllCategories = addViewModel.mAllCategories.value,
+                            state_isOkButtonEnabled = addViewModel.mIsOkButtonEnable.value,
+                            event_onAddScreenImportanceSelected = { importance ->
+                                addViewModel.dispatchEvent(
+                                    AddActions.OnAddScreenImportanceSelected(
+                                        importance = importance
+                                    )
                                 )
                             },
-                            event_addScreenOnNameChange = {},
-                            event_addScreenOnDescriptionChange = {},
-                            event_addScreenAddNewItemOnOkButtonClicked = {}
+                            event_onAddScreenCategorySelected = { category ->
+                                addViewModel.dispatchEvent(
+                                    AddActions.OnAddScreenCategorySelected(
+                                        category = category
+                                    )
+                                )
+                            },
+                            event_onDatePickerIconClicked = {
+                                showDatePicker(
+                                    onDateSelected = { selectedDate ->
+                                        addViewModel.dispatchEvent(
+                                            AddActions.OnDatePickerIconClickedOnDateSelected(
+                                                selectedDate = selectedDate
+                                            )
+                                        )
+                                    }
+                                )
+                            },
+                            event_addScreenOnNameChange = { name ->
+                                addViewModel.dispatchEvent(
+                                    AddActions.AddScreenOnNameChange(
+                                        name = name
+                                    )
+                                )
+                            },
+                            event_addScreenOnDescriptionChange = { description ->
+                                addViewModel.dispatchEvent(
+                                    AddActions.AddScreenOnDescriptionChange(
+                                        description = description
+                                    )
+                                )
+                            },
+                            event_addScreenAddNewItemOnOkButtonClicked = {
+                                addViewModel.dispatchEvent(
+                                    addAction = AddActions.AddScreenAddNewItemOnOkButtonClicked(
+                                        navActionManager = navActionManager
+                                    )
+                                )
+                            }
                         )
                     }
 

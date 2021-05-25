@@ -25,32 +25,18 @@ import com.picone.viewmodels.BaseViewModel
 @Composable
 fun AddScreen(
     state_nullableProjectToPassInTask: Project?,
-    /*itemType: String,*/
     state_addScreenDeadlineSelectedDate: String,
     event_onAddScreenImportanceSelected: (String) -> Unit,
     event_onAddScreenCategorySelected: (String) -> Unit,
-    event_showDatePicker: (isVisible: Boolean) -> Unit,
-    /*taskId: Int,
-    projectId: Int,*/
     state_addScreenAllCategories: List<Category>,
     state_isOkButtonEnabled : Boolean,
     event_addScreenOnNameChange : (name : String)->Unit,
     event_addScreenOnDescriptionChange : (description : String) -> Unit,
     event_addScreenAddNewItemOnOkButtonClicked : ()->Unit,
-    /*addNewProjectOnOkButtonClicked: (project: Project) -> Unit,
-    addNewTaskOnOkButtonClicked: (task: Task) -> Unit*/
+    event_onDatePickerIconClicked : () -> Unit,
 ) {
 
     val categoriesToStringList : MutableList<String> = mutableListOf()
-
-
-    BaseViewModel.completionStateMutableLD.value =
-        BaseViewModel.Companion.CompletionState.START_STATE
-
-   /* var categoryState by remember { mutableStateOf("") }
-    var nameState by remember { mutableStateOf("") }
-    var descriptionState by remember { mutableStateOf("") }*/
-    //var isOkButtonEnabledState by remember { mutableStateOf(false) }
 
     val categoryStr: String? =
         if (state_nullableProjectToPassInTask != null)
@@ -59,9 +45,6 @@ fun AddScreen(
 
     state_addScreenAllCategories.forEachIndexed { _, category -> categoriesToStringList.add(category.name!!) }
 
-    /*isOkButtonEnabledState = nameState.trim().isNotEmpty() && descriptionState.trim()
-        .isNotEmpty() && categoryState.trim().isNotEmpty()
-*/
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
@@ -71,12 +54,12 @@ fun AddScreen(
         item {
             AddScreenHeader(
                 state_addScreenCategoryDropDownMenuItemList = categoriesToStringList,
-                state_addScreenIsDatePickerClickableIconVisible = false,
+                state_addScreenIsDatePickerClickableIconVisible = true,
                 state_addScreenNullableCategoryPreselectedItem =categoryStr,
                 state_addScreenDeadlineSelectedDate = state_addScreenDeadlineSelectedDate,
                 event_onAddScreenImportanceSelected = event_onAddScreenImportanceSelected,
                 event_onAddScreenCategorySelected = event_onAddScreenCategorySelected,
-                event_showDatePicker = event_showDatePicker
+                event_onDatePickerIconClicked = event_onDatePickerIconClicked
             )
         }
         item { Spacer(modifier = Modifier.height(10.dp)) }
@@ -92,39 +75,7 @@ fun AddScreen(
             OkButton(
                 state_isOkButtonEnabled = state_isOkButtonEnabled,
                 event_addNewItemOnOkButtonClicked = event_addScreenAddNewItemOnOkButtonClicked
-            ) /*{
-                 val importance = listOf("Unimportant", "Normal", "Important")
-                var importanceState by remember { mutableStateOf("") }
-
-                when (itemType) {
-                    "Project" ->
-                        addNewProjectOnOkButtonClicked(
-                            Project(
-                                projectId,
-                                categoriesToStringList.indexOf(categoryState) + 1,
-                                nameState,
-                                descriptionState
-                            )
-                        )
-                    "Task" ->
-                        addNewTaskOnOkButtonClicked(
-                            Task(
-                                taskId,
-                                categoriesToStringList.indexOf(categoryState) + 1,
-                                nameState,
-                                descriptionState,
-                                importance.indexOf(importanceState) + 1,
-                                Calendar.getInstance().time,
-                                null,
-                                if (state_addScreenDeadlineSelectedDate.trim().isNotEmpty()) SimpleDateFormat(
-                                    "dd/MM/yyyy",
-                                    Locale.FRANCE
-                                ).parse(state_addScreenDeadlineSelectedDate) else null,
-                                null
-                            )
-                        )
-                }
-            }*/
+            )
         }
     }
 }
@@ -172,13 +123,13 @@ private fun Body(
         BaseEditText(
             state_title = "Name",
             state_textColor = MaterialTheme.colors.onSecondary,
-            state_text = state_nullableProjectToPassInTask?.name ?: "",
+            state_text = innerStateName,
             event_baseEditTextOnTextChange = { innerStateName = it })
         Spacer(modifier = Modifier.height(10.dp))
         BaseEditText(
             state_title = "Description",
             state_textColor = MaterialTheme.colors.onSecondary,
-            state_text = state_nullableProjectToPassInTask?.description ?: "",
+            state_text = innerStateDescription,
             event_baseEditTextOnTextChange = { innerStateDescription = it }
         )
     }
@@ -192,13 +143,11 @@ private fun AddScreenHeader(
     state_addScreenDeadlineSelectedDate: String,
     event_onAddScreenImportanceSelected: (String) -> Unit,
     event_onAddScreenCategorySelected: (String) -> Unit,
-    event_showDatePicker: (isVisible: Boolean) -> Unit
+    event_onDatePickerIconClicked : () -> Unit,
 ) {
-    var innerStateIsDatePickerVisible by remember { mutableStateOf(false) }
     var innerStateImportance by remember { mutableStateOf("") }
     var innerStateCategory by remember { mutableStateOf("") }
 
-    event_showDatePicker(innerStateIsDatePickerVisible)
     event_onAddScreenImportanceSelected(innerStateImportance)
     event_onAddScreenCategorySelected(innerStateCategory)
 
@@ -223,9 +172,7 @@ private fun AddScreenHeader(
         if (state_addScreenIsDatePickerClickableIconVisible) {
             BaseDatePickerClickableIcon(
                 state_datePickerIconDateText = state_addScreenDeadlineSelectedDate,
-                event_onDatePickerIconClicked = {
-                    innerStateIsDatePickerVisible = !innerStateIsDatePickerVisible
-                }
+                event_onDatePickerIconClicked = event_onDatePickerIconClicked
             )
             BaseSpinner(
                 state_BaseSpinnerItemList = listOf("Unimportant", "Normal", "Important"),//todo pass with external list
@@ -237,21 +184,3 @@ private fun AddScreenHeader(
         }
     }
 }
-
-
-/*
-fun showDatePicker(
-    requireActivity: AppCompatActivity,
-    onDismiss: () -> Unit,
-    onDateSelected: (String) -> Unit
-) {
-    val picker = MaterialDatePicker.Builder.datePicker().build()
-    picker.show(requireActivity.supportFragmentManager, picker.toString())
-
-    picker.addOnPositiveButtonClickListener {
-        onDateSelected(SimpleDateFormat("dd/MM/yyy", Locale.FRANCE).format(it))
-    }
-    picker.addOnDismissListener {
-        onDismiss()
-    }
-}*/
