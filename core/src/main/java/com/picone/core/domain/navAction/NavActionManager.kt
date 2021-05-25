@@ -1,4 +1,4 @@
-package com.picone.appcompose.ui.main.navAction
+package com.picone.core.domain.navAction
 
 import androidx.navigation.NavController
 import com.google.gson.Gson
@@ -8,7 +8,7 @@ class NavActionManager(private val navController: NavController) {
     fun navigate(navAction : NavAction){
         when(navAction){
             NavObjects.Home -> NavObjects.Home.doNavAction(navController)
-            NavObjects.Project-> NavObjects.Project.doNavAction(navController)
+            NavObjects.Project -> NavObjects.Project.doNavAction(navController)
             NavObjects.Add -> NavObjects.Add.doNavAction(navController)
             else -> throw Exception("Unknown nav action in ${this.javaClass.simpleName}")
         }

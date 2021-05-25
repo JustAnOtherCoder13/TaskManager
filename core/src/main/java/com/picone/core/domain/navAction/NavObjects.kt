@@ -1,8 +1,9 @@
-package com.picone.appcompose.ui.main.navAction
+package com.picone.core.domain.navAction
 
 import androidx.navigation.NavType
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.navArgument
+import com.picone.core.domain.navAction.NavAction
 import com.picone.core.util.Constants
 
 object NavObjects {

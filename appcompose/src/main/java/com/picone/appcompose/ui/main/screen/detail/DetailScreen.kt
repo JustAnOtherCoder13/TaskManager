@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.main.baseComponent.*
-import com.picone.appcompose.ui.main.screen.add.BaseDatePickerClickableIcon
 import com.picone.appcompose.ui.values.TopLeftCornerCut
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.appcompose.ui.values.TopRoundedCorner
@@ -26,7 +25,7 @@ fun DetailScreen(
     state_Task: Task,
     state_allUnderStainsForTask: List<UnderStain>,
     state_isAddUnderStainComponentVisible: Boolean,
-    state_addUnderStainItemName: String,
+    state_datePickerIconDateText: String,
     event_onAddUnderStainButtonClick: () -> Unit,
     event_AddUnderStainButtonOnOkButtonClicked: () -> Unit,
     event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit,
@@ -73,7 +72,7 @@ fun DetailScreen(
                     modifier = Modifier.padding(horizontal = 5.dp)
                 ) {
                     AddUnderStainItem(
-                        state_addUnderStainItemName,
+                        state_datePickerIconDateText,
                         event_AddUnderStainButtonOnOkButtonClicked,
                         event_AddUnderStainButtonOnCancelButtonClicked,
                         event_nameEditTextOnTextChange,

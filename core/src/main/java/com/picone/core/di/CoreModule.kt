@@ -20,10 +20,7 @@ import com.picone.core.domain.interactor.task.AddNewTaskInteractor
 import com.picone.core.domain.interactor.task.UpdateTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.DeleteTaskInteractor
-import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
-import com.picone.core.domain.interactor.underStain.DeleteUnderStainInteractor
-import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
-import com.picone.core.domain.interactor.underStain.UpdateUnderStainInteractor
+import com.picone.core.domain.interactor.underStain.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -150,6 +147,11 @@ class CoreModule {
     @Provides
     fun provideGetAllUnderStainsForTaskId(underStainRepository: UnderStainRepository):GetAllUnderStainForTaskIdInteractor{
         return GetAllUnderStainForTaskIdInteractor(underStainRepository)
+    }
+
+    @Provides
+    fun provideGetAllUnderStains(underStainRepository: UnderStainRepository): GetAllUnderStainsInteractor{
+        return GetAllUnderStainsInteractor(underStainRepository)
     }
 
     @Provides

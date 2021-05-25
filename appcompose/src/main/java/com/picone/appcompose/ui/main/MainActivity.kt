@@ -5,28 +5,27 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.*
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
-import com.picone.appcompose.ui.main.navAction.NavActionManager
-import com.picone.appcompose.ui.main.navAction.NavObjects
-import com.picone.appcompose.ui.main.screen.*
+import com.picone.core.domain.navAction.NavActionManager
+import com.picone.core.domain.navAction.NavObjects
 import com.picone.appcompose.ui.main.screen.add.AddScreen
 import com.picone.appcompose.ui.main.screen.detail.DetailScreen
 import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
 import com.picone.appcompose.ui.main.screen.home.homeTask.screens.HomeTaskScreen
 import com.picone.appcompose.ui.values.TaskManagerTheme
-import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Task
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.KEY_TASK
 import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
 import com.picone.core.util.Constants.UnknownTask
-import com.picone.newArchitectureViewModels.DetailScreenViewModel
-import com.picone.newArchitectureViewModels.HomeScreenViewModel
+import com.picone.newArchitectureViewModels.DetailActions
+import com.picone.newArchitectureViewModels.DetailViewModel
+import com.picone.newArchitectureViewModels.HomeActions
+import com.picone.newArchitectureViewModels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 import java.text.SimpleDateFormat
@@ -36,13 +35,11 @@ import java.util.*
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val homeScreenViewModel: HomeScreenViewModel by viewModels()
-    private val detailScreenViewModel: DetailScreenViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels()
+    private val detailViewModel: DetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        homeScreenViewModel.getAllTasks()
-        homeScreenViewModel.getAllProjects()
 
         setContent {
             TaskManagerTheme {
@@ -55,28 +52,57 @@ class MainActivity : AppCompatActivity() {
                     startDestination = NavObjects.Home.destination
                 ) {
                     composable(NavObjects.Home.getRoute()) {
+                        homeViewModel.dispatchEvent(HomeActions.OnHomeCreated)
                         HomeTaskScreen(
-                            state_allTasks = homeScreenViewModel.mAllTasksMutableLD.observeAsState(listOf()).value,
-                            event_taskRecyclerViewOnTaskSelected = { selectedTask -> navActionManager.navigate(NavObjects.Detail,selectedTask) },
-                            state_topBarAddMenuItems = listOf(CATEGORY, PROJECT, TASK),
-                            event_topBarOnMenuItemSelected = { selectedAddItem -> navActionManager.navigate(NavObjects.Add) },
+                            state_allTasks = homeViewModel.mAllTasksState.value,
+                            event_taskRecyclerViewOnTaskSelected = { selectedTask ->
+                                homeViewModel.dispatchEvent(
+                                    HomeActions.TaskRecyclerViewOnTaskSelected(
+                                        navActionManager = navActionManager,
+                                        selectedTask = selectedTask
+                                    )
+                                )
+                            },
+                            state_topBarAddMenuItems = topBarrAddMenuItems(),
+                            event_topBarOnMenuItemSelected = { selectedAddItem ->
+                                homeViewModel.dispatchEvent(
+                                    HomeActions.TopBarOnMenuItemSelected(
+                                        navActionManager = navActionManager,
+                                        selectedItem = selectedAddItem
+                                    )
+                                )
+                            },
                             event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
-                                homeScreenViewModel.updateBottomNavSelectedItem(selectedNavItem)
-                                navActionManager.onBottomNavItemSelected(selectedNavItem)
+                                homeViewModel.dispatchEvent(
+                                    HomeActions.BottomNavBarOnNavItemSelected(
+                                        navActionManager = navActionManager,
+                                        selectedNavItem = selectedNavItem
+                                    )
+                                )
                             },
                             state_currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                         )
                     }
                     composable(NavObjects.Project.getRoute()) {
+                        homeViewModel.dispatchEvent(HomeActions.OnProjectCreated)
                         HomeProjectScreen(
-                            state_allProjects = homeScreenViewModel.mAllProjectMutableLD.observeAsState(
-                                listOf()
-                            ).value,
-                            state_topBarAddMenuItems = listOf(CATEGORY, PROJECT, TASK),
-                            event_topBarOnMenuItemSelected = { selectedAddItem -> navActionManager.navigate(NavObjects.Add) },
+                            state_allProjects = homeViewModel.mAllProjectState.value,
+                            state_topBarAddMenuItems = topBarrAddMenuItems(),
+                            event_topBarOnMenuItemSelected = { selectedAddItem ->
+                                homeViewModel.dispatchEvent(
+                                    HomeActions.TopBarOnMenuItemSelected(
+                                        navActionManager = navActionManager,
+                                        selectedItem = selectedAddItem
+                                    )
+                                )
+                            },
                             event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
-                                homeScreenViewModel.updateBottomNavSelectedItem(selectedNavItem)
-                                navActionManager.onBottomNavItemSelected(selectedNavItem)
+                                homeViewModel.dispatchEvent(
+                                    HomeActions.BottomNavBarOnNavItemSelected(
+                                        navActionManager = navActionManager,
+                                        selectedNavItem = selectedNavItem
+                                    )
+                                )
                             },
                             state_currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
                         )
@@ -85,43 +111,72 @@ class MainActivity : AppCompatActivity() {
                         route = NavObjects.Detail.getRoute(),
                         arguments = NavObjects.Detail.arguments
                     ) { backStackEntry ->
-                        detailScreenViewModel.getAllUnderStainForTask(
-                            getTaskOrNull(backStackEntry) ?: UnknownTask
+                        detailViewModel.dispatchEvent(
+                            DetailActions.OnDetailCreated(
+                                getTaskOrNull(backStackEntry) ?: UnknownTask
+                            )
                         )
                         DetailScreen(
                             state_Task = getTaskOrNull(backStackEntry) ?: UnknownTask,
-                            state_allUnderStainsForTask = detailScreenViewModel.allUnderStainsForTaskMutableLD.observeAsState(
-                                listOf()
-                            ).value,
-                            state_isAddUnderStainComponentVisible = true,
-                            state_addUnderStainItemName = "",
-                            event_onAddUnderStainButtonClick = {},
-                            event_AddUnderStainButtonOnOkButtonClicked = {},
-                            event_AddUnderStainButtonOnCancelButtonClicked = {},
-                            event_nameEditTextOnTextChange = {},
-                            event_descriptionEditTextOnTextChange ={},
-                            event_onDatePickerIconClicked = {}
+                            state_allUnderStainsForTask = detailViewModel.mAllUnderStainsForTaskState.value,
+                            state_isAddUnderStainComponentVisible = detailViewModel.mIsAddUnderStainComponentVisible.value,
+                            state_datePickerIconDateText = detailViewModel.mNewUnderStainSelectedDeadLine.value,
+                            event_onAddUnderStainButtonClick = {
+                                detailViewModel.dispatchEvent(
+                                    DetailActions.OnAddUnderStainButtonClick
+                                )
+                            },
+                            event_AddUnderStainButtonOnOkButtonClicked = {
+                                detailViewModel.dispatchEvent(
+                                    DetailActions.AddUnderStainButtonOnOkButtonClicked
+                                )
+                            },
+                            event_AddUnderStainButtonOnCancelButtonClicked = {
+                                detailViewModel.dispatchEvent(
+                                    DetailActions.AddUnderStainButtonOnCancelButtonClicked
+                                )
+                            },
+                            event_nameEditTextOnTextChange = { name ->
+                                detailViewModel.dispatchEvent(
+                                    DetailActions.NameEditTextOnTextChange(name)
+                                )
+                            },
+                            event_descriptionEditTextOnTextChange = { description ->
+                                detailViewModel.dispatchEvent(
+                                    DetailActions.DescriptionEditTextOnTextChange(description)
+                                )
+                            },
+                            event_onDatePickerIconClicked = {
+                                showDatePicker(
+                                    onDateSelected = { selectedDate ->
+                                        detailViewModel.dispatchEvent(
+                                            DetailActions.OnDatePickerIconClickedOnDateSelected(
+                                                selectedDate = selectedDate
+                                            )
+                                        )
+                                    }
+                                )
+                            }
                         )
 
                     }
                     composable(NavObjects.Add.getRoute())
                     {
                         AddScreen(
-                            state_nullableProjectToPassInTask=null,
-                            state_addScreenDeadlineSelectedDate="",
+                            state_nullableProjectToPassInTask = null,
+                            state_addScreenDeadlineSelectedDate = "",
                             state_addScreenAllCategories = listOf(),
                             state_isOkButtonEnabled = false,
-                            event_onAddScreenImportanceSelected= {},
-                            event_onAddScreenCategorySelected= {  },
+                            event_onAddScreenImportanceSelected = {},
+                            event_onAddScreenCategorySelected = { },
                             event_showDatePicker = {
                                 showDatePicker(
-                                    onDismiss = {},
                                     onDateSelected = { selectedDate -> }
                                 )
                             },
                             event_addScreenOnNameChange = {},
                             event_addScreenOnDescriptionChange = {},
-                            event_addScreenAddNewItemOnOkButtonClicked ={}
+                            event_addScreenAddNewItemOnOkButtonClicked = {}
                         )
                     }
 
@@ -132,6 +187,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Composable
+    private fun topBarrAddMenuItems() = listOf(CATEGORY, PROJECT, TASK)
+
+    @Composable
     private fun getTaskOrNull(backStackEntry: NavBackStackEntry): Task? {
         var task: Task? = null
         backStackEntry.arguments?.getString(KEY_TASK)?.let { json ->
@@ -140,19 +198,16 @@ class MainActivity : AppCompatActivity() {
         return task
     }
 
-    fun showDatePicker(
-        onDismiss: () -> Unit,
+    private fun showDatePicker(
         onDateSelected: (String) -> Unit
-    ){
+    ) {
         val picker = MaterialDatePicker.Builder.datePicker().build()
         picker.show(supportFragmentManager, picker.toString())
 
         picker.addOnPositiveButtonClickListener {
             onDateSelected(SimpleDateFormat("dd/MM/yyy", Locale.FRANCE).format(it))
         }
-        picker.addOnDismissListener {
-            onDismiss()
-        }
+        picker.addOnDismissListener {}
     }
 }
 

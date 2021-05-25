@@ -10,6 +10,10 @@ class UnderStainRepository @Inject constructor(private val underStainDaoImpl: Un
         return underStainDaoImpl.getAllUnderStainForTaskId(taskId)
     }
 
+    fun getAllUnderStains() : Flow<List<UnderStain>>{
+        return underStainDaoImpl.getAllUnderStains()
+    }
+
     suspend fun addNewUnderStain(underStain: UnderStain){
         underStainDaoImpl.addNewUnderStain(underStain)
     }

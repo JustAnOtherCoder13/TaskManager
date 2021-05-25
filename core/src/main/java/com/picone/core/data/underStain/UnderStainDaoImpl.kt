@@ -12,6 +12,9 @@ class UnderStainDaoImpl @Inject constructor(taskDatabase: TaskDatabase) {
     fun getAllUnderStainForTaskId(taskId: Int): Flow<List<UnderStain>> {
         return underStainDao.getAllUnderStainForTaskId(taskId)
     }
+    fun getAllUnderStains() : Flow<List<UnderStain>>{
+        return underStainDao.getAllUnderStains()
+    }
 
     suspend fun addNewUnderStain(underStain: UnderStain) {
         underStainDao.addNewUnderStain(underStain)
