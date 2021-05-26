@@ -1,7 +1,6 @@
 package com.picone.core.util
 
 import com.picone.core.domain.entity.Task
-import java.text.DateFormat
 import java.util.*
 
 object Constants {
@@ -12,9 +11,6 @@ object Constants {
     const val PROJECT_TABLE_NAME = "project_table"
     const val TASK_TABLE_NAME = "task_table"
     const val UNDER_STAIN_TABLE_NAME = "under_stain_table"
-
-    val Date.medium:String
-        get() = DateFormat.getDateInstance(DateFormat.MEDIUM).format(this)
 
     const val IMPORTANCE_IMPORTANT = 0
     const val IMPORTANCE_NORMAL = 1
@@ -36,6 +32,20 @@ object Constants {
     val MY_DAY = calendar.get(Calendar.DAY_OF_MONTH)
 
     //compose const
+    const val CATEGORY = "Category"
+    const val TASK = "Task"
+    const val PROJECT = "Project"
+
+    const val KEY_TASK = "task"
+    const val KEY_ITEM = "item"
+
     val UnknownTask = Task(0, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
+
+    enum class COMPLETION_STATE{
+        DEFAULT,
+        ON_LOADING,
+        ON_SUCCESS,
+        ON_ERROR
+    }
 
 }

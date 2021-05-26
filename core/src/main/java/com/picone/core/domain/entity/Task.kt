@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.picone.core.util.Constants.TASK_TABLE_NAME
-import com.picone.core.util.Constants.UNKNOWN
 import java.util.*
 
 @Entity(
@@ -19,12 +18,12 @@ data class Task(
     @PrimaryKey(autoGenerate = true) val id: Int,
 
     @ColumnInfo(index = true) val categoryId: Int,
-    override val name: String = UNKNOWN,
-    override val description: String = UNKNOWN,
+    val name: String,
+    val description: String,
     var importance: Int,
     val creation: Date,
-    override var start: Date?,
-    override var deadLine: Date?,
-    override var close: Date?
-):BaseTask(start= start,deadLine = deadLine,close = close)
+    var start: Date?,
+    var deadLine: Date?,
+    var close: Date?
+)
 

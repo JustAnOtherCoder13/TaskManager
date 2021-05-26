@@ -15,6 +15,6 @@ data class Project(
     @PrimaryKey(autoGenerate = true)val id:Int,
 
     @ColumnInfo(index = true)val categoryId:Int,
-    override var name: String,
-    override var description: String
-    ):BaseTask(start=null,deadLine = null,close = null)
+    var name: String,
+    var description: String
+    )
