@@ -32,10 +32,7 @@ import java.util.*
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val homeViewModel: HomeViewModel by viewModels()
-    private val detailViewModel: DetailViewModel by viewModels()
-    private val addViewModel: AddViewModel by viewModels()
-
+//TODO found how to scope vm on screen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,6 +47,8 @@ class MainActivity : AppCompatActivity() {
                     startDestination = NavObjects.Home.destination
                 ) {
                     composable(NavObjects.Home.getRoute()) {
+                        val homeViewModel: HomeViewModel by viewModels()
+
                         homeViewModel.dispatchEvent(HomeActions.OnHomeCreated)
                         HomeTaskScreen(
                             state_allTasks = homeViewModel.mAllTasksState.value,
@@ -82,6 +81,8 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                     composable(NavObjects.Project.getRoute()) {
+                        val homeViewModel: HomeViewModel by viewModels()
+
                         homeViewModel.dispatchEvent(HomeActions.OnProjectCreated)
                         HomeProjectScreen(
                             state_allProjects = homeViewModel.mAllProjectState.value,
@@ -109,6 +110,8 @@ class MainActivity : AppCompatActivity() {
                         route = NavObjects.Detail.getRoute(),
                         arguments = NavObjects.Detail.arguments
                     ) { backStackEntry ->
+                        val detailViewModel: DetailViewModel by viewModels()
+
                         detailViewModel.dispatchEvent(
                             DetailActions.OnDetailCreated(
                                 getTaskOrNull(backStackEntry) ?: UnknownTask
@@ -160,6 +163,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     composable(NavObjects.Add.getRoute())
                     {
+                        val addViewModel: AddViewModel by viewModels()
+
                         addViewModel.dispatchEvent(AddActions.OnAddCreated)
                         AddScreen(
                             state_nullableProjectToPassInTask = null,
