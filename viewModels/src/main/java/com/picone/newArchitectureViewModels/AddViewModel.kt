@@ -17,7 +17,6 @@ import com.picone.core.util.Constants.FIRST_ELEMENT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -32,66 +31,95 @@ class AddViewModel @Inject constructor(
 
     var mNewTaskSelectedDeadLine: MutableState<String> = mutableStateOf("")
     var mAllCategories: MutableState<List<Category>> = mutableStateOf(mutableListOf())
-    var mNewTaskImportance: MutableState<String> = mutableStateOf("")
-    var mNewTaskCategory: MutableState<String> = mutableStateOf("")
-    var mNewTaskName: MutableState<String> = mutableStateOf("")
-    var mNewTaskDescription: MutableState<String> = mutableStateOf("")
+    private var mNewTaskImportance: MutableState<String> = mutableStateOf("")
+    private var mNewTaskCategory: MutableState<String> = mutableStateOf("")
+    private var mNewTaskName: MutableState<String> = mutableStateOf("")
+    private var mNewTaskDescription: MutableState<String> = mutableStateOf("")
     var mIsOkButtonEnable: MutableState<Boolean> = mutableStateOf(false)
-    var mNewTaskId : MutableState<Int> = mutableStateOf(0)
+    var mNewTaskId: MutableState<Int> = mutableStateOf(0)
 
+    fun onStart() { Log.i("TAG", "onStart: ") }
+
+    fun onStop() = resetStates()
 
     fun dispatchEvent(addAction: AddAction) {
         when (addAction) {
             is AddActions.OnDatePickerIconClickedOnDateSelected ->
                 updateSelectedDeadline(addAction)
+
             is AddActions.OnAddCreated ->
                 getAllCategories()
-            is AddActions.OnAddScreenImportanceSelected -> {
+
+            is AddActions.OnAddScreenImportanceSelected ->
                 mNewTaskImportance.value = addAction.importance
-            }
+
             is AddActions.OnAddScreenCategorySelected -> {
                 mNewTaskCategory.value = addAction.category
                 mIsOkButtonEnable.value = isEnable()
             }
+
             is AddActions.AddScreenOnNameChange -> {
                 mNewTaskName.value = addAction.name
                 mIsOkButtonEnable.value = isEnable()
             }
+
             is AddActions.AddScreenOnDescriptionChange -> {
                 mNewTaskDescription.value = addAction.description
                 mIsOkButtonEnable.value = isEnable()
             }
-            is AddActions.AddScreenAddNewItemOnOkButtonClicked -> {
-                viewModelScope.launch {
-                    mGetAllTasksInteractor.allTasksFlow.collect {
-                        mNewTaskId.value = it.size + 1
-                    }
-                }
-                viewModelScope.launch {
-                    try {
-                        mAddNewTaskInteractor.addNewTask(
-                            Task(
-                                id = mNewTaskId.value,
-                                categoryId = mAllCategories.value.filter {
-                                    it.name == mNewTaskCategory.value
-                                }[FIRST_ELEMENT].id,
-                                close = null,
-                                creation = Calendar.getInstance().time,
-                                importance = 0,
-                                deadLine = getSelectedDeadLineOrNull(),
-                                description = mNewTaskDescription.value,
-                                name = mNewTaskName.value,
-                                start = null
-                            )
-                        )
-                        addAction.navActionManager.navigate(NavObjects.Home)
-                    }catch (e:Exception){
-                        Log.e(this::class.java.simpleName, "dispatchEvent: ",e )
-                    }
 
-                }
+            is AddActions.AddScreenAddNewItemOnOkButtonClicked -> {
+                updateNewTaskId()
+                addNewTask()
             }
 
+            is AddActions.NavigateToHomeOnAddTaskComplete ->
+                addAction.navActionManager.navigate(NavObjects.Home)
+
+        }
+    }
+
+    private fun addNewTask() {
+        viewModelScope.launch {
+            try {
+                mAddNewTaskInteractor.addNewTask(
+                    Task(
+                        id = mNewTaskId.value,
+                        categoryId = mAllCategories.value.filter {
+                            it.name == mNewTaskCategory.value
+                        }[FIRST_ELEMENT].id,
+                        close = null,
+                        creation = Calendar.getInstance().time,
+                        importance = 0,
+                        deadLine = getSelectedDeadLineOrNull(),
+                        description = mNewTaskDescription.value,
+                        name = mNewTaskName.value,
+                        start = null
+                    )
+                )
+                completionState.value = CompletionState.ON_COMPLETE
+            } catch (e: Exception) {
+                Log.e(this::class.java.simpleName, "dispatchEvent: ", e)
+                completionState.value = CompletionState.ON_ERROR
+
+            }
+        }
+    }
+
+    var completionState: MutableState<CompletionState> =
+        mutableStateOf(CompletionState.ON_START)
+
+    enum class CompletionState {
+        ON_START,
+        ON_COMPLETE,
+        ON_ERROR
+    }
+
+    private fun updateNewTaskId() {
+        viewModelScope.launch {
+            mGetAllTasksInteractor.allTasksFlow.collect {
+                mNewTaskId.value = it.size + 1
+            }
         }
     }
 
@@ -121,5 +149,15 @@ class AddViewModel @Inject constructor(
             ).parse(mNewTaskSelectedDeadLine.value)
         else null
 
-
+    private fun resetStates() {
+        completionState.value = CompletionState.ON_START
+        mNewTaskSelectedDeadLine.value = ""
+        mAllCategories.value = mutableListOf()
+        mNewTaskImportance.value = ""
+        mNewTaskCategory.value = ""
+        mNewTaskName.value = ""
+        mNewTaskDescription.value = ""
+        mIsOkButtonEnable.value = false
+        mNewTaskId.value = 0
+    }
 }

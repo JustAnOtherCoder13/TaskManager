@@ -4,19 +4,21 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.*
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
-import com.picone.core.domain.navAction.NavActionManager
-import com.picone.core.domain.navAction.NavObjects
 import com.picone.appcompose.ui.main.screen.add.AddScreen
 import com.picone.appcompose.ui.main.screen.detail.DetailScreen
 import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
 import com.picone.appcompose.ui.main.screen.home.homeTask.screens.HomeTaskScreen
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Task
+import com.picone.core.domain.navAction.NavActionManager
+import com.picone.core.domain.navAction.NavObjects
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.KEY_TASK
 import com.picone.core.util.Constants.PROJECT
@@ -32,7 +34,6 @@ import java.util.*
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-//TODO found how to scope vm on screen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,7 +50,11 @@ class MainActivity : AppCompatActivity() {
                     composable(NavObjects.Home.getRoute()) {
                         val homeViewModel: HomeViewModel by viewModels()
 
-                        homeViewModel.dispatchEvent(HomeActions.OnHomeCreated)
+                        DisposableEffect(key1 = homeViewModel) {
+                            homeViewModel.onStart(NavObjects.Home.destination)
+                            onDispose { homeViewModel.onStop() }
+                        }
+
                         HomeTaskScreen(
                             state_allTasks = homeViewModel.mAllTasksState.value,
                             event_taskRecyclerViewOnTaskSelected = { selectedTask ->
@@ -83,7 +88,11 @@ class MainActivity : AppCompatActivity() {
                     composable(NavObjects.Project.getRoute()) {
                         val homeViewModel: HomeViewModel by viewModels()
 
-                        homeViewModel.dispatchEvent(HomeActions.OnProjectCreated)
+                        DisposableEffect(key1 = homeViewModel) {
+                            homeViewModel.onStart(NavObjects.Project.destination)
+                            onDispose { homeViewModel.onStop() }
+                        }
+
                         HomeProjectScreen(
                             state_allProjects = homeViewModel.mAllProjectState.value,
                             state_topBarAddMenuItems = topBarrAddMenuItems(),
@@ -111,12 +120,14 @@ class MainActivity : AppCompatActivity() {
                         arguments = NavObjects.Detail.arguments
                     ) { backStackEntry ->
                         val detailViewModel: DetailViewModel by viewModels()
+                        val selectedTask =
+                            getTaskOrNull(backStackEntry = backStackEntry) ?: UnknownTask
 
-                        detailViewModel.dispatchEvent(
-                            DetailActions.OnDetailCreated(
-                                getTaskOrNull(backStackEntry) ?: UnknownTask
-                            )
-                        )
+                        DisposableEffect(key1 = detailViewModel) {
+                            detailViewModel.onStart(selectedTask = selectedTask)
+                            onDispose { detailViewModel.onStop() }
+                        }
+
                         DetailScreen(
                             state_Task = getTaskOrNull(backStackEntry) ?: UnknownTask,
                             state_allUnderStainsForTask = detailViewModel.mAllUnderStainsForTaskState.value,
@@ -164,6 +175,11 @@ class MainActivity : AppCompatActivity() {
                     composable(NavObjects.Add.getRoute())
                     {
                         val addViewModel: AddViewModel by viewModels()
+
+                        DisposableEffect(key1 = addViewModel) {
+                            addViewModel.onStart()
+                            onDispose { addViewModel.onStop() }
+                        }
 
                         addViewModel.dispatchEvent(AddActions.OnAddCreated)
                         AddScreen(
@@ -216,6 +232,12 @@ class MainActivity : AppCompatActivity() {
                                         navActionManager = navActionManager
                                     )
                                 )
+                                if (addViewModel.completionState.value == AddViewModel.CompletionState.ON_COMPLETE)
+                                    addViewModel.dispatchEvent(
+                                        AddActions.NavigateToHomeOnAddTaskComplete(
+                                            navActionManager = navActionManager
+                                        )
+                                    )
                             }
                         )
                     }
@@ -250,4 +272,3 @@ class MainActivity : AppCompatActivity() {
         picker.addOnDismissListener {}
     }
 }
-

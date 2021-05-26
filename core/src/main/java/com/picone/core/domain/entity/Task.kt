@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.picone.core.util.Constants.TASK_TABLE_NAME
-import com.picone.core.util.Constants.UNKNOWN
 import java.util.*
 
 @Entity(

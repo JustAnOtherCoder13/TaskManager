@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
-import com.picone.core.util.Constants
 import com.picone.core.util.Constants.UNDER_STAIN_TABLE_NAME
 import java.util.*
 

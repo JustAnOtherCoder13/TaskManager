@@ -1,6 +1,5 @@
 package com.picone.core.compose
 
-import com.picone.core.domain.navAction.NavAction
 import com.picone.core.domain.navAction.NavActionManager
 
 interface UiAction

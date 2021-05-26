@@ -17,9 +17,9 @@ import com.picone.core.domain.interactor.project.DeleteProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.project.UpdateProjectInteractor
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
-import com.picone.core.domain.interactor.task.UpdateTaskInteractor
-import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.DeleteTaskInteractor
+import com.picone.core.domain.interactor.task.GetAllTasksInteractor
+import com.picone.core.domain.interactor.task.UpdateTaskInteractor
 import com.picone.core.domain.interactor.underStain.*
 import dagger.Module
 import dagger.Provides

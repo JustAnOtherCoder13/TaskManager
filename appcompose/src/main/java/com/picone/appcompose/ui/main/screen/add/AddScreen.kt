@@ -19,7 +19,6 @@ import com.picone.appcompose.ui.main.baseComponent.BaseSpinner
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.util.Constants.FIRST_ELEMENT
-import com.picone.viewmodels.BaseViewModel
 
 
 @Composable
