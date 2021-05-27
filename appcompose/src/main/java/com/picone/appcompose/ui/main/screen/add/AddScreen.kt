@@ -54,7 +54,7 @@ fun AddScreen(
         item {
             AddScreenHeader(
                 state_addScreenCategoryDropDownMenuItemList = categoriesToStringList,
-                state_addScreenIsDatePickerClickableIconVisible = true,
+                state_addScreenIsDatePickerClickableIconVisible = state_addScreenIsDatePickerClickableIconVisible,
                 state_addScreenNullableCategoryPreselectedItem =categoryStr,
                 state_addScreenDeadlineSelectedDate = state_addScreenDeadlineSelectedDate,
                 event_onAddScreenImportanceSelected = event_onAddScreenImportanceSelected,

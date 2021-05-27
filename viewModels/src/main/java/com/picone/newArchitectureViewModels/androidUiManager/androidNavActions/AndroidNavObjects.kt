@@ -1,4 +1,4 @@
-package com.picone.viewModels.androidUiManager.androidNavActions
+package com.picone.newArchitectureViewModels.androidUiManager.androidNavActions
 
 import androidx.navigation.NavType
 import androidx.navigation.compose.NamedNavArgument

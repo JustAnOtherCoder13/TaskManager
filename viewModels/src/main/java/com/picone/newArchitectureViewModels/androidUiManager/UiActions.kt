@@ -1,6 +1,6 @@
-package com.picone.viewModels.androidUiManager
+package com.picone.newArchitectureViewModels.androidUiManager
 
-import com.picone.viewModels.androidUiManager.androidNavActions.AndroidNavActionManager
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavActionManager
 
 interface UiAction
 interface HomeAction : UiAction

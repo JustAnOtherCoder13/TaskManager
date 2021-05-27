@@ -1,8 +1,8 @@
-package com.picone.viewModels.androidUiManager.androidActions
+package com.picone.newArchitectureViewModels.androidUiManager.androidActions
 
-import com.picone.viewModels.androidUiManager.AddAction
-import com.picone.viewModels.androidUiManager.AddNavAction
-import com.picone.viewModels.androidUiManager.androidNavActions.AndroidNavActionManager
+import com.picone.newArchitectureViewModels.androidUiManager.AddAction
+import com.picone.newArchitectureViewModels.androidUiManager.AddNavAction
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavActionManager
 
 object AddActions : AddAction {
 
@@ -12,8 +12,10 @@ object AddActions : AddAction {
     data class OnAddScreenCategorySelected(val category: String) : AddAction
     data class AddScreenOnNameChange(val name: String) : AddAction
     data class AddScreenOnDescriptionChange(val description: String) : AddAction
-    object AddScreenAddNewItemOnOkButtonClicked : AddAction
+    data class AddScreenAddNewItemOnOkButtonClicked(val selectedItemType : String) : AddAction
     data class NavigateToHomeOnAddTaskComplete(override val androidNavActionManager: AndroidNavActionManager):
+        AddNavAction
+    data class NavigateToProjectOnAddProjectComplete(override val androidNavActionManager: AndroidNavActionManager):
         AddNavAction
 
 }

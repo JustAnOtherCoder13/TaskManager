@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.picone.appcompose.R
-import com.picone.viewModels.androidUiManager.androidNavActions.AndroidNavObjects
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 
 @Composable
 fun TaskManagerTopAppBar(

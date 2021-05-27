@@ -1,6 +1,6 @@
-package com.picone.viewModels.androidUiManager.androidActions
+package com.picone.newArchitectureViewModels.androidUiManager.androidActions
 
-import com.picone.viewModels.androidUiManager.DetailAction
+import com.picone.newArchitectureViewModels.androidUiManager.DetailAction
 import com.picone.core.domain.entity.Task
 
 

@@ -1,5 +1,6 @@
-package com.picone.viewModels.androidUiManager.androidNavActions
+package com.picone.newArchitectureViewModels.androidUiManager.androidNavActions
 
+import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.navigate
@@ -27,7 +28,7 @@ interface AndroidNavAction {
     }
 
     fun getRoute(): String =
-        if (KEY.trim().isNotEmpty()) "${destination}/{${Constants.KEY_TASK}}"
+        if (KEY.trim().isNotEmpty()) "${destination}/{${KEY}}"
          else destination
 
 }

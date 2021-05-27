@@ -17,18 +17,17 @@ import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
 import com.picone.appcompose.ui.main.screen.home.homeTask.screens.HomeTaskScreen
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Task
-import com.picone.viewModels.androidUiManager.androidNavActions.AndroidNavActionManager
-import com.picone.viewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import com.picone.core.util.Constants.CATEGORY
-import com.picone.core.util.Constants.KEY_ITEM
 import com.picone.core.util.Constants.KEY_TASK
 import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
 import com.picone.core.util.Constants.UnknownTask
-import com.picone.viewModels.*
-import com.picone.viewModels.androidUiManager.androidActions.AddActions
-import com.picone.viewModels.androidUiManager.androidActions.DetailActions
-import com.picone.viewModels.androidUiManager.androidActions.HomeActions
+import com.picone.newArchitectureViewModels.*
+import com.picone.newArchitectureViewModels.androidUiManager.androidActions.AddActions
+import com.picone.newArchitectureViewModels.androidUiManager.androidActions.DetailActions
+import com.picone.newArchitectureViewModels.androidUiManager.androidActions.HomeActions
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavActionManager
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 import java.text.SimpleDateFormat
@@ -40,11 +39,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val addViewModel: AddViewModel by viewModels()
+        val homeViewModel: HomeViewModel by viewModels()
+        val detailViewModel: DetailViewModel by viewModels()
 
         setContent {
             TaskManagerTheme {
                 val navController = rememberNavController()
-                val navActionManager = AndroidNavActionManager(navController)
+                val androidNavActionManager = AndroidNavActionManager(navController)
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 NavHost(
@@ -52,7 +54,6 @@ class MainActivity : AppCompatActivity() {
                     startDestination = AndroidNavObjects.Home.destination
                 ) {
                     composable(AndroidNavObjects.Home.getRoute()) {
-                        val homeViewModel: HomeViewModel by viewModels()
 
                         DisposableEffect(key1 = homeViewModel) {
                             homeViewModel.onStart(AndroidNavObjects.Home.destination)
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                             event_taskRecyclerViewOnTaskSelected = { selectedTask ->
                                 homeViewModel.dispatchEvent(
                                     HomeActions.TaskRecyclerViewOnTaskSelected(
-                                        androidNavActionManager = navActionManager,
+                                        androidNavActionManager = androidNavActionManager,
                                         selectedTask = selectedTask
                                     )
                                 )
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                             event_topBarOnMenuItemSelected = { selectedAddItem ->
                                 homeViewModel.dispatchEvent(
                                     HomeActions.TopBarOnMenuItemSelected(
-                                        androidNavActionManager = navActionManager,
+                                        androidNavActionManager = androidNavActionManager,
                                         selectedItem = selectedAddItem
                                     )
                                 )
@@ -83,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                             event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
                                 homeViewModel.dispatchEvent(
                                     HomeActions.BottomNavBarOnNavItemSelected(
-                                        androidNavActionManager = navActionManager,
+                                        androidNavActionManager = androidNavActionManager,
                                         selectedNavItem = selectedNavItem
                                     )
                                 )
@@ -91,7 +92,6 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                     composable(AndroidNavObjects.Project.getRoute()) {
-                        val homeViewModel: HomeViewModel by viewModels()
 
                         DisposableEffect(key1 = homeViewModel) {
                             homeViewModel.onStart(AndroidNavObjects.Project.destination)
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
                             event_topBarOnMenuItemSelected = { selectedAddItem ->
                                 homeViewModel.dispatchEvent(
                                     HomeActions.TopBarOnMenuItemSelected(
-                                        androidNavActionManager = navActionManager,
+                                        androidNavActionManager = androidNavActionManager,
                                         selectedItem = selectedAddItem
                                     )
                                 )
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                             event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
                                 homeViewModel.dispatchEvent(
                                     HomeActions.BottomNavBarOnNavItemSelected(
-                                        androidNavActionManager = navActionManager,
+                                        androidNavActionManager = androidNavActionManager,
                                         selectedNavItem = selectedNavItem
                                     )
                                 )
@@ -124,7 +124,6 @@ class MainActivity : AppCompatActivity() {
                         route = AndroidNavObjects.Detail.getRoute(),
                         arguments = AndroidNavObjects.Detail.arguments
                     ) { backStackEntry ->
-                        val detailViewModel: DetailViewModel by viewModels()
                         val selectedTask = getTaskOrNull(backStackEntry = backStackEntry) ?: UnknownTask
 
                         DisposableEffect(key1 = detailViewModel) {
@@ -180,22 +179,23 @@ class MainActivity : AppCompatActivity() {
                         route = AndroidNavObjects.Add.getRoute(),
                         arguments = AndroidNavObjects.Add.arguments
                         )
-                    { navBackStackEntry ->
-                        val addViewModel: AddViewModel by viewModels()
-                        val selectedItem = navBackStackEntry.arguments?.getString(KEY_ITEM)
-
+                    { backStackEntry ->
+                        val selectedItemType = backStackEntry.arguments?.getString(AndroidNavObjects.Add.KEY)?:""
                         DisposableEffect(key1 = addViewModel) {
                             addViewModel.onStart()
-                            onDispose { addViewModel.onStop() }
+                            onDispose {
+                                addViewModel.completionState.removeObservers(this@MainActivity)
+                                addViewModel.onStop() }
                         }
 
-                        addViewModel.dispatchEvent(AddActions.OnAddCreated)
+                        ObserveCompletionStateToDoNavAction(addViewModel, androidNavActionManager)
+
                         AddScreen(
                             state_nullableProjectToPassInTask = null,
                             state_addScreenDeadlineSelectedDate = addViewModel.mNewTaskSelectedDeadLine.value,
                             state_addScreenAllCategories = addViewModel.mAllCategories.value,
                             state_isOkButtonEnabled = addViewModel.mIsOkButtonEnable.value,
-                            state_addScreenIsDatePickerClickableIconVisible = selectedItem.equals(TASK),
+                            state_addScreenIsDatePickerClickableIconVisible = selectedItemType == TASK,
                             event_onAddScreenImportanceSelected = { importance ->
                                 addViewModel.dispatchEvent(
                                     AddActions.OnAddScreenImportanceSelected(
@@ -237,20 +237,37 @@ class MainActivity : AppCompatActivity() {
                             },
                             event_addScreenAddNewItemOnOkButtonClicked = {
                                 addViewModel.dispatchEvent(
-                                    addAction = AddActions.AddScreenAddNewItemOnOkButtonClicked
+                                    addAction = AddActions.AddScreenAddNewItemOnOkButtonClicked(selectedItemType)
                                 )
-                                if (addViewModel.completionState.value == AddViewModel.CompletionState.ON_COMPLETE)
-                                    addViewModel.dispatchEvent(
-                                        AddActions.NavigateToHomeOnAddTaskComplete(
-                                            androidNavActionManager = navActionManager
-                                        )
-                                    )
                             }
                         )
                     }
 
                 }
 
+            }
+        }
+    }
+
+    @Composable
+    private fun ObserveCompletionStateToDoNavAction(
+        addViewModel: AddViewModel,
+        androidNavActionManager: AndroidNavActionManager
+    ) {
+        addViewModel.completionState.observe(this@MainActivity) {
+            when (it) {
+                BaseViewModel.CompletionState.ADD_TASK_ON_COMPLETE -> addViewModel.dispatchEvent(
+                    AddActions.NavigateToHomeOnAddTaskComplete(
+                        androidNavActionManager = androidNavActionManager
+                    )
+                )
+                BaseViewModel.CompletionState.ADD_PROJECT_ON_COMPLETE -> addViewModel.dispatchEvent(
+                    AddActions.NavigateToProjectOnAddProjectComplete(
+                        androidNavActionManager = androidNavActionManager
+                    )
+                )
+                else -> {
+                }
             }
         }
     }

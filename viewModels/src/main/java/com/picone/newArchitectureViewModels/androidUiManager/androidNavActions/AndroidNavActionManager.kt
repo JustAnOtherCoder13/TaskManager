@@ -1,5 +1,6 @@
-package com.picone.viewModels.androidUiManager.androidNavActions
+package com.picone.newArchitectureViewModels.androidUiManager.androidNavActions
 
+import android.util.Log
 import androidx.navigation.NavController
 import com.google.gson.Gson
 
@@ -9,16 +10,15 @@ class AndroidNavActionManager(private val navController: NavController) {
         when(androidNavAction){
             AndroidNavObjects.Home -> AndroidNavObjects.Home.doNavAction(navController)
             AndroidNavObjects.Project -> AndroidNavObjects.Project.doNavAction(navController)
-            AndroidNavObjects.Add -> AndroidNavObjects.Add.doNavAction(navController)
             else -> throw Exception("Unknown nav action in ${this.javaClass.simpleName}")
         }
     }
 
     fun navigate(androidNavAction : AndroidNavAction, argument : String){
         when(androidNavAction){
-            AndroidNavObjects.Home -> AndroidNavObjects.Home.doNavAction(navController)
-            AndroidNavObjects.Project -> AndroidNavObjects.Project.doNavAction(navController)
-            AndroidNavObjects.Add -> AndroidNavObjects.Add.doNavAction(navController)
+            AndroidNavObjects.Add -> {
+                AndroidNavObjects.Add.doNavAction(navController, argument)
+            }
             else -> throw Exception("Unknown nav action in ${this.javaClass.simpleName}")
         }
     }
