@@ -1,32 +1,33 @@
-package com.picone.core.domain.navAction
+package com.picone.viewModels.androidUiManager.androidNavActions
 
 import androidx.navigation.NavType
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.navArgument
 import com.picone.core.util.Constants
+import com.picone.core.util.Constants.KEY_ITEM
 
-object NavObjects {
+object AndroidNavObjects {
 
-    val Home = object : NavAction {
+    val Home = object : AndroidNavAction {
         override val destination: String = "home"
         override val arguments: List<NamedNavArgument> = emptyList()
     }
-    val Project = object : NavAction {
+    val Project = object : AndroidNavAction {
         override val arguments: List<NamedNavArgument> = emptyList()
         override val destination: String = "project"
     }
 
-    val Detail = object : NavAction {
+    val Detail = object : AndroidNavAction {
         override val KEY: String = Constants.KEY_TASK
         override val arguments: List<NamedNavArgument> =
             listOf(navArgument(KEY) { type = NavType.StringType })
         override val destination: String = "detail"
     }
 
-    val Add = object : NavAction {
-        //override val KEY: String = KEY_ITEM
+    val Add = object : AndroidNavAction {
+        override val KEY: String = KEY_ITEM
         override val arguments: List<NamedNavArgument> =
-            emptyList() //listOf(navArgument(KEY){type = NavType.StringType})
+            listOf(navArgument(KEY){type = NavType.StringType})
         override val destination: String = "add"
     }
 }

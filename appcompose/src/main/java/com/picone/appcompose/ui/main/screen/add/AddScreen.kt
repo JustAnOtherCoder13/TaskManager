@@ -25,6 +25,7 @@ import com.picone.core.util.Constants.FIRST_ELEMENT
 fun AddScreen(
     state_nullableProjectToPassInTask: Project?,
     state_addScreenDeadlineSelectedDate: String,
+    state_addScreenIsDatePickerClickableIconVisible:Boolean,
     event_onAddScreenImportanceSelected: (String) -> Unit,
     event_onAddScreenCategorySelected: (String) -> Unit,
     state_addScreenAllCategories: List<Category>,

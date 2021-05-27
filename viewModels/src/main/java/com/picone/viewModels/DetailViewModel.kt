@@ -1,16 +1,17 @@
-package com.picone.newArchitectureViewModels
+package com.picone.viewModels
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picone.core.compose.DetailAction
+import com.picone.viewModels.androidUiManager.DetailAction
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
 import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainsInteractor
+import com.picone.viewModels.androidUiManager.androidActions.DetailActions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

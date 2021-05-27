@@ -1,19 +1,20 @@
-package com.picone.newArchitectureViewModels
+package com.picone.viewModels
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picone.core.compose.AddAction
+import com.picone.viewModels.androidUiManager.AddAction
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.interactor.category.GetAllCategoriesInteractor
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
-import com.picone.core.domain.navAction.NavObjects
+import com.picone.viewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.FIRST_ELEMENT
+import com.picone.viewModels.androidUiManager.androidActions.AddActions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -74,7 +75,7 @@ class AddViewModel @Inject constructor(
             }
 
             is AddActions.NavigateToHomeOnAddTaskComplete ->
-                addAction.navActionManager.navigate(NavObjects.Home)
+                addAction.androidNavActionManager.navigate(AndroidNavObjects.Home)
 
         }
     }

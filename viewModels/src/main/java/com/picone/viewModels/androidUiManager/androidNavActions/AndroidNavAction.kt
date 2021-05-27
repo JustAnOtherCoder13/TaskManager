@@ -1,11 +1,11 @@
-package com.picone.core.domain.navAction
+package com.picone.viewModels.androidUiManager.androidNavActions
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.navigate
 import com.picone.core.util.Constants
 
-interface NavAction {
+interface AndroidNavAction {
 
     val destination: String
     val arguments: List<NamedNavArgument>
