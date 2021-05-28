@@ -55,26 +55,25 @@ fun BaseExpandableItem(
 fun BaseExpandableItemTitle(
     itemName: String,
     optionIcon: @Composable () -> Unit,
-    onTaskSelected: (Boolean) -> Unit
+    onTaskSelected: () -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .padding(5.dp)
-            .fillMaxWidth()
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .clickable(onClick = { onTaskSelected(true) })
+                .clickable(onClick = onTaskSelected )
                 .weight(7f)
         ) {
             Text(
                 text = itemName,
                 style = MaterialTheme.typography.subtitle1,
             )
-            optionIcon()
         }
+        optionIcon()
     }
 }
 
@@ -224,13 +223,17 @@ fun BaseSpinner(
     state_BaseSpinnerItemList: List<String>,
     state_baseSpinnerHint: String,
     state_nullablePreselectedItem: String?,
-    state_nullableErrorItem : String?,
+    state_nullableErrorItem: String?,
     event_onItemSelected: (item: String) -> Unit
 ) {
+    //todo review here to pass category
     var innerStateIsExpanded by remember { mutableStateOf(false) }
-    var innerStateSelectedItem by remember { mutableStateOf(state_nullablePreselectedItem ?: state_baseSpinnerHint) }
+    var innerStateSelectedItem by remember {
+        mutableStateOf(
+            state_nullablePreselectedItem ?: state_baseSpinnerHint
+        )
+    }
 
-    event_onItemSelected(innerStateSelectedItem)
 
     Row(modifier = Modifier
         .animateContentSize()
@@ -241,7 +244,8 @@ fun BaseSpinner(
         .border(
 
             if (state_nullableErrorItem != null
-                && innerStateSelectedItem == state_nullableErrorItem) {
+                && innerStateSelectedItem == state_nullableErrorItem
+            ) {
                 BorderStroke(2.dp, MaterialTheme.colors.error)
             } else BorderStroke(0.dp, Color.Transparent)
         ),
@@ -268,7 +272,7 @@ fun BaseSpinner(
             state_BaseSpinnerItemList.forEachIndexed { _, item ->
                 DropdownMenuItem(onClick = {
                     innerStateIsExpanded = false
-                    innerStateSelectedItem = item
+                    event_onItemSelected(item)
                 }) {
                     Text(text = item)
                 }
@@ -357,42 +361,45 @@ private fun setBorderStrokeOnEmpty(state_text: String) = if (state_text
 )
 else BorderStroke(0.dp, Color.Transparent)
 
+
 @Composable
-fun <T> PopUpMenuButton(
+fun <T> PopUpMenuIcon(
     state_menuItems: List<String>,
-    state_icon : T,
+    state_icon: T,
     event_onMenuItemSelected: (item: String) -> Unit,
 ) {
     var isPopUpMenuExpanded by remember { mutableStateOf(false) }
 
-    val iconToPass : @Composable ()->Unit = {
-        when (state_icon) {
+    @Composable
+    fun <T> iconToPass(state_icon: T, event_OnClick : ()-> Unit)  {
+         when (state_icon) {
             is ImageVector -> Icon(
                 imageVector = state_icon,
                 contentDescription = null,
+                modifier = Modifier
+                    .clickable { event_OnClick() }
+                    .fillMaxHeight()
+                    .padding(horizontal = 5.dp)
             )
-            is ImageBitmap ->Icon(
+            is ImageBitmap -> Icon(
                 bitmap = state_icon,
                 contentDescription = null,
+                modifier = Modifier.clickable { event_OnClick() }
             )
             is Painter -> Icon(
                 painter = state_icon,
                 contentDescription = null,
+                modifier = Modifier.clickable { event_OnClick() }
             )
             else -> throw Exception("pass only Painter, ImageVector or ImageBitmap for icon value")
         }
     }
-    Button(
-        onClick = { isPopUpMenuExpanded=true },
-        shape = CircleShape,
-        elevation = null,
-        colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
-    ) {
         Row(
             horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxHeight()
         ) {
-            if (state_icon is ImageVector)
-                iconToPass()
+            iconToPass(state_icon = state_icon ,event_OnClick = { isPopUpMenuExpanded = true })
             BaseDropDownMenu(
                 isPopUpMenuExpanded,
                 state_menuItems = state_menuItems,
@@ -403,9 +410,9 @@ fun <T> PopUpMenuButton(
                     }
                 },
             )
-        }
     }
 }
+
 @Composable
 fun BaseDropDownMenu(
     state_isPopUpMenuExpanded: Boolean,

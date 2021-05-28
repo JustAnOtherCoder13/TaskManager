@@ -17,8 +17,10 @@ import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.FIRST_ELEMENT
+import com.picone.core.util.Constants.IMPORTANCE_LIST
 import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
+import com.picone.core.util.Constants.UnknownTask
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.AddActions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -37,19 +39,21 @@ class AddViewModel @Inject constructor(
     private val mAddNewProjectInteractor: AddNewProjectInteractor
 ) : BaseViewModel() {
 
+
     var mNewTaskSelectedDeadLine: MutableState<String> = mutableStateOf("")
     var mAllCategories: MutableState<List<Category>> = mutableStateOf(mutableListOf())
-    private var mNewTaskImportance: MutableState<String> = mutableStateOf("")
-    private var mNewItemCategory: MutableState<String> = mutableStateOf("")
-    private var mNewItemName: MutableState<String> = mutableStateOf("")
-    private var mNewItemDescription: MutableState<String> = mutableStateOf("")
+    var mNewTaskImportance: MutableState<String?> = mutableStateOf(null)
+    var mNewItemCategory: MutableState<String?> = mutableStateOf(null)
+    var mNewItemName: MutableState<String> = mutableStateOf("")
+    var mNewItemDescription: MutableState<String> = mutableStateOf("")
     var mIsOkButtonEnable: MutableState<Boolean> = mutableStateOf(false)
     var mNewTaskId: MutableState<Int> = mutableStateOf(0)
     var mNewProjectId: MutableState<Int> = mutableStateOf(0)
-    var completionState: MutableLiveData<CompletionState> = MutableLiveData(CompletionState.ON_START)
+    var completionState: MutableLiveData<CompletionState> =
+        MutableLiveData(CompletionState.ON_START)
 
-    fun onStart() {
-        dispatchEvent(AddActions.OnAddCreated)
+    fun onStart(selectedTask: Task?) {
+        getAllCategories(selectedTask)
     }
 
     fun onStop() = resetStates()
@@ -59,8 +63,9 @@ class AddViewModel @Inject constructor(
             is AddActions.OnDatePickerIconClickedOnDateSelected ->
                 updateSelectedDeadline(addAction)
 
-            is AddActions.OnAddCreated ->
-                getAllCategories()
+            is AddActions.OnAddCreated -> {
+                if (addAction.selectedTask != null && addAction.selectedTask.id != UnknownTask.id) updateUiValue(addAction.selectedTask)
+            }
 
             is AddActions.OnAddScreenImportanceSelected ->
                 mNewTaskImportance.value = addAction.importance
@@ -102,6 +107,19 @@ class AddViewModel @Inject constructor(
         }
     }
 
+    private fun updateUiValue(selectedTask: Task) {
+        Log.i("TAG", "updateUiValue: "+mAllCategories.value.filter { selectedTask.categoryId == it.id }[FIRST_ELEMENT].name)
+        mNewTaskSelectedDeadLine.value =
+            if (selectedTask.deadLine != null) {
+                SimpleDateFormat("dd/MM/yyy", Locale.FRANCE).format(selectedTask.deadLine!!)
+            } else ""
+        mNewTaskImportance.value = IMPORTANCE_LIST[selectedTask.importance]
+        mNewItemCategory.value = mAllCategories.value.filter { selectedTask.categoryId == it.id }[FIRST_ELEMENT].name ?: ""
+        mNewItemName.value = selectedTask.name
+        mNewItemDescription.value = selectedTask.description
+        mNewTaskId.value = selectedTask.id
+    }
+
     private fun addNewProject() {
         viewModelScope.launch {
             completionState.value = CompletionState.ON_LOADING
@@ -140,7 +158,7 @@ class AddViewModel @Inject constructor(
                         categoryId = getCategoryId(),
                         close = null,
                         creation = Calendar.getInstance().time,
-                        importance = 0,
+                        importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
                         deadLine = getSelectedDeadLineOrNull(),
                         description = mNewItemDescription.value,
                         name = mNewItemName.value,
@@ -167,10 +185,11 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    private fun getAllCategories() {
+    private fun getAllCategories(selectedTask: Task?) {
         viewModelScope.launch {
             mGetAllCategoriesInteractor.allCategoriesFlow.collect {
                 mAllCategories.value = it
+                dispatchEvent(AddActions.OnAddCreated(selectedTask))
             }
         }
     }

@@ -3,9 +3,9 @@ package com.picone.appcompose.ui.main.screen.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,6 +15,8 @@ import com.picone.appcompose.ui.SetProgressDrawable
 import com.picone.appcompose.ui.main.baseComponent.*
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
+import com.picone.core.util.Constants.DELETE
+import com.picone.core.util.Constants.EDIT
 
 
 @Composable
@@ -42,32 +44,37 @@ fun HomeScreen(
 
 @Composable
 fun TaskRecyclerView(
-    allTasks: List<Task>,
-    importance: String,
-    taskRecyclerViewOnTaskSelected: (item: Task) -> Unit,
-) {
+    state_allTasks: List<Task>,
+    state_importance: String,
+    event_taskRecyclerViewOnTaskSelected: (item: Task) -> Unit,
+    event_taskRecyclerViewOnMenuItemSelected:(String, task :Task)-> Unit
+    ) {
     BaseRecyclerView(
-        items = allTasks ,
-        tableHeaderView = { TaskImportanceSelector(importance = importance) }
-    ) { task ->
-        TaskExpandableItem(
-            task,
-            onTaskSelected = { selectedTask -> taskRecyclerViewOnTaskSelected(selectedTask) }
-        )
-    }
+        items = state_allTasks ,
+        tableHeaderView = { TaskImportanceSelector(importance = state_importance) },
+        itemView = { task ->
+            TaskExpandableItem(
+                task,
+                event_onTaskSelected = event_taskRecyclerViewOnTaskSelected,
+                event_onMenuItemSelected = event_taskRecyclerViewOnMenuItemSelected
+            )
+        }
+    )
 }
 
 @Composable
 fun TaskExpandableItem(
-    item: Task,
-    onTaskSelected: (item: Task) -> Unit
+    state_task : Task,
+    event_onTaskSelected : (item: Task) -> Unit,
+    event_onMenuItemSelected:(String, task :Task)-> Unit,
 ) {
     BaseExpandableItem(
-        itemDescription = item.description,
+        itemDescription = state_task.description,
         itemHeader = {
             ExpandableTaskHeader(
-                task = item,
-                onTaskSelected = { selectedTask -> onTaskSelected(selectedTask) }
+                state_task = state_task,
+                event_onTaskSelected = event_onTaskSelected,
+                event_onMenuItemSelected = event_onMenuItemSelected
             )
         }
     )
@@ -75,16 +82,27 @@ fun TaskExpandableItem(
 
 @Composable
 private fun ExpandableTaskHeader(
-    task: Task,
-    onTaskSelected: (item: Task) -> Unit,
+    state_task: Task,
+    event_onTaskSelected: (item: Task) -> Unit,
+    event_onMenuItemSelected:(String, task :Task)-> Unit,
 ) {
     BaseExpandableItemTitle(
-        itemName = task.name,
-        optionIcon = { SetProgressDrawable(start = task.start, close = task.close) },
-        onTaskSelected = { taskSelected -> onTaskSelected(task) }
+        itemName = state_task.name,
+        optionIcon = {ExpandableTaskHeaderOptionIcon(state_task,event_onMenuItemSelected = {
+            event_onMenuItemSelected(it,state_task)
+        })},
+        onTaskSelected = { event_onTaskSelected(state_task) }
     )
 }
 
+@Composable
+private fun ExpandableTaskHeaderOptionIcon(state_task: Task, event_onMenuItemSelected:(String)-> Unit){
+    Row() {
+        SetProgressDrawable(start = state_task.start, close = state_task.close)
+        PopUpMenuIcon(listOf(DELETE,EDIT),Icons.Default.MoreVert,event_onMenuItemSelected )
+
+    }
+}
 
 @Composable
 private fun TaskImportanceSelector(importance: String) {

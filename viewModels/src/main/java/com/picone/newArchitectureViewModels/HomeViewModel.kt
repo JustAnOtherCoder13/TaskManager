@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.picone.newArchitectureViewModels.androidUiManager.HomeAction
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
@@ -54,7 +55,8 @@ class HomeViewModel @Inject constructor(
                 if (homeAction.selectedItem != CATEGORY) {
                     homeAction.androidNavActionManager.navigate(
                         AndroidNavObjects.Add,
-                        homeAction.selectedItem
+                        homeAction.selectedItem,
+                        Gson().toJson(homeAction.selectedTask)
                     )
                 }
                 else Log.i("TAG", "dispatchEvent: category click")
@@ -62,8 +64,20 @@ class HomeViewModel @Inject constructor(
             is HomeActions.TaskRecyclerViewOnTaskSelected ->
                 homeAction.androidNavActionManager.navigate(
                     AndroidNavObjects.Detail,
-                    homeAction.selectedTask
+                    Gson().toJson(homeAction.selectedTask)
                 )
+
+            is HomeActions.OnDeleteTaskSelected ->{
+                deleteTask(homeAction.task)
+            }
+
+            is HomeActions.OnEditTaskSelected ->{
+                homeAction.androidNavActionManager.navigate(
+                    AndroidNavObjects.Add,
+                    homeAction.selectedItem,
+                    Gson().toJson(homeAction.task)
+                )
+            }
         }
     }
 
@@ -77,7 +91,10 @@ class HomeViewModel @Inject constructor(
     private fun getAllTasks() {
         viewModelScope.launch {
             mGetAllTasksInteractor.allTasksFlow
-                .collect { mAllTasksState.value = it.toMutableList() }
+                .collect {
+                    mAllTasksState.value = it.toMutableList()
+
+                }
         }
     }
 

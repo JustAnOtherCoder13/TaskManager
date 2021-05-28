@@ -21,7 +21,7 @@ fun TaskManagerTopAppBar(
         title = { Text(text = stringResource(R.string.app_name)) },
         backgroundColor = MaterialTheme.colors.primary,
         actions = {
-            PopUpMenuButton(
+            PopUpMenuIcon(
                 state_menuItems = state_topBarAddMenuItems,
                 state_icon = Icons.Rounded.AddCircle ,
                 event_onMenuItemSelected = event_topBarOnMenuItemSelected,

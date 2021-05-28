@@ -18,12 +18,16 @@ import com.picone.appcompose.ui.main.baseComponent.BaseEditText
 import com.picone.appcompose.ui.main.baseComponent.BaseSpinner
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
+import com.picone.core.domain.entity.Task
 import com.picone.core.util.Constants.FIRST_ELEMENT
+import com.picone.core.util.Constants.IMPORTANCE_LIST
+import com.picone.core.util.Constants.IMPORTANT
+import com.picone.core.util.Constants.NORMAL
+import com.picone.core.util.Constants.UNIMPORTANT
 
 
 @Composable
 fun AddScreen(
-    state_nullableProjectToPassInTask: Project?,
     state_addScreenDeadlineSelectedDate: String,
     state_addScreenIsDatePickerClickableIconVisible:Boolean,
     event_onAddScreenImportanceSelected: (String) -> Unit,
@@ -34,14 +38,14 @@ fun AddScreen(
     event_addScreenOnDescriptionChange : (description : String) -> Unit,
     event_addScreenAddNewItemOnOkButtonClicked : ()->Unit,
     event_onDatePickerIconClicked : () -> Unit,
+    state_name : String,
+    state_description : String,
+    state_category : String?,
+    state_importance : String?
 ) {
 
     val categoriesToStringList : MutableList<String> = mutableListOf()
 
-    val categoryStr: String? =
-        if (state_nullableProjectToPassInTask != null)
-            state_addScreenAllCategories.filter { category -> category.id == state_nullableProjectToPassInTask.categoryId }[FIRST_ELEMENT].name
-        else null
 
     state_addScreenAllCategories.forEachIndexed { _, category -> categoriesToStringList.add(category.name!!) }
 
@@ -55,19 +59,22 @@ fun AddScreen(
             AddScreenHeader(
                 state_addScreenCategoryDropDownMenuItemList = categoriesToStringList,
                 state_addScreenIsDatePickerClickableIconVisible = state_addScreenIsDatePickerClickableIconVisible,
-                state_addScreenNullableCategoryPreselectedItem =categoryStr,
+                state_addScreenNullableCategoryPreselectedItem =null,//todo replace
                 state_addScreenDeadlineSelectedDate = state_addScreenDeadlineSelectedDate,
                 event_onAddScreenImportanceSelected = event_onAddScreenImportanceSelected,
                 event_onAddScreenCategorySelected = event_onAddScreenCategorySelected,
-                event_onDatePickerIconClicked = event_onDatePickerIconClicked
+                event_onDatePickerIconClicked = event_onDatePickerIconClicked,
+                state_importance = state_importance,
+                state_category = state_category
             )
         }
         item { Spacer(modifier = Modifier.height(10.dp)) }
         item {
             Body(
-                state_nullableProjectToPassInTask = state_nullableProjectToPassInTask,
                 event_nameEditTextOnTextChange = event_addScreenOnNameChange,
-                event_descriptionEditTextOnTextChange = event_addScreenOnDescriptionChange
+                event_descriptionEditTextOnTextChange = event_addScreenOnDescriptionChange,
+                state_name = state_name,
+                state_description = state_description
             )
         }
 
@@ -100,19 +107,11 @@ private fun OkButton(
 
 @Composable
 private fun Body(
-    state_nullableProjectToPassInTask: Project?,
     event_nameEditTextOnTextChange: (String) -> Unit,
-    event_descriptionEditTextOnTextChange: (String) -> Unit
+    event_descriptionEditTextOnTextChange: (String) -> Unit,
+    state_name : String,
+    state_description : String
 ) {
-    var innerStateName by remember { mutableStateOf(state_nullableProjectToPassInTask?.name ?: "") }
-    var innerStateDescription by remember {
-        mutableStateOf(
-            state_nullableProjectToPassInTask?.description ?: ""
-        )
-    }
-
-    event_nameEditTextOnTextChange(innerStateName)
-    event_descriptionEditTextOnTextChange(innerStateDescription)
 
     Column(
         modifier = Modifier
@@ -123,14 +122,14 @@ private fun Body(
         BaseEditText(
             state_title = "Name",
             state_textColor = MaterialTheme.colors.onSecondary,
-            state_text = innerStateName,
-            event_baseEditTextOnTextChange = { innerStateName = it })
+            state_text = state_name,
+            event_baseEditTextOnTextChange = { event_nameEditTextOnTextChange(it) })
         Spacer(modifier = Modifier.height(10.dp))
         BaseEditText(
             state_title = "Description",
             state_textColor = MaterialTheme.colors.onSecondary,
-            state_text = innerStateDescription,
-            event_baseEditTextOnTextChange = { innerStateDescription = it }
+            state_text = state_description,
+            event_baseEditTextOnTextChange = { event_descriptionEditTextOnTextChange(it) }
         )
     }
 }
@@ -144,13 +143,9 @@ private fun AddScreenHeader(
     event_onAddScreenImportanceSelected: (String) -> Unit,
     event_onAddScreenCategorySelected: (String) -> Unit,
     event_onDatePickerIconClicked : () -> Unit,
+    state_importance : String?,
+    state_category : String?
 ) {
-    var innerStateImportance by remember { mutableStateOf("") }
-    var innerStateCategory by remember { mutableStateOf("") }
-
-    event_onAddScreenImportanceSelected(innerStateImportance)
-    event_onAddScreenCategorySelected(innerStateCategory)
-
     Row(
         modifier = Modifier
             .animateContentSize()
@@ -164,9 +159,9 @@ private fun AddScreenHeader(
         BaseSpinner(
             state_BaseSpinnerItemList = state_addScreenCategoryDropDownMenuItemList,
             state_baseSpinnerHint = "Category",
-            state_nullablePreselectedItem = state_addScreenNullableCategoryPreselectedItem,
+            state_nullablePreselectedItem = state_category,
             state_nullableErrorItem = "Category",
-            event_onItemSelected = { innerStateCategory = it }
+            event_onItemSelected = { event_onAddScreenCategorySelected(it)}
         )
 
         if (state_addScreenIsDatePickerClickableIconVisible) {
@@ -175,11 +170,11 @@ private fun AddScreenHeader(
                 event_onDatePickerIconClicked = event_onDatePickerIconClicked
             )
             BaseSpinner(
-                state_BaseSpinnerItemList = listOf("Unimportant", "Normal", "Important"),//todo pass with external list
+                state_BaseSpinnerItemList = IMPORTANCE_LIST,
                 state_baseSpinnerHint = "Importance",
-                state_nullablePreselectedItem = null,
+                state_nullablePreselectedItem = state_importance,
                 state_nullableErrorItem = null,
-                event_onItemSelected = { innerStateImportance = it }
+                event_onItemSelected = { event_onAddScreenImportanceSelected(it) }
             )
         }
     }

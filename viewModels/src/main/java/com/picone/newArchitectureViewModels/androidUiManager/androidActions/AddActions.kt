@@ -1,5 +1,6 @@
 package com.picone.newArchitectureViewModels.androidUiManager.androidActions
 
+import com.picone.core.domain.entity.Task
 import com.picone.newArchitectureViewModels.androidUiManager.AddAction
 import com.picone.newArchitectureViewModels.androidUiManager.AddNavAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavActionManager
@@ -7,7 +8,7 @@ import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.A
 object AddActions : AddAction {
 
     data class OnDatePickerIconClickedOnDateSelected(val selectedDate: String) : AddAction
-    object OnAddCreated : AddAction
+    data class OnAddCreated(val selectedTask : Task?) : AddAction
     data class OnAddScreenImportanceSelected(val importance: String) : AddAction
     data class OnAddScreenCategorySelected(val category: String) : AddAction
     data class AddScreenOnNameChange(val name: String) : AddAction

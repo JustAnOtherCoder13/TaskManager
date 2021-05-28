@@ -36,8 +36,19 @@ object Constants {
     const val TASK = "Task"
     const val PROJECT = "Project"
 
+    const val DELETE = "Delete"
+    const val EDIT = "Edit"
+
+
+    const val IMPORTANT = "Important"
+    const val NORMAL = "Normal"
+    const val UNIMPORTANT = "Unimportant"
+
+    val IMPORTANCE_LIST : List<String> = listOf(UNIMPORTANT,NORMAL,IMPORTANT)
+
     const val KEY_TASK = "task"
     const val KEY_ITEM = "item"
+    const val KEY_EDIT_TASK = "edit task"
 
     val UnknownTask = Task(0, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
 

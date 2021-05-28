@@ -27,6 +27,13 @@ interface AndroidNavAction {
         }
     }
 
+    fun doNavAction(navController: NavController, argument: String, secondArgument : String) {
+        navController.navigate("$destination/${argument}/${secondArgument}") {
+            popUpTo(navController.graph.startDestination) {}
+            launchSingleTop = true
+        }
+    }
+
     fun getRoute(): String =
         if (KEY.trim().isNotEmpty()) "${destination}/{${KEY}}"
          else destination
