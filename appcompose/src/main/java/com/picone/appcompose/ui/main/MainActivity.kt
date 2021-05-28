@@ -60,6 +60,10 @@ class MainActivity : AppCompatActivity() {
                     //------------------------------------------------------------------------HOME
                     composable(AndroidNavObjects.Home.getRoute()) {
 
+                        //todo filter with title
+                        //todo add pop up to create new category
+                        //todo show category in list
+
                         DisposableEffect(key1 = homeViewModel) {
                             homeViewModel.onStart(AndroidNavObjects.Home.destination)
                             onDispose { homeViewModel.onStop() }
@@ -116,6 +120,8 @@ class MainActivity : AppCompatActivity() {
 
                     //------------------------------------------------------------------------PROJECT
 
+                    //todo add edit, delete and pass project in task
+
                     composable(AndroidNavObjects.Project.getRoute()) {
 
                         DisposableEffect(key1 = homeViewModel) {
@@ -148,6 +154,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     //------------------------------------------------------------------------DETAIL
+                    //todo start, close , delete and edit underStain
 
                     composable(
                         route = AndroidNavObjects.Detail.getRoute(),
@@ -240,7 +247,7 @@ class MainActivity : AppCompatActivity() {
                             state_addScreenDeadlineSelectedDate = addViewModel.mNewTaskSelectedDeadLine.value,
                             state_addScreenAllCategories = addViewModel.mAllCategories.value,
                             state_isOkButtonEnabled = addViewModel.mIsOkButtonEnable.value,
-                            state_addScreenIsDatePickerClickableIconVisible = selectedItemType == TASK,
+                            state_addScreenIsDatePickerClickableIconVisible = selectedItemType == TASK || selectedTask?.id != UnknownTask.id,
                             event_onAddScreenImportanceSelected = { importance ->
                                 addViewModel.dispatchEvent(
                                     AddActions.OnAddScreenImportanceSelected(
@@ -305,6 +312,7 @@ class MainActivity : AppCompatActivity() {
         addViewModel.completionState.observe(this@MainActivity) {
             when (it) {
                 BaseViewModel.CompletionState.ADD_TASK_ON_COMPLETE -> addViewModel.dispatchEvent(
+                    //todo navigate to detail
                     AddActions.NavigateToHomeOnAddTaskComplete(
                         androidNavActionManager = androidNavActionManager
                     )
