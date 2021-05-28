@@ -14,6 +14,7 @@ import com.picone.core.domain.interactor.project.AddNewProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
+import com.picone.core.domain.interactor.task.UpdateTaskInteractor
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.FIRST_ELEMENT
@@ -36,7 +37,8 @@ class AddViewModel @Inject constructor(
     private val mAddNewTaskInteractor: AddNewTaskInteractor,
     private val mGetAllTasksInteractor: GetAllTasksInteractor,
     private val mGetAllProjectInteractor: GetAllProjectInteractor,
-    private val mAddNewProjectInteractor: AddNewProjectInteractor
+    private val mAddNewProjectInteractor: AddNewProjectInteractor,
+    private val mUpdateTaskInteractor: UpdateTaskInteractor
 ) : BaseViewModel() {
 
 
@@ -86,14 +88,39 @@ class AddViewModel @Inject constructor(
             }
 
             is AddActions.AddScreenAddNewItemOnOkButtonClicked -> {
-                when (addAction.selectedItemType) {
-                    TASK -> {
-                        updateNewTaskId()
-                        addNewTask()
+                if (addAction.editedTask != null && addAction.editedTask.id != UnknownTask.id)
+                    viewModelScope.launch {
+                        completionState.value = CompletionState.ON_LOADING
+                        try {
+                            mUpdateTaskInteractor.updateTask(
+                                Task(
+                                    id = addAction.editedTask.id,
+                                    categoryId = getCategoryId(),
+                                    close = addAction.editedTask.close,
+                                    creation = addAction.editedTask.creation,
+                                    importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
+                                    deadLine = getSelectedDeadLineOrNull(),
+                                    description = mNewItemDescription.value,
+                                    name = mNewItemName.value,
+                                    start = addAction.editedTask.start
+                                ))
+                            completionState.value = CompletionState.UPDATE_TASK_ON_COMPLETE
+                        }catch (e:Exception){
+                            Log.e(this::class.java.simpleName, "dispatchEvent: ", e)
+                            completionState.value = CompletionState.ON_ERROR
+                        }
+
                     }
-                    PROJECT -> {
-                        updateNewProjectId()
-                        addNewProject()
+                else{
+                    when (addAction.selectedItemType) {
+                        TASK -> {
+                            updateNewTaskId()
+                            addNewTask()
+                        }
+                        PROJECT -> {
+                            updateNewProjectId()
+                            addNewProject()
+                        }
                     }
                 }
             }
@@ -108,7 +135,6 @@ class AddViewModel @Inject constructor(
     }
 
     private fun updateUiValue(selectedTask: Task) {
-        Log.i("TAG", "updateUiValue: "+mAllCategories.value.filter { selectedTask.categoryId == it.id }[FIRST_ELEMENT].name)
         mNewTaskSelectedDeadLine.value =
             if (selectedTask.deadLine != null) {
                 SimpleDateFormat("dd/MM/yyy", Locale.FRANCE).format(selectedTask.deadLine!!)

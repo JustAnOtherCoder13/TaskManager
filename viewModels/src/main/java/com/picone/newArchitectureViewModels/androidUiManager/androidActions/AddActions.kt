@@ -13,7 +13,7 @@ object AddActions : AddAction {
     data class OnAddScreenCategorySelected(val category: String) : AddAction
     data class AddScreenOnNameChange(val name: String) : AddAction
     data class AddScreenOnDescriptionChange(val description: String) : AddAction
-    data class AddScreenAddNewItemOnOkButtonClicked(val selectedItemType : String) : AddAction
+    data class AddScreenAddNewItemOnOkButtonClicked(val selectedItemType : String, val editedTask : Task?) : AddAction
     data class NavigateToHomeOnAddTaskComplete(override val androidNavActionManager: AndroidNavActionManager):
         AddNavAction
     data class NavigateToProjectOnAddProjectComplete(override val androidNavActionManager: AndroidNavActionManager):

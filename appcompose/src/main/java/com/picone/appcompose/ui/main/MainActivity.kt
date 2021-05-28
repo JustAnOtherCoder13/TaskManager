@@ -1,7 +1,6 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,10 +17,10 @@ import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
 import com.picone.appcompose.ui.main.screen.home.homeTask.HomeTaskScreen
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Task
-import com.picone.core.util.Constants
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.DELETE
 import com.picone.core.util.Constants.EDIT
+import com.picone.core.util.Constants.KEY_EDIT_TASK
 import com.picone.core.util.Constants.KEY_ITEM
 import com.picone.core.util.Constants.KEY_TASK
 import com.picone.core.util.Constants.PROJECT
@@ -209,22 +208,19 @@ class MainActivity : AppCompatActivity() {
                     //------------------------------------------------------------------------ADD
 
                     composable(
-                        route = "add/{item}/{edit task}",
+                        route = "${AndroidNavObjects.Add.destination}/{${KEY_ITEM}}/{${KEY_EDIT_TASK}}",
                         arguments = AndroidNavObjects.Add.arguments,
 
                     )
                     { backStackEntry ->
+
                         val selectedItemType =
                             backStackEntry.arguments?.getString(AndroidNavObjects.Add.KEY) ?: ""
 
                         val selectedTask =
-                            backStackEntry.arguments?.getString(Constants.KEY_EDIT_TASK)?.let { json ->
+                            backStackEntry.arguments?.getString(KEY_EDIT_TASK)?.let { json ->
                                 Gson().fromJson(json, Task::class.java)
                             }
-
-                        if (selectedTask != null && selectedTask.id != UnknownTask.id){
-                            addViewModel.dispatchEvent(AddActions.AddScreenOnNameChange(selectedTask.name))
-                        }
 
                         DisposableEffect(key1 = addViewModel) {
                             addViewModel.onStart(selectedTask = selectedTask)
@@ -287,104 +283,14 @@ class MainActivity : AppCompatActivity() {
                             event_addScreenAddNewItemOnOkButtonClicked = {
                                 addViewModel.dispatchEvent(
                                     addAction = AddActions.AddScreenAddNewItemOnOkButtonClicked(
-                                        selectedItemType
+                                        selectedItemType = selectedItemType,
+                                        editedTask = selectedTask
                                     )
                                 )
                             },
 
                         )
                     }
-
-                    /*//------------------------------------------------------------------------ADD from edit task
-
-                    //todo pass multiple arguments instead of making two screen
-                    composable(
-                        route = AndroidNavObjects.AddFromEdit.getRoute(),
-                        arguments = AndroidNavObjects.AddFromEdit.arguments
-                    )
-                    { backStackEntry ->
-
-                        val selectedTask =
-                            backStackEntry.arguments?.getString(AndroidNavObjects.AddFromEdit.KEY)?.let { json ->
-                                Gson().fromJson(json, Task::class.java)
-                            }
-
-                        if (selectedTask != null){
-                            addViewModel.dispatchEvent(AddActions.AddScreenOnNameChange(selectedTask.name))
-                        }
-
-
-                        DisposableEffect(key1 = addViewModel) {
-                            addViewModel.onStart(selectedTask)
-                            onDispose {
-                                addViewModel.completionState.removeObservers(this@MainActivity)
-                                addViewModel.onStop()
-                            }
-                        }
-
-                        Log.i("TAG", "onCreate: "+addViewModel.mNewItemCategory.value)
-
-                        ObserveCompletionStateToDoNavAction(addViewModel, androidNavActionManager)
-
-                        AddScreen(
-                            state_name = addViewModel.mNewItemName.value,
-                            state_description = addViewModel.mNewItemDescription.value,
-                            state_category = addViewModel.mNewItemCategory.value,
-                            state_importance = addViewModel.mNewTaskImportance.value,
-                            state_addScreenDeadlineSelectedDate = addViewModel.mNewTaskSelectedDeadLine.value,
-                            state_addScreenAllCategories = addViewModel.mAllCategories.value,
-                            state_isOkButtonEnabled = addViewModel.mIsOkButtonEnable.value,
-                            state_addScreenIsDatePickerClickableIconVisible = true,
-                            event_onAddScreenImportanceSelected = { importance ->
-                                addViewModel.dispatchEvent(
-                                    AddActions.OnAddScreenImportanceSelected(
-                                        importance = importance
-                                    )
-                                )
-                            },
-                            event_onAddScreenCategorySelected = { category ->
-                                addViewModel.dispatchEvent(
-                                    AddActions.OnAddScreenCategorySelected(
-                                        category = category
-                                    )
-                                )
-                            },
-                            event_onDatePickerIconClicked = {
-                                showDatePicker(
-                                    onDateSelected = { selectedDate ->
-                                        addViewModel.dispatchEvent(
-                                            AddActions.OnDatePickerIconClickedOnDateSelected(
-                                                selectedDate = selectedDate
-                                            )
-                                        )
-                                    }
-                                )
-                            },
-                            event_addScreenOnNameChange = { name ->
-                                addViewModel.dispatchEvent(
-                                    AddActions.AddScreenOnNameChange(
-                                        name = name
-                                    )
-                                )
-                            },
-                            event_addScreenOnDescriptionChange = { description ->
-                                addViewModel.dispatchEvent(
-                                    AddActions.AddScreenOnDescriptionChange(
-                                        description = description
-                                    )
-                                )
-                            },
-                            event_addScreenAddNewItemOnOkButtonClicked = {
-                                addViewModel.dispatchEvent(
-                                    addAction = AddActions.AddScreenAddNewItemOnOkButtonClicked(
-                                        TASK
-                                    )
-                                )
-                            },
-
-                            )
-                    }*/
-
                 }
 
             }
@@ -408,6 +314,10 @@ class MainActivity : AppCompatActivity() {
                         androidNavActionManager = androidNavActionManager
                     )
                 )
+                BaseViewModel.CompletionState.UPDATE_TASK_ON_COMPLETE -> addViewModel.dispatchEvent(
+                    AddActions.NavigateToHomeOnAddTaskComplete(
+                        androidNavActionManager = androidNavActionManager
+                    ))
                 else -> {
                 }
             }

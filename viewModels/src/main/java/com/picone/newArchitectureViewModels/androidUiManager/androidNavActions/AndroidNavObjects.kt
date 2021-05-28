@@ -33,11 +33,4 @@ object AndroidNavObjects {
                 navArgument(KEY_TWO) { type = NavType.StringType })
         override val destination: String = "add"
     }
-
-    /*val AddFromEdit = object : AndroidNavAction {
-        override val KEY: String = KEY_EDIT_TASK
-        override val arguments: List<NamedNavArgument> =
-            listOf(navArgument(KEY) { type = NavType.StringType })
-        override val destination: String = "addFromEdit"
-    }*/
 }

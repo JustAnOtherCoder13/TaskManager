@@ -226,14 +226,7 @@ fun BaseSpinner(
     state_nullableErrorItem: String?,
     event_onItemSelected: (item: String) -> Unit
 ) {
-    //todo review here to pass category
     var innerStateIsExpanded by remember { mutableStateOf(false) }
-    var innerStateSelectedItem by remember {
-        mutableStateOf(
-            state_nullablePreselectedItem ?: state_baseSpinnerHint
-        )
-    }
-
 
     Row(modifier = Modifier
         .animateContentSize()
@@ -244,7 +237,7 @@ fun BaseSpinner(
         .border(
 
             if (state_nullableErrorItem != null
-                && innerStateSelectedItem == state_nullableErrorItem
+                && state_nullablePreselectedItem ?: state_baseSpinnerHint == state_nullableErrorItem
             ) {
                 BorderStroke(2.dp, MaterialTheme.colors.error)
             } else BorderStroke(0.dp, Color.Transparent)
@@ -253,7 +246,7 @@ fun BaseSpinner(
 
     ) {
         Text(
-            text = innerStateSelectedItem,
+            text = state_nullablePreselectedItem ?: state_baseSpinnerHint,
             modifier = Modifier
                 .padding(2.dp),
             style = MaterialTheme.typography.subtitle2
