@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.picone.newArchitectureViewModels.androidUiManager.AddAction
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
@@ -17,8 +18,11 @@ import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.UpdateTaskInteractor
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import com.picone.core.util.Constants.CATEGORY
+import com.picone.core.util.Constants.DELETE
+import com.picone.core.util.Constants.EDIT
 import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.core.util.Constants.IMPORTANCE_LIST
+import com.picone.core.util.Constants.PASS_TO_TASK
 import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
 import com.picone.core.util.Constants.UnknownTask
@@ -54,8 +58,8 @@ class AddViewModel @Inject constructor(
     var completionState: MutableLiveData<CompletionState> =
         MutableLiveData(CompletionState.ON_START)
 
-    fun onStart(selectedTask: Task?) {
-        getAllCategories(selectedTask)
+    fun onStart(selectedTask: Task?, selectedProject : Project?) {
+        getAllCategories(selectedTask, selectedProject)
     }
 
     fun onStop() = resetStates()
@@ -66,7 +70,8 @@ class AddViewModel @Inject constructor(
                 updateSelectedDeadline(addAction)
 
             is AddActions.OnAddCreated -> {
-                if (addAction.selectedTask != null && addAction.selectedTask.id != UnknownTask.id) updateUiValue(addAction.selectedTask)
+                if (addAction.selectedTask != null) updateTaskUiValue(addAction.selectedTask)
+                if (addAction.selectedProject != null) updateProjectUiValue(addAction.selectedProject)
             }
 
             is AddActions.OnAddScreenImportanceSelected ->
@@ -89,28 +94,7 @@ class AddViewModel @Inject constructor(
 
             is AddActions.AddScreenAddNewItemOnOkButtonClicked -> {
                 if (addAction.editedTask != null && addAction.editedTask.id != UnknownTask.id)
-                    viewModelScope.launch {
-                        completionState.value = CompletionState.ON_LOADING
-                        try {
-                            mUpdateTaskInteractor.updateTask(
-                                Task(
-                                    id = addAction.editedTask.id,
-                                    categoryId = getCategoryId(),
-                                    close = addAction.editedTask.close,
-                                    creation = addAction.editedTask.creation,
-                                    importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
-                                    deadLine = getSelectedDeadLineOrNull(),
-                                    description = mNewItemDescription.value,
-                                    name = mNewItemName.value,
-                                    start = addAction.editedTask.start
-                                ))
-                            completionState.value = CompletionState.UPDATE_TASK_ON_COMPLETE
-                        }catch (e:Exception){
-                            Log.e(this::class.java.simpleName, "dispatchEvent: ", e)
-                            completionState.value = CompletionState.ON_ERROR
-                        }
-
-                    }
+                    addNewTask(addAction.editedTask)
                 else{
                     when (addAction.selectedItemType) {
                         TASK -> {
@@ -121,12 +105,16 @@ class AddViewModel @Inject constructor(
                             updateNewProjectId()
                             addNewProject()
                         }
+                        EDIT-> Log.i("TAG", "dispatchEvent: edit")
+                        PASS_TO_TASK -> Log.i("TAG", "dispatchEvent: pass to task")
                     }
                 }
             }
 
-            is AddActions.NavigateToHomeOnAddTaskComplete ->
-                addAction.androidNavActionManager.navigate(AndroidNavObjects.Home)
+            is AddActions.NavigateToDetailOnAddTaskComplete -> {
+                val taskToJson = Gson().toJson(getNewTask())
+                    addAction.androidNavActionManager.navigate(AndroidNavObjects.Detail, taskToJson)
+            }
 
             is AddActions.NavigateToProjectOnAddProjectComplete ->
                 addAction.androidNavActionManager.navigate(AndroidNavObjects.Project)
@@ -134,13 +122,39 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    private fun updateUiValue(selectedTask: Task) {
+    private fun addNewTask(editedTask: Task) {
+        viewModelScope.launch {
+            completionState.value = CompletionState.ON_LOADING
+            try {
+                mUpdateTaskInteractor.updateTask(
+                    Task(
+                        id = editedTask.id,
+                        categoryId = getCategoryId(),
+                        close = editedTask.close,
+                        creation = editedTask.creation,
+                        importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
+                        deadLine = getSelectedDeadLineOrNull(),
+                        description = mNewItemDescription.value,
+                        name = mNewItemName.value,
+                        start = editedTask.start
+                    )
+                )
+                completionState.value = CompletionState.UPDATE_TASK_ON_COMPLETE
+            } catch (e: Exception) {
+                Log.e(this::class.java.simpleName, "dispatchEvent: ", e)
+                completionState.value = CompletionState.ON_ERROR
+            }
+
+        }
+    }
+
+    private fun updateTaskUiValue(selectedTask: Task) {
         mNewTaskSelectedDeadLine.value =
             if (selectedTask.deadLine != null) {
                 SimpleDateFormat("dd/MM/yyy", Locale.FRANCE).format(selectedTask.deadLine!!)
             } else ""
         mNewTaskImportance.value = IMPORTANCE_LIST[selectedTask.importance]
-        mNewItemCategory.value = mAllCategories.value.filter { selectedTask.categoryId == it.id }[FIRST_ELEMENT].name ?: ""
+        mNewItemCategory.value = mAllCategories.value.filter { selectedTask.categoryId == it.id }[FIRST_ELEMENT].name
         mNewItemName.value = selectedTask.name
         mNewItemDescription.value = selectedTask.description
         mNewTaskId.value = selectedTask.id
@@ -178,19 +192,7 @@ class AddViewModel @Inject constructor(
         viewModelScope.launch {
             completionState.value = CompletionState.ON_LOADING
             try {
-                mAddNewTaskInteractor.addNewTask(
-                    Task(
-                        id = mNewTaskId.value,
-                        categoryId = getCategoryId(),
-                        close = null,
-                        creation = Calendar.getInstance().time,
-                        importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
-                        deadLine = getSelectedDeadLineOrNull(),
-                        description = mNewItemDescription.value,
-                        name = mNewItemName.value,
-                        start = null
-                    )
-                )
+                mAddNewTaskInteractor.addNewTask(getNewTask())
                 completionState.value = CompletionState.ADD_TASK_ON_COMPLETE
             } catch (e: Exception) {
                 Log.e(this::class.java.simpleName, "dispatchEvent: ", e)
@@ -198,6 +200,18 @@ class AddViewModel @Inject constructor(
             }
         }
     }
+
+    private fun getNewTask() = Task(
+        id = mNewTaskId.value,
+        categoryId = getCategoryId(),
+        close = null,
+        creation = Calendar.getInstance().time,
+        importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
+        deadLine = getSelectedDeadLineOrNull(),
+        description = mNewItemDescription.value,
+        name = mNewItemName.value,
+        start = null
+    )
 
     private fun getCategoryId() = mAllCategories.value.filter {
         it.name == mNewItemCategory.value
@@ -211,11 +225,11 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    private fun getAllCategories(selectedTask: Task?) {
+    private fun getAllCategories(selectedTask: Task?, selectedProject : Project?) {
         viewModelScope.launch {
             mGetAllCategoriesInteractor.allCategoriesFlow.collect {
                 mAllCategories.value = it
-                dispatchEvent(AddActions.OnAddCreated(selectedTask))
+                dispatchEvent(AddActions.OnAddCreated(selectedTask, selectedProject))
             }
         }
     }
@@ -251,4 +265,12 @@ class AddViewModel @Inject constructor(
         mNewTaskId.value = 0
         mNewProjectId.value = 0
     }
+
+     private fun updateProjectUiValue(selectedProject: Project){
+         mNewItemCategory.value = mAllCategories.value.filter { selectedProject.categoryId == it.id }[FIRST_ELEMENT].name
+         mNewItemName.value = selectedProject.name
+         mNewItemDescription.value = selectedProject.description
+         mNewTaskId.value = selectedProject.id
+     }
+
 }

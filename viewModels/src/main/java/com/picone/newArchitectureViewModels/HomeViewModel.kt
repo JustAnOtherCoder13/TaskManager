@@ -3,16 +3,26 @@ package com.picone.newArchitectureViewModels
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.picone.newArchitectureViewModels.androidUiManager.HomeAction
+import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
+import com.picone.core.domain.interactor.category.AddNewCategoryInteractor
+import com.picone.core.domain.interactor.category.GetAllCategoriesInteractor
+import com.picone.core.domain.interactor.project.DeleteProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.task.DeleteTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.util.Constants.CATEGORY
+import com.picone.core.util.Constants.DELETE
+import com.picone.core.util.Constants.EDIT
+import com.picone.core.util.Constants.PASS_TO_TASK
+import com.picone.core.util.Constants.UnknownProject
+import com.picone.core.util.Constants.UnknownTask
+import com.picone.newArchitectureViewModels.androidUiManager.HomeAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.HomeActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,12 +34,20 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val mGetAllTasksInteractor: GetAllTasksInteractor,
     private val mDeleteTaskInteractor: DeleteTaskInteractor,
-    private val mGetAllProjectInteractor: GetAllProjectInteractor
-
+    private val mGetAllProjectInteractor: GetAllProjectInteractor,
+    private val mGetAllCategoriesInteractor: GetAllCategoriesInteractor,
+    private val mAddNewCategoryInteractor: AddNewCategoryInteractor,
+    private val mDeleteProjectInteractor: DeleteProjectInteractor
 ) : ViewModel() {
 
     val mAllTasksState: MutableState<MutableList<Task>> = mutableStateOf(mutableListOf())
     val mAllProjectState: MutableState<MutableList<Project>> = mutableStateOf(mutableListOf())
+    val mAllCategoriesState: MutableState<MutableList<Category>> = mutableStateOf(mutableListOf())
+    val mIsAddCategoryPopUpExpanded: MutableState<Boolean> = mutableStateOf(false)
+    private val mNewCategorySelectedColor: MutableState<Long> = mutableStateOf(0)
+    private val mNewCategoryName: MutableState<String> = mutableStateOf("")
+    var completionState: MutableLiveData<BaseViewModel.CompletionState> =
+        MutableLiveData(BaseViewModel.CompletionState.ON_START)
 
     fun onStart(destination: String) {
         when (destination) {
@@ -42,8 +60,10 @@ class HomeViewModel @Inject constructor(
 
     fun dispatchEvent(homeAction: HomeAction) {
         when (homeAction) {
-            is HomeActions.OnHomeCreated ->
+            is HomeActions.OnHomeCreated -> {
                 getAllTasks()
+                getAllCategories()
+            }
 
             is HomeActions.OnProjectCreated ->
                 getAllProjects()
@@ -56,10 +76,12 @@ class HomeViewModel @Inject constructor(
                     homeAction.androidNavActionManager.navigate(
                         AndroidNavObjects.Add,
                         homeAction.selectedItem,
-                        Gson().toJson(homeAction.selectedTask)
+                        Gson().toJson(homeAction.selectedTask),
+                        Gson().toJson(UnknownProject)
                     )
+                } else if (homeAction.selectedItem == CATEGORY) {
+                    setAddCategoryPopUpMenuExpanded(true)
                 }
-                else Log.i("TAG", "dispatchEvent: category click")
 
             is HomeActions.TaskRecyclerViewOnTaskSelected ->
                 homeAction.androidNavActionManager.navigate(
@@ -67,18 +89,87 @@ class HomeViewModel @Inject constructor(
                     Gson().toJson(homeAction.selectedTask)
                 )
 
-            is HomeActions.OnDeleteTaskSelected ->{
+            is HomeActions.OnDeleteTaskSelected -> {
                 deleteTask(homeAction.task)
             }
 
-            is HomeActions.OnEditTaskSelected ->{
+            is HomeActions.OnEditTaskSelected -> {
                 homeAction.androidNavActionManager.navigate(
                     AndroidNavObjects.Add,
                     homeAction.selectedItem,
-                    Gson().toJson(homeAction.task)
+                    Gson().toJson(homeAction.task),
+                    Gson().toJson(UnknownProject)
                 )
             }
+
+            is HomeActions.CloseCategoryPopUp ->
+                setAddCategoryPopUpMenuExpanded(false)
+
+            is HomeActions.AddCategoryOnColorSelected ->
+                mNewCategorySelectedColor.value = homeAction.color
+
+            is HomeActions.AddCategoryOnTextChange ->
+                mNewCategoryName.value = homeAction.name
+
+            is HomeActions.AddCategoryOnOkButtonClicked -> {
+                addNewCategory()
+                setAddCategoryPopUpMenuExpanded(false)
+            }
+            is HomeActions.ProjectRecyclerViewOnMenuItemSelected -> {
+                when (homeAction.selectedItem) {
+                    EDIT -> homeAction.androidNavActionManager.navigate(
+                        AndroidNavObjects.Add,
+                        homeAction.selectedItem,
+                        Gson().toJson(UnknownTask),
+                        Gson().toJson(homeAction.project)
+                    )
+                    //todo show date picker icon
+                    PASS_TO_TASK-> homeAction.androidNavActionManager.navigate(
+                        AndroidNavObjects.Add,
+                        homeAction.selectedItem,
+                        Gson().toJson(UnknownTask),
+                        Gson().toJson(homeAction.project)
+                    )
+                    DELETE -> viewModelScope.launch {
+                        mDeleteProjectInteractor.deleteProject(homeAction.project)
+                    }
+                }
+
+            }
+
+
         }
+    }
+
+    private fun addNewCategory() {
+        viewModelScope.launch {
+            completionState.value = BaseViewModel.CompletionState.ON_LOADING
+            try {
+                mAddNewCategoryInteractor.addNewCategory(
+                    Category(
+                        id = mAllCategoriesState.value.size + 1,
+                        color = mNewCategorySelectedColor.value,
+                        name = mNewCategoryName.value
+                    )
+                )
+                completionState.value = BaseViewModel.CompletionState.ADD_CATEGORY_ON_COMPLETE
+            } catch (e: Exception) {
+                Log.e(this::class.java.simpleName, "dispatchEvent: ", e)
+                completionState.value = BaseViewModel.CompletionState.ON_ERROR
+            }
+        }
+    }
+
+    private fun getAllCategories() {
+        viewModelScope.launch {
+            mGetAllCategoriesInteractor.allCategoriesFlow.collect {
+                mAllCategoriesState.value = it.toMutableList()
+            }
+        }
+    }
+
+    private fun setAddCategoryPopUpMenuExpanded(isExpanded: Boolean) {
+        mIsAddCategoryPopUpExpanded.value = isExpanded
     }
 
     private fun getAllProjects() {
@@ -98,15 +189,21 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun deleteTask(task: Task) {
+    private fun deleteTask(task: Task) {
         viewModelScope.launch {
             mDeleteTaskInteractor.deleteTask(task)
         }
     }
 
     private fun resetStates() {
+        mAllCategoriesState.value = mutableListOf()
         mAllTasksState.value = mutableListOf()
         mAllProjectState.value = mutableListOf()
+        completionState.value = BaseViewModel.CompletionState.ON_START
+        mNewCategoryName.value = ""
+        mNewCategorySelectedColor.value = 0
+        mIsAddCategoryPopUpExpanded.value = false
+
     }
 
 }

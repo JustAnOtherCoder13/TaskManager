@@ -122,13 +122,13 @@ private fun Body(
             state_title = "Name",
             state_textColor = MaterialTheme.colors.onSecondary,
             state_text = state_name,
-            event_baseEditTextOnTextChange = { event_nameEditTextOnTextChange(it) })
+            event_baseEditTextOnTextChange =  event_nameEditTextOnTextChange)
         Spacer(modifier = Modifier.height(10.dp))
         BaseEditText(
             state_title = "Description",
             state_textColor = MaterialTheme.colors.onSecondary,
             state_text = state_description,
-            event_baseEditTextOnTextChange = { event_descriptionEditTextOnTextChange(it) }
+            event_baseEditTextOnTextChange = event_descriptionEditTextOnTextChange
         )
     }
 }
@@ -157,7 +157,7 @@ private fun AddScreenHeader(
         BaseSpinner(
             state_BaseSpinnerItemList = state_addScreenCategoryDropDownMenuItemList,
             state_baseSpinnerHint = "Category",
-            state_nullablePreselectedItem = state_category,
+            state_nullablePreselectedItem =  state_category,
             state_nullableErrorItem = "Category",
             event_onItemSelected = { event_onAddScreenCategorySelected(it)}
         )

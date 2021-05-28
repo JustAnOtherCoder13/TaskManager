@@ -4,6 +4,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.navArgument
 import com.picone.core.util.Constants
+import com.picone.core.util.Constants.KEY_EDIT_PROJECT
 import com.picone.core.util.Constants.KEY_EDIT_TASK
 import com.picone.core.util.Constants.KEY_ITEM
 
@@ -27,10 +28,12 @@ object AndroidNavObjects {
 
     val Add = object : AndroidNavAction {
         override val KEY: String = KEY_ITEM
-        val KEY_TWO: String = KEY_EDIT_TASK
+
         override val arguments: List<NamedNavArgument> =
             listOf(navArgument(KEY) { type = NavType.StringType },
-                navArgument(KEY_TWO) { type = NavType.StringType })
+                navArgument(KEY_EDIT_TASK) { type = NavType.StringType },
+                navArgument(KEY_EDIT_PROJECT){ type = NavType.StringType}
+                )
         override val destination: String = "add"
     }
 }

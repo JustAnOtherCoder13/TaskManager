@@ -12,9 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +25,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.values.TopRightCornerCut
 
+@Composable
+fun BaseOkAndCancelButtons(
+    state_isOkButtonEnable: Boolean,
+    event_onOkButtonClicked: () -> Unit,
+    event_onCancelButtonClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 5.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        //positive button
+        Button(
+            onClick = { event_onOkButtonClicked() },
+            enabled = state_isOkButtonEnable
+        ) { Text(text = "OK") }
+
+        //cancel button
+        Button(onClick = { event_onCancelButtonClicked() }
+        ) { Text(text = "Cancel") }
+    }
+}
 
 @Composable
 fun BaseExpandableItem(
@@ -65,7 +86,31 @@ fun BaseExpandableItemTitle(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .clickable(onClick = onTaskSelected )
+                .clickable(onClick = onTaskSelected)
+                .weight(7f)
+        ) {
+            Text(
+                text = itemName,
+                style = MaterialTheme.typography.subtitle1,
+            )
+        }
+        optionIcon()
+    }
+}
+
+@Composable
+fun BaseExpandableItemTitle(
+    itemName: String,
+    optionIcon: @Composable () -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .padding(5.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
                 .weight(7f)
         ) {
             Text(
@@ -105,72 +150,6 @@ fun <T> BaseRecyclerView(
         }
     }
 }
-
-
-/*
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .padding(5.dp)
-            .fillMaxWidth()
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .clickable(onClick = { if (item is Task) onTaskSelected(item) })
-                .weight(7f)
-        ) {
-            Text(
-                text = task.name,
-                style = MaterialTheme.typography.subtitle1,
-            )
-            if (item !is Project) {
-                SetProgressDrawable(start = task.start, close = task.close)
-            }
-        }
-
-        var isPopUpMenuExpanded by remember {
-            mutableStateOf(false)
-        }
-        val option: List<String> = when (item) {
-            is Project -> listOf("Change to task")
-            else -> listOf("start", "close")
-        }*/
-/*if (item !is Task) {
-    Row(modifier = Modifier
-        .wrapContentWidth(align = Alignment.End)
-        .clickable { isPopUpMenuExpanded = !isPopUpMenuExpanded }
-    ) {
-        Icon(
-            imageVector = Icons.Default.MoreVert,
-            contentDescription = null,
-            modifier = Modifier.padding(start = 10.dp)
-        )
-        AddNewTaskDropDownMenu(
-            isPopUpMenuExpanded = isPopUpMenuExpanded,
-            addItems = option,
-            closePopUp = { selectedItem ->
-                isPopUpMenuExpanded = false
-                when (item) {
-                    is Project -> when (selectedItem) {
-                        option[0] -> onTransformProjectInTaskClicked(item)
-                    }
-                    else -> when (selectedItem) {
-                        option[0] -> {
-                            item as UnderStain
-                            item.start = Calendar.getInstance().time
-                            onAddUnderStainButtonClicked(item)
-                        }
-                        option[1] -> Log.i("TAG", "TaskTitle: close under stain")
-                    }
-                }
-            }
-        )
-    }
-}
-
-}*/
-
 
 @Composable
 private fun ExpandIcon(expanded: Boolean, onCLick: () -> Unit) {
@@ -356,53 +335,120 @@ else BorderStroke(0.dp, Color.Transparent)
 
 
 @Composable
-fun <T> PopUpMenuIcon(
+fun <T> BasePopUpMenuIcon(
     state_menuItems: List<String>,
     state_icon: T,
     event_onMenuItemSelected: (item: String) -> Unit,
 ) {
-    var isPopUpMenuExpanded by remember { mutableStateOf(false) }
-
-    @Composable
-    fun <T> iconToPass(state_icon: T, event_OnClick : ()-> Unit)  {
-         when (state_icon) {
-            is ImageVector -> Icon(
-                imageVector = state_icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .clickable { event_OnClick() }
-                    .fillMaxHeight()
-                    .padding(horizontal = 5.dp)
-            )
-            is ImageBitmap -> Icon(
-                bitmap = state_icon,
-                contentDescription = null,
-                modifier = Modifier.clickable { event_OnClick() }
-            )
-            is Painter -> Icon(
-                painter = state_icon,
-                contentDescription = null,
-                modifier = Modifier.clickable { event_OnClick() }
-            )
-            else -> throw Exception("pass only Painter, ImageVector or ImageBitmap for icon value")
-        }
-    }
+    var innerStateIsPopUpMenuExpanded by remember { mutableStateOf(false) }
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxHeight()
         ) {
-            iconToPass(state_icon = state_icon ,event_OnClick = { isPopUpMenuExpanded = true })
+            IconToPass(
+                state_icon = state_icon ,
+                event_OnClick = { innerStateIsPopUpMenuExpanded = true }
+            )
             BaseDropDownMenu(
-                isPopUpMenuExpanded,
+                state_isPopUpMenuExpanded = innerStateIsPopUpMenuExpanded,
                 state_menuItems = state_menuItems,
                 event_onMenuItemSelected = { menuItem ->
-                    isPopUpMenuExpanded = false
+                    innerStateIsPopUpMenuExpanded = false
                     if (menuItem.trim().isNotEmpty()) {
                         event_onMenuItemSelected(menuItem)
                     }
                 },
             )
+    }
+}
+@Composable
+fun CategoryColorPopUpMenu(
+    event_onMenuItemSelected: (color : Long) -> Unit,
+) {
+    var innerStateIsPopUpMenuExpanded by remember { mutableStateOf(false) }
+    var innerStateColorSelectorTint by remember {
+        mutableStateOf(Color.Transparent)
+    }
+
+    val colorList : List<ColorItem> = listOf(
+        ColorItem(name = "Red", color = 0xfffe0000),
+        ColorItem(name = "Yellow", color = 0xfffdfe02),
+        ColorItem(name = "Green", color = 0xff0bff01),
+        ColorItem(name = "Blue", color = 0xff011efe),
+        ColorItem(name = "Purple", color = 0xfffe00f6)
+    )
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxHeight()
+    ) {
+        Icon(
+            imageVector =Icons.Default.Circle ,
+            contentDescription ="" ,
+            modifier = Modifier
+                .clickable { innerStateIsPopUpMenuExpanded = true }
+                .fillMaxHeight()
+                .padding(horizontal = 5.dp)
+                .clip(CircleShape)
+                .border(1.dp, Color.Black, CircleShape),
+            tint = innerStateColorSelectorTint
+        )
+        DropdownMenu(
+            expanded = innerStateIsPopUpMenuExpanded,
+            onDismissRequest = { innerStateIsPopUpMenuExpanded = false },
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight()
+        ) {
+            colorList.forEachIndexed { _, item ->
+                DropdownMenuItem(onClick = {
+                    innerStateIsPopUpMenuExpanded =false
+                    innerStateColorSelectorTint = Color(item.color)
+                    event_onMenuItemSelected(item.color) }) {
+                    BaseInformationText(informationText = "${item.name} : ")
+                    Icon(
+                        imageVector = Icons.Default.Circle,
+                        contentDescription = "",
+                        tint = Color(item.color)
+                    )
+                }
+            }
+        }
+
+    }
+}
+
+data class ColorItem(val name:String,val color : Long)
+
+@Composable
+fun <T> IconToPass(state_icon: T, event_OnClick : ()-> Unit)  {
+    when (state_icon) {
+        is ImageVector -> Icon(
+            imageVector = state_icon,
+            contentDescription = null,
+            modifier = Modifier
+                .clickable { event_OnClick() }
+                .fillMaxHeight()
+                .padding(horizontal = 5.dp)
+        )
+        is ImageBitmap -> Icon(
+            bitmap = state_icon,
+            contentDescription = null,
+            modifier = Modifier
+                .clickable { event_OnClick() }
+                .fillMaxHeight()
+                .padding(horizontal = 5.dp)
+        )
+        is Painter -> Icon(
+            painter = state_icon,
+            contentDescription = null,
+            modifier = Modifier
+                .clickable { event_OnClick() }
+                .fillMaxHeight()
+                .padding(horizontal = 5.dp)
+        )
+        else -> throw Exception("pass only Painter, ImageVector or ImageBitmap for icon value")
     }
 }
 

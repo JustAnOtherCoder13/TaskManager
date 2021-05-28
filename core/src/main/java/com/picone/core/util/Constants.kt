@@ -1,5 +1,6 @@
 package com.picone.core.util
 
+import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
 import java.util.*
 
@@ -39,6 +40,8 @@ object Constants {
     const val DELETE = "Delete"
     const val EDIT = "Edit"
 
+    const val PASS_TO_TASK = "Pass to Task"
+
 
     const val IMPORTANT = "Important"
     const val NORMAL = "Normal"
@@ -49,8 +52,11 @@ object Constants {
     const val KEY_TASK = "task"
     const val KEY_ITEM = "item"
     const val KEY_EDIT_TASK = "edit task"
+    const val KEY_EDIT_PROJECT = "edit project"
 
     val UnknownTask = Task(0, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
+
+    val UnknownProject = Project(0,0,"unknown Project", "")
 
     enum class COMPLETION_STATE{
         DEFAULT,

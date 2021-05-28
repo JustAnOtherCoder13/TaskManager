@@ -9,16 +9,32 @@ import com.picone.core.domain.entity.Project
 fun HomeProjectScreen(
     state_allProjects: List<Project>,
     state_topBarAddMenuItems: List<String>,
-    event_topBarOnMenuItemSelected: (selectedItem : String) -> Unit,
+    event_topBarOnMenuItemSelected: (selectedItem: String) -> Unit,
     event_bottomNavBarOnNavItemSelected: (item: String) -> Unit,
-    state_currentRoute : String?
-){
+    state_currentRoute: String?,
+    state_topBarAddCategoryPopUpIsExpanded: Boolean,
+    event_topBarAddCategoryPopUpOnDismiss: () -> Unit,
+    event_addCategoryOnTextChange: (text: String) -> Unit,
+    event_addCategoryOnOkButtonClicked: () -> Unit,
+    event_addCategoryOnColorSelected: (color: Long) -> Unit,
+    event_projectRecyclerViewOnMenuItemSelected: (selectedItem: String, project : Project) -> Unit
+) {
 
     HomeScreen(
-        mainContent = { ProjectRecyclerView(allProjects = state_allProjects) },
+        mainContent = {
+            ProjectRecyclerView(
+                state_allProjects = state_allProjects,
+                event_projectRecyclerViewOnMenuItemSelected = event_projectRecyclerViewOnMenuItemSelected
+            )
+        },
         state_topBarAddMenuItems = state_topBarAddMenuItems,
         event_topBarOnMenuItemSelected = event_topBarOnMenuItemSelected,
         event_bottomNavBarOnNavItemSelected = event_bottomNavBarOnNavItemSelected,
-        state_currentRoute = state_currentRoute
+        state_currentRoute = state_currentRoute,
+        state_topBarAddCategoryPopUpIsExpanded = state_topBarAddCategoryPopUpIsExpanded,
+        event_topBarAddCategoryPopUpOnDismiss = event_topBarAddCategoryPopUpOnDismiss,
+        event_addCategoryPopUpOnTextChange = event_addCategoryOnTextChange,
+        event_addCategoryOnColorSelected = event_addCategoryOnColorSelected,
+        event_addCategoryOnOkButtonClicked = event_addCategoryOnOkButtonClicked
     )
 }

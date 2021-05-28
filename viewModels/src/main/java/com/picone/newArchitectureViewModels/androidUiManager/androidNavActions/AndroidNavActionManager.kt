@@ -22,9 +22,9 @@ class AndroidNavActionManager(private val navController: NavController) {
         }
     }
 
-    fun navigate(androidNavAction : AndroidNavAction, argument : String, secondaryArgument : String){
+    fun navigate(androidNavAction : AndroidNavAction, argument : String, secondaryArgument : String, thirdArgument : String){
         when(androidNavAction){
-            AndroidNavObjects.Add -> AndroidNavObjects.Add.doNavAction(navController,argument, secondaryArgument)
+            AndroidNavObjects.Add -> AndroidNavObjects.Add.doNavAction(navController,argument, secondaryArgument, thirdArgument)
             else -> throw Exception("Unknown nav action in ${this.javaClass.simpleName}")
         }
     }

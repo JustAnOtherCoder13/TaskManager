@@ -27,8 +27,8 @@ interface AndroidNavAction {
         }
     }
 
-    fun doNavAction(navController: NavController, argument: String, secondArgument : String) {
-        navController.navigate("$destination/${argument}/${secondArgument}") {
+    fun doNavAction(navController: NavController, argument: String, secondArgument : String, thirdArgument : String) {
+        navController.navigate("$destination/${argument}/${secondArgument}/${thirdArgument}") {
             popUpTo(navController.graph.startDestination) {}
             launchSingleTop = true
         }

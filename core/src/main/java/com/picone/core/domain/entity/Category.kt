@@ -8,7 +8,7 @@ import com.picone.core.util.Constants.CATEGORY_TABLE_NAME
 data class Category(
     @PrimaryKey(autoGenerate = true) val id:Int,
 
-    var color:String?,
-    val name:String?
+    var color: Long,
+    val name:String
 
     )

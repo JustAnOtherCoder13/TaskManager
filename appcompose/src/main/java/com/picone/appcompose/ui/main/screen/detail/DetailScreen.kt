@@ -8,6 +8,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -104,7 +105,8 @@ private fun AddUnderStainItem(
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
             .padding(horizontal = 10.dp)
-            .fillMaxHeight()
+            .fillMaxHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BaseDatePickerClickableIcon(
             state_datePickerIconDateText = state_datePickerIconDateText,
@@ -122,37 +124,15 @@ private fun AddUnderStainItem(
             state_text = innerStateDescription,
             event_baseEditTextOnTextChange = { text -> innerStateDescription = text }
         )
-        AddUnderStainButtons(
-            event_AddUnderStainButtonOnOkButtonClicked = event_AddUnderStainButtonOnOkButtonClicked,
-            event_AddUnderStainButtonOnCancelButtonClicked = event_AddUnderStainButtonOnCancelButtonClicked,
+        BaseOkAndCancelButtons(
+            event_onOkButtonClicked = event_AddUnderStainButtonOnOkButtonClicked,
+            event_onCancelButtonClicked = event_AddUnderStainButtonOnCancelButtonClicked,
             state_isOkButtonEnable = innerStateName.trim().isNotEmpty() && innerStateDescription.trim().isNotEmpty(),
         )
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 
-@Composable
-private fun AddUnderStainButtons(
-    state_isOkButtonEnable: Boolean,
-    event_AddUnderStainButtonOnOkButtonClicked: () -> Unit,
-    event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 5.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        //positive button
-        Button(
-            onClick = { event_AddUnderStainButtonOnOkButtonClicked() },
-            enabled = state_isOkButtonEnable
-        ) { Text(text = "OK") }
-
-        //cancel button
-        Button(onClick = { event_AddUnderStainButtonOnCancelButtonClicked() }
-        ) { Text(text = "Cancel") }
-    }
-}
 
 @Composable
 private fun DetailHeader(
