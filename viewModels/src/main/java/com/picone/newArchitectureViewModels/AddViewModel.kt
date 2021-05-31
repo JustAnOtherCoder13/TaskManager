@@ -39,11 +39,9 @@ class AddViewModel @Inject constructor(
     private val mGetAllCategoriesInteractor: GetAllCategoriesInteractor,
     private val mAddNewTaskInteractor: AddNewTaskInteractor,
     private val mGetAllTasksInteractor: GetAllTasksInteractor,
-    private val mGetAllProjectInteractor: GetAllProjectInteractor,
     private val mAddNewProjectInteractor: AddNewProjectInteractor,
     private val mUpdateTaskInteractor: UpdateTaskInteractor
 ) : BaseViewModel() {
-
 
     var mNewTaskSelectedDeadLine: MutableState<String> = mutableStateOf("")
     var mAllCategories: MutableState<List<Category>> = mutableStateOf(mutableListOf())
@@ -52,8 +50,6 @@ class AddViewModel @Inject constructor(
     var mNewItemName: MutableState<String> = mutableStateOf("")
     var mNewItemDescription: MutableState<String> = mutableStateOf("")
     var mIsOkButtonEnable: MutableState<Boolean> = mutableStateOf(false)
-    private var mNewTaskId: MutableState<Int> = mutableStateOf(0)
-    private var mNewProjectId: MutableState<Int> = mutableStateOf(0)
     var completionState: MutableLiveData<CompletionState> =
         MutableLiveData(CompletionState.ON_START)
 
@@ -99,11 +95,11 @@ class AddViewModel @Inject constructor(
                     when (addAction.selectedItemType) {
                         TASK -> {
                             Log.i("TAG", "dispatchEvent: add task ")
-                            updateNewTaskId()
+                            //updateNewTaskId()
                             addNewTask()
                         }
                         PROJECT -> {
-                            updateNewProjectId()
+                            //updateNewProjectId()
                             addNewProject()
                         }
                         EDIT -> Log.i("TAG", "dispatchEvent: edit")
@@ -167,7 +163,6 @@ class AddViewModel @Inject constructor(
             mAllCategories.value.filter { selectedTask.categoryId == it.id }[FIRST_ELEMENT].name
         mNewItemName.value = selectedTask.name
         mNewItemDescription.value = selectedTask.description
-        mNewTaskId.value = selectedTask.id
     }
 
     private fun getSelectedImportanceOrSetUnimportant(selectedTask: Task) =
@@ -188,14 +183,6 @@ class AddViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e(this::class.java.simpleName, "dispatchEvent: ", e)
                 completionState.value = CompletionState.ON_ERROR
-            }
-        }
-    }
-
-    private fun updateNewProjectId() {
-        viewModelScope.launch {
-            mGetAllProjectInteractor.allProjectsFlow.collect {
-                mNewProjectId.value = it.size + 1
             }
         }
     }
@@ -231,13 +218,6 @@ class AddViewModel @Inject constructor(
         it.name == mNewItemCategory.value
     }[FIRST_ELEMENT].id else 0
 
-    private fun updateNewTaskId() {
-        viewModelScope.launch {
-            mGetAllTasksInteractor.allTasksFlow.collect {
-                mNewTaskId.value = it.size + 1
-            }
-        }
-    }
 
     private fun getAllCategories(selectedTask: Task?, selectedProject: Project?) {
         viewModelScope.launch {
@@ -276,8 +256,7 @@ class AddViewModel @Inject constructor(
         mNewItemName.value = ""
         mNewItemDescription.value = ""
         mIsOkButtonEnable.value = false
-        mNewTaskId.value = 0
-        mNewProjectId.value = 0
+        
     }
 
     private fun updateProjectUiValue(selectedProject: Project) {
@@ -285,7 +264,6 @@ class AddViewModel @Inject constructor(
             mAllCategories.value.filter { selectedProject.categoryId == it.id }[FIRST_ELEMENT].name
         mNewItemName.value = selectedProject.name
         mNewItemDescription.value = selectedProject.description
-        mNewTaskId.value = selectedProject.id
     }
 
 }
