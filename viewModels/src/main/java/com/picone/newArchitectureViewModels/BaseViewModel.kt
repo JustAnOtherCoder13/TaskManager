@@ -2,6 +2,7 @@ package com.picone.newArchitectureViewModels
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 abstract class BaseViewModel : ViewModel() {
@@ -15,4 +16,6 @@ abstract class BaseViewModel : ViewModel() {
         UPDATE_TASK_ON_COMPLETE,
         ADD_CATEGORY_ON_COMPLETE
     }
+
+    var currentDestinationMutableLD : MutableLiveData<String> = MutableLiveData("")
 }

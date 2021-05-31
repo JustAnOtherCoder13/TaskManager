@@ -1,6 +1,7 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -46,21 +47,20 @@ import java.util.*
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val addViewModel: AddViewModel by viewModels()
         val homeViewModel: HomeViewModel by viewModels()
         val detailViewModel: DetailViewModel by viewModels()
 
-
-
         setContent {
             TaskManagerTheme {
                 val navController = rememberNavController()
                 val androidNavActionManager = AndroidNavActionManager(navController)
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
+
                 val completionStateObserver = Observer<BaseViewModel.CompletionState> {
+                    Log.i("TAG", "onCreate: "+it)
                     when (it) {
                         BaseViewModel.CompletionState.ADD_TASK_ON_COMPLETE -> addViewModel.dispatchEvent(
                             AddActions.NavigateToDetailOnAddTaskComplete(
@@ -137,6 +137,7 @@ class MainActivity : AppCompatActivity() {
                                 )
                             },
                             event_taskRecyclerViewOnMenuItemSelected = { menuItem, task ->
+                                Log.e("TAG", "onCreate: "+menuItem )
                                 when (menuItem) {
                                     DELETE -> homeViewModel.dispatchEvent(
                                         HomeActions.OnDeleteTaskSelected(

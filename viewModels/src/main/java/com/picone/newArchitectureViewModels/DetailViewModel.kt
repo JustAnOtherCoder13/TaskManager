@@ -12,6 +12,7 @@ import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainsInteractor
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.DetailActions
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -24,17 +25,20 @@ class DetailViewModel @Inject constructor(
     private val mGetAllUnderStainsInteractor: GetAllUnderStainsInteractor,
     private val mGetAllUnderStainForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor,
     private val mAddNewUnderStainInteractor: AddNewUnderStainInteractor
-) : ViewModel() {
+) : BaseViewModel() {
 
     var mAllUnderStainsForTaskState: MutableState<List<UnderStain>> = mutableStateOf(emptyList())
     var mIsAddUnderStainComponentVisible: MutableState<Boolean> = mutableStateOf(false)
     var mNewUnderStainSelectedDeadLine: MutableState<String> = mutableStateOf("")
-    var mNewUnderStainSelectedTaskId: MutableState<Int> = mutableStateOf(0)
-    var mNewUnderStainName: MutableState<String> = mutableStateOf("")
-    var mNewUnderStainDescription: MutableState<String> = mutableStateOf("")
+    private var mNewUnderStainSelectedTaskId: MutableState<Int> = mutableStateOf(0)
+    private var mNewUnderStainName: MutableState<String> = mutableStateOf("")
+    private var mNewUnderStainDescription: MutableState<String> = mutableStateOf("")
     var mNewUnderStainId: MutableState<Int> = mutableStateOf(0)
 
-    fun onStart(selectedTask: Task) = dispatchEvent(DetailActions.OnDetailCreated(selectedTask))
+    fun onStart(selectedTask: Task) {
+        currentDestinationMutableLD.value = AndroidNavObjects.Detail.destination
+        dispatchEvent(DetailActions.OnDetailCreated(selectedTask))
+    }
     fun onStop() = resetStates()
 
     fun dispatchEvent(action: DetailAction) {
@@ -71,7 +75,6 @@ class DetailViewModel @Inject constructor(
             try {
                 mAddNewUnderStainInteractor.addNewUnderStain(
                     underStain = UnderStain(
-                        id = mNewUnderStainId.value,
                         taskId = mNewUnderStainSelectedTaskId.value,
                         name = mNewUnderStainName.value,
                         description = mNewUnderStainDescription.value,
@@ -115,11 +118,11 @@ class DetailViewModel @Inject constructor(
         else null
 
     private fun getAllUnderStainsForTask(action: DetailActions.OnDetailCreated) {
+        mNewUnderStainSelectedTaskId.value = action.task.id
         viewModelScope.launch {
             mGetAllUnderStainForTaskIdInteractor.getAllUnderStainForTaskId(taskId = action.task.id)
                 .collect {
                     mAllUnderStainsForTaskState.value = it.toMutableList()
-                    mNewUnderStainSelectedTaskId.value = action.task.id
                 }
         }
     }

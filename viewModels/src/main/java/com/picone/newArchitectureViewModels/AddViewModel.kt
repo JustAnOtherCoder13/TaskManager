@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.picone.newArchitectureViewModels.androidUiManager.AddAction
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
@@ -16,9 +15,7 @@ import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.task.AddNewTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
 import com.picone.core.domain.interactor.task.UpdateTaskInteractor
-import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import com.picone.core.util.Constants.CATEGORY
-import com.picone.core.util.Constants.DELETE
 import com.picone.core.util.Constants.EDIT
 import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.core.util.Constants.IMPORTANCE_LIST
@@ -26,7 +23,9 @@ import com.picone.core.util.Constants.PASS_TO_TASK
 import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
 import com.picone.core.util.Constants.UnknownTask
+import com.picone.newArchitectureViewModels.androidUiManager.AddAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.AddActions
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -53,12 +52,13 @@ class AddViewModel @Inject constructor(
     var mNewItemName: MutableState<String> = mutableStateOf("")
     var mNewItemDescription: MutableState<String> = mutableStateOf("")
     var mIsOkButtonEnable: MutableState<Boolean> = mutableStateOf(false)
-    var mNewTaskId: MutableState<Int> = mutableStateOf(0)
-    var mNewProjectId: MutableState<Int> = mutableStateOf(0)
+    private var mNewTaskId: MutableState<Int> = mutableStateOf(0)
+    private var mNewProjectId: MutableState<Int> = mutableStateOf(0)
     var completionState: MutableLiveData<CompletionState> =
         MutableLiveData(CompletionState.ON_START)
 
-    fun onStart(selectedTask: Task?, selectedProject : Project?) {
+    fun onStart(selectedTask: Task?, selectedProject: Project?) {
+        currentDestinationMutableLD.value = AndroidNavObjects.Add.destination
         getAllCategories(selectedTask, selectedProject)
     }
 
@@ -93,11 +93,12 @@ class AddViewModel @Inject constructor(
             }
 
             is AddActions.AddScreenAddNewItemOnOkButtonClicked -> {
-                if (addAction.editedTask != null && addAction.editedTask.id != UnknownTask.id)
-                    addNewTask(addAction.editedTask)
-                else{
+                if (addAction.editedTask != null && addAction.editedTask.name != UnknownTask.name)
+                    updateEditedTask(addAction.editedTask)
+                else {
                     when (addAction.selectedItemType) {
                         TASK -> {
+                            Log.i("TAG", "dispatchEvent: add task ")
                             updateNewTaskId()
                             addNewTask()
                         }
@@ -105,15 +106,24 @@ class AddViewModel @Inject constructor(
                             updateNewProjectId()
                             addNewProject()
                         }
-                        EDIT-> Log.i("TAG", "dispatchEvent: edit")
+                        EDIT -> Log.i("TAG", "dispatchEvent: edit")
                         PASS_TO_TASK -> Log.i("TAG", "dispatchEvent: pass to task")
                     }
                 }
             }
 
             is AddActions.NavigateToDetailOnAddTaskComplete -> {
-                val taskToJson = Gson().toJson(getNewTask())
-                    addAction.androidNavActionManager.navigate(AndroidNavObjects.Detail, taskToJson)
+                viewModelScope.launch {
+                    Log.e("TAG", "dispatchEvent: nav to detail", )
+                    mGetAllTasksInteractor.allTasksFlow.collect {
+                        val taskToJson =
+                            Gson().toJson(it.filter { task -> task.name == getNewTask().name && task.description == getNewTask().description }[FIRST_ELEMENT])
+                        addAction.androidNavActionManager.navigate(
+                            AndroidNavObjects.Detail,
+                            taskToJson
+                        )
+                    }
+                }
             }
 
             is AddActions.NavigateToProjectOnAddProjectComplete ->
@@ -122,13 +132,12 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    private fun addNewTask(editedTask: Task) {
+    private fun updateEditedTask(editedTask: Task) {
         viewModelScope.launch {
             completionState.value = CompletionState.ON_LOADING
             try {
                 mUpdateTaskInteractor.updateTask(
                     Task(
-                        id = editedTask.id,
                         categoryId = getCategoryId(),
                         close = editedTask.close,
                         creation = editedTask.creation,
@@ -153,12 +162,16 @@ class AddViewModel @Inject constructor(
             if (selectedTask.deadLine != null) {
                 SimpleDateFormat("dd/MM/yyy", Locale.FRANCE).format(selectedTask.deadLine!!)
             } else ""
-        mNewTaskImportance.value = IMPORTANCE_LIST[selectedTask.importance]
-        mNewItemCategory.value = mAllCategories.value.filter { selectedTask.categoryId == it.id }[FIRST_ELEMENT].name
+        mNewTaskImportance.value = getSelectedImportanceOrSetUnimportant(selectedTask)
+        mNewItemCategory.value =
+            mAllCategories.value.filter { selectedTask.categoryId == it.id }[FIRST_ELEMENT].name
         mNewItemName.value = selectedTask.name
         mNewItemDescription.value = selectedTask.description
         mNewTaskId.value = selectedTask.id
     }
+
+    private fun getSelectedImportanceOrSetUnimportant(selectedTask: Task) =
+        if (selectedTask.importance >= 0) IMPORTANCE_LIST[selectedTask.importance] else IMPORTANCE_LIST[0]
 
     private fun addNewProject() {
         viewModelScope.launch {
@@ -166,8 +179,7 @@ class AddViewModel @Inject constructor(
             try {
                 mAddNewProjectInteractor.addNewProject(
                     Project(
-                        id = mNewProjectId.value,
-                        categoryId = getCategoryId(),
+                        categoryId =  getCategoryId(),
                         name = mNewItemName.value,
                         description = mNewItemDescription.value
                     )
@@ -201,21 +213,23 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    private fun getNewTask() = Task(
-        id = mNewTaskId.value,
-        categoryId = getCategoryId(),
-        close = null,
-        creation = Calendar.getInstance().time,
-        importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
-        deadLine = getSelectedDeadLineOrNull(),
-        description = mNewItemDescription.value,
-        name = mNewItemName.value,
-        start = null
-    )
+    private fun getNewTask() : Task {
+        Log.i("TAG", "getNewTask: "+mAllCategories.value+" "+currentDestinationMutableLD.value)
+        return  Task(
+            categoryId = getCategoryId(),
+            close = null,
+            creation = Calendar.getInstance().time,
+            importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
+            deadLine = getSelectedDeadLineOrNull(),
+            description = mNewItemDescription.value,
+            name = mNewItemName.value,
+            start = null
+        )
+    }
 
-    private fun getCategoryId() = mAllCategories.value.filter {
+    private fun getCategoryId()= if( mAllCategories.value.isNotEmpty()) mAllCategories.value.filter {
         it.name == mNewItemCategory.value
-    }[FIRST_ELEMENT].id
+    }[FIRST_ELEMENT].id else 0
 
     private fun updateNewTaskId() {
         viewModelScope.launch {
@@ -225,7 +239,7 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    private fun getAllCategories(selectedTask: Task?, selectedProject : Project?) {
+    private fun getAllCategories(selectedTask: Task?, selectedProject: Project?) {
         viewModelScope.launch {
             mGetAllCategoriesInteractor.allCategoriesFlow.collect {
                 mAllCategories.value = it
@@ -266,11 +280,12 @@ class AddViewModel @Inject constructor(
         mNewProjectId.value = 0
     }
 
-     private fun updateProjectUiValue(selectedProject: Project){
-         mNewItemCategory.value = mAllCategories.value.filter { selectedProject.categoryId == it.id }[FIRST_ELEMENT].name
-         mNewItemName.value = selectedProject.name
-         mNewItemDescription.value = selectedProject.description
-         mNewTaskId.value = selectedProject.id
-     }
+    private fun updateProjectUiValue(selectedProject: Project) {
+        mNewItemCategory.value =
+            mAllCategories.value.filter { selectedProject.categoryId == it.id }[FIRST_ELEMENT].name
+        mNewItemName.value = selectedProject.name
+        mNewItemDescription.value = selectedProject.description
+        mNewTaskId.value = selectedProject.id
+    }
 
 }

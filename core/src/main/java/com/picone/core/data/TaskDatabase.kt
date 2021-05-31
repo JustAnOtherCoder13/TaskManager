@@ -39,7 +39,7 @@ abstract class TaskDatabase: RoomDatabase() {
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, TaskDatabase::class.java, "task_database.db")
                 .fallbackToDestructiveMigration()
-                .addCallback(CALLBACK)
+                //.addCallback(CALLBACK)
                 .build()
 
         private val CALLBACK = object : RoomDatabase.Callback() {

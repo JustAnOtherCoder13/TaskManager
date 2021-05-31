@@ -38,7 +38,7 @@ class HomeViewModel @Inject constructor(
     private val mGetAllCategoriesInteractor: GetAllCategoriesInteractor,
     private val mAddNewCategoryInteractor: AddNewCategoryInteractor,
     private val mDeleteProjectInteractor: DeleteProjectInteractor
-) : ViewModel() {
+) : BaseViewModel() {
 
     val mAllTasksState: MutableState<MutableList<Task>> = mutableStateOf(mutableListOf())
     val mAllProjectState: MutableState<MutableList<Project>> = mutableStateOf(mutableListOf())
@@ -51,8 +51,14 @@ class HomeViewModel @Inject constructor(
 
     fun onStart(destination: String) {
         when (destination) {
-            AndroidNavObjects.Home.destination -> dispatchEvent(HomeActions.OnHomeCreated)
-            AndroidNavObjects.Project.destination -> dispatchEvent(HomeActions.OnProjectCreated)
+            AndroidNavObjects.Home.destination -> {
+                currentDestinationMutableLD.value = AndroidNavObjects.Home.destination
+                dispatchEvent(HomeActions.OnHomeCreated)
+            }
+            AndroidNavObjects.Project.destination -> {
+                currentDestinationMutableLD.value = AndroidNavObjects.Project.destination
+                dispatchEvent(HomeActions.OnProjectCreated)
+            }
         }
     }
 
@@ -90,6 +96,7 @@ class HomeViewModel @Inject constructor(
                 )
 
             is HomeActions.OnDeleteTaskSelected -> {
+                Log.i("TAG", "dispatchEvent: home"+currentDestinationMutableLD.value)
                 deleteTask(homeAction.task)
             }
 
@@ -115,6 +122,7 @@ class HomeViewModel @Inject constructor(
                 addNewCategory()
                 setAddCategoryPopUpMenuExpanded(false)
             }
+            //todo json error when delete project before edit following
             is HomeActions.ProjectRecyclerViewOnMenuItemSelected -> {
                 when (homeAction.selectedItem) {
                     EDIT -> homeAction.androidNavActionManager.navigate(
@@ -147,7 +155,6 @@ class HomeViewModel @Inject constructor(
             try {
                 mAddNewCategoryInteractor.addNewCategory(
                     Category(
-                        id = mAllCategoriesState.value.size + 1,
                         color = mNewCategorySelectedColor.value,
                         name = mNewCategoryName.value
                     )
@@ -196,14 +203,12 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun resetStates() {
-        mAllCategoriesState.value = mutableListOf()
         mAllTasksState.value = mutableListOf()
         mAllProjectState.value = mutableListOf()
         completionState.value = BaseViewModel.CompletionState.ON_START
         mNewCategoryName.value = ""
         mNewCategorySelectedColor.value = 0
         mIsAddCategoryPopUpExpanded.value = false
-
     }
 
 }

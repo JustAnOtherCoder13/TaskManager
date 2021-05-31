@@ -6,9 +6,8 @@ import com.picone.core.util.Constants.CATEGORY_TABLE_NAME
 
 @Entity(tableName = CATEGORY_TABLE_NAME)
 data class Category(
-    @PrimaryKey(autoGenerate = true) val id:Int,
-
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     var color: Long,
-    val name:String
-
-    )
+    val name: String
+)
