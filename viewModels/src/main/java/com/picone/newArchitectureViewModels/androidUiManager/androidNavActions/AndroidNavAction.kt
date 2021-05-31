@@ -1,10 +1,7 @@
 package com.picone.newArchitectureViewModels.androidUiManager.androidNavActions
 
-import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.compose.NamedNavArgument
-import androidx.navigation.compose.navigate
-import com.picone.core.util.Constants
 
 interface AndroidNavAction {
 
@@ -15,21 +12,21 @@ interface AndroidNavAction {
 
     fun doNavAction(navController: NavController) {
         navController.navigate(destination) {
-            popUpTo(navController.graph.startDestination) {}
+            popUpTo(AndroidNavObjects.Home.destination) {}
             launchSingleTop = true
         }
     }
 
     fun doNavAction(navController: NavController, argument: String) {
         navController.navigate("$destination/${argument}") {
-            popUpTo(navController.graph.startDestination) {}
+            popUpTo(AndroidNavObjects.Home.destination) {}
             launchSingleTop = true
         }
     }
 
     fun doNavAction(navController: NavController, argument: String, secondArgument : String, thirdArgument : String) {
         navController.navigate("$destination/${argument}/${secondArgument}/${thirdArgument}") {
-            popUpTo(navController.graph.startDestination) {}
+            popUpTo(AndroidNavObjects.Home.destination) {}
             launchSingleTop = true
         }
     }

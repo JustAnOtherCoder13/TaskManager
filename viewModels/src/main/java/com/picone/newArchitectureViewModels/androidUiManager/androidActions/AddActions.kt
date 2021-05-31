@@ -6,7 +6,8 @@ import com.picone.newArchitectureViewModels.androidUiManager.AddAction
 import com.picone.newArchitectureViewModels.androidUiManager.AddNavAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavActionManager
 
-object AddActions : AddAction {
+
+object AddActions  {
 
     data class OnDatePickerIconClickedOnDateSelected(val selectedDate: String) : AddAction
     data class OnAddCreated(val selectedTask : Task?,val selectedProject : Project?) : AddAction
@@ -19,5 +20,4 @@ object AddActions : AddAction {
         AddNavAction
     data class NavigateToProjectOnAddProjectComplete(override val androidNavActionManager: AndroidNavActionManager):
         AddNavAction
-
 }

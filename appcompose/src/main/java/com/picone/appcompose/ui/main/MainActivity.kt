@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                         HomeTaskScreen(
                             state_allTasks = homeViewModel.mAllTasksState.value,
                             state_topBarAddMenuItems = topBarrAddMenuItems(),
-                            state_currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE),
+                            state_currentRoute = navBackStackEntry?.destination?.route,
                             state_allCategories = homeViewModel.mAllCategoriesState.value,
                             event_taskRecyclerViewOnTaskSelected = { selectedTask ->
                                 homeViewModel.dispatchEvent(
@@ -206,7 +206,7 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 )
                             },
-                            state_currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE),
+                            state_currentRoute = navBackStackEntry?.destination?.route,
                             state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpanded.value,
                             event_topBarAddCategoryPopUpOnDismiss = {
                                 homeViewModel.dispatchEvent(
