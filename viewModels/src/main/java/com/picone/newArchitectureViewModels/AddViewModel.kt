@@ -26,6 +26,7 @@ import com.picone.newArchitectureViewModels.androidUiManager.AddAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.AddActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -52,9 +53,14 @@ class AddViewModel @Inject constructor(
     var completionState: MutableLiveData<CompletionState> =
         MutableLiveData(CompletionState.ON_START)
 
+    private var collectTasks: Job? = null
+    private var collectAllCategories: Job? = null
+    
+    private var editedItemRelatedCategory: MutableLiveData<Category> = MutableLiveData()
+
     fun onStart(selectedTask: Task?, selectedProject: Project?) {
         currentDestinationMutableLD.value = AndroidNavObjects.Add.destination
-        getAllCategories(selectedTask, selectedProject)
+        dispatchEvent(AddActions.OnAddCreated(selectedTask, selectedProject))
     }
 
     fun onStop() = resetStates()
@@ -65,8 +71,23 @@ class AddViewModel @Inject constructor(
                 updateSelectedDeadline(addAction)
 
             is AddActions.OnAddCreated -> {
-                if (addAction.selectedTask != null) updateTaskUiValue(addAction.selectedTask)
-                if (addAction.selectedProject != null) updateProjectUiValue(addAction.selectedProject)
+                collectAllCategories = viewModelScope.launch {
+                    mGetAllCategoriesInteractor.allCategoriesFlow.collect { allCategories ->
+                        mAllCategories.value = allCategories
+                        editedItemRelatedCategory.value = allCategories.filter {
+                            it.id == addAction.selectedTask?.categoryId ?: addAction.selectedProject?.categoryId
+                        }[FIRST_ELEMENT]
+
+                        mNewItemCategory.value = editedItemRelatedCategory.value?.name
+
+                        if (addAction.selectedTask != null) {
+                            updateTaskUiValue(addAction.selectedTask)
+                        }
+                        else if (addAction.selectedProject != null) {
+                            updateProjectUiValue(addAction.selectedProject)
+                        }
+                    }
+                }
             }
 
             is AddActions.OnAddScreenImportanceSelected ->
@@ -74,6 +95,9 @@ class AddViewModel @Inject constructor(
 
             is AddActions.OnAddScreenCategorySelected -> {
                 mNewItemCategory.value = addAction.category
+                editedItemRelatedCategory.value = mAllCategories.value.filter {
+                    it.name == addAction.category
+                }[FIRST_ELEMENT]
                 mIsOkButtonEnable.value = isEnable()
             }
 
@@ -92,15 +116,8 @@ class AddViewModel @Inject constructor(
                     updateEditedTask(addAction.editedTask)
                 else {
                     when (addAction.selectedItemType) {
-                        TASK -> {
-                            Log.i("TAG", "dispatchEvent: add task ")
-                            //updateNewTaskId()
-                            addNewTask()
-                        }
-                        PROJECT -> {
-                            //updateNewProjectId()
-                            addNewProject()
-                        }
+                        TASK -> addNewTask()
+                        PROJECT -> addNewProject()
                         EDIT -> Log.i("TAG", "dispatchEvent: edit")
                         PASS_TO_TASK -> Log.i("TAG", "dispatchEvent: pass to task")
                     }
@@ -108,11 +125,12 @@ class AddViewModel @Inject constructor(
             }
 
             is AddActions.NavigateToDetailOnAddTaskComplete -> {
-                viewModelScope.launch {
-                    Log.e("TAG", "dispatchEvent: nav to detail", )
+                collectTasks = viewModelScope.launch {
                     mGetAllTasksInteractor.allTasksFlow.collect {
-                        val taskToJson =
-                            Gson().toJson(it.filter { task -> task.name == getNewTask().name && task.description == getNewTask().description }[FIRST_ELEMENT])
+                        val taskToJson = Gson().toJson(it.filter { task ->
+                            task.name == mNewItemName.value && task.description == mNewItemDescription.value
+                        }[FIRST_ELEMENT])
+
                         addAction.androidNavActionManager.navigate(
                             AndroidNavObjects.Detail,
                             taskToJson
@@ -124,6 +142,9 @@ class AddViewModel @Inject constructor(
             is AddActions.NavigateToProjectOnAddProjectComplete ->
                 addAction.androidNavActionManager.navigate(AndroidNavObjects.Project)
 
+            is AddActions.NavigateToHomeOnUpdateTaskComplete ->
+                addAction.androidNavActionManager.navigate(AndroidNavObjects.Home)
+
         }
     }
 
@@ -133,7 +154,8 @@ class AddViewModel @Inject constructor(
             try {
                 mUpdateTaskInteractor.updateTask(
                     Task(
-                        categoryId = getCategoryId(),
+                        id = editedTask.id ,
+                        categoryId = editedItemRelatedCategory.value?.id!!,
                         close = editedTask.close,
                         creation = editedTask.creation,
                         importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
@@ -158,8 +180,6 @@ class AddViewModel @Inject constructor(
                 SimpleDateFormat("dd/MM/yyy", Locale.FRANCE).format(selectedTask.deadLine!!)
             } else ""
         mNewTaskImportance.value = getSelectedImportanceOrSetUnimportant(selectedTask)
-        mNewItemCategory.value =
-            mAllCategories.value.filter { selectedTask.categoryId == it.id }[FIRST_ELEMENT].name
         mNewItemName.value = selectedTask.name
         mNewItemDescription.value = selectedTask.description
     }
@@ -173,7 +193,7 @@ class AddViewModel @Inject constructor(
             try {
                 mAddNewProjectInteractor.addNewProject(
                     Project(
-                        categoryId =  getCategoryId(),
+                        categoryId = editedItemRelatedCategory.value?.id!!,
                         name = mNewItemName.value,
                         description = mNewItemDescription.value
                     )
@@ -199,10 +219,9 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    private fun getNewTask() : Task {
-        Log.i("TAG", "getNewTask: "+mAllCategories.value+" "+currentDestinationMutableLD.value)
-        return  Task(
-            categoryId = getCategoryId(),
+    private fun getNewTask(): Task {
+        return Task(
+            categoryId = editedItemRelatedCategory.value?.id!!,
             close = null,
             creation = Calendar.getInstance().time,
             importance = IMPORTANCE_LIST.indexOf(mNewTaskImportance.value),
@@ -212,21 +231,6 @@ class AddViewModel @Inject constructor(
             start = null
         )
     }
-
-    private fun getCategoryId()= if( mAllCategories.value.isNotEmpty()) mAllCategories.value.filter {
-        it.name == mNewItemCategory.value
-    }[FIRST_ELEMENT].id else 0
-
-
-    private fun getAllCategories(selectedTask: Task?, selectedProject: Project?) {
-        viewModelScope.launch {
-            mGetAllCategoriesInteractor.allCategoriesFlow.collect {
-                mAllCategories.value = it
-                dispatchEvent(AddActions.OnAddCreated(selectedTask, selectedProject))
-            }
-        }
-    }
-
 
     private fun updateSelectedDeadline(action: AddActions.OnDatePickerIconClickedOnDateSelected) {
         mNewTaskSelectedDeadLine.value = action.selectedDate
@@ -249,18 +253,16 @@ class AddViewModel @Inject constructor(
     private fun resetStates() {
         completionState.value = CompletionState.ON_START
         mNewTaskSelectedDeadLine.value = ""
-        mAllCategories.value = mutableListOf()
         mNewTaskImportance.value = ""
-        mNewItemCategory.value = ""
+        mNewItemCategory.value = CATEGORY
         mNewItemName.value = ""
         mNewItemDescription.value = ""
         mIsOkButtonEnable.value = false
-        
+        collectTasks?.cancel()
+        collectAllCategories?.cancel()
     }
 
     private fun updateProjectUiValue(selectedProject: Project) {
-        mNewItemCategory.value =
-            mAllCategories.value.filter { selectedProject.categoryId == it.id }[FIRST_ELEMENT].name
         mNewItemName.value = selectedProject.name
         mNewItemDescription.value = selectedProject.description
     }

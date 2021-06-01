@@ -60,7 +60,6 @@ class MainActivity : AppCompatActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 val completionStateObserver = Observer<BaseViewModel.CompletionState> {
-                    Log.i("TAG", "onCreate: "+it)
                     when (it) {
                         BaseViewModel.CompletionState.ADD_TASK_ON_COMPLETE -> addViewModel.dispatchEvent(
                             AddActions.NavigateToDetailOnAddTaskComplete(
@@ -73,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         )
                         BaseViewModel.CompletionState.UPDATE_TASK_ON_COMPLETE -> addViewModel.dispatchEvent(
-                            AddActions.NavigateToDetailOnAddTaskComplete(
+                            AddActions.NavigateToHomeOnUpdateTaskComplete(
                                 androidNavActionManager = androidNavActionManager
                             )
                         )
@@ -137,20 +136,21 @@ class MainActivity : AppCompatActivity() {
                                 )
                             },
                             event_taskRecyclerViewOnMenuItemSelected = { menuItem, task ->
-                                Log.e("TAG", "onCreate: "+menuItem )
                                 when (menuItem) {
                                     DELETE -> homeViewModel.dispatchEvent(
                                         HomeActions.OnDeleteTaskSelected(
                                             task
                                         )
                                     )
-                                    EDIT -> homeViewModel.dispatchEvent(
-                                        HomeActions.OnEditTaskSelected(
-                                            androidNavActionManager = androidNavActionManager,
-                                            selectedItem = "null",
-                                            task = task
+                                    EDIT -> {
+                                        homeViewModel.dispatchEvent(
+                                            HomeActions.OnEditTaskSelected(
+                                                androidNavActionManager = androidNavActionManager,
+                                                selectedItem = "null",
+                                                task = task
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             },
                             state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpanded.value,

@@ -26,6 +26,7 @@ import com.picone.newArchitectureViewModels.androidUiManager.HomeAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.HomeActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,16 +41,25 @@ class HomeViewModel @Inject constructor(
     private val mDeleteProjectInteractor: DeleteProjectInteractor
 ) : BaseViewModel() {
 
-    val mAllTasksState: MutableState<MutableList<Task>> = mutableStateOf(mutableListOf())
-    val mAllProjectState: MutableState<MutableList<Project>> = mutableStateOf(mutableListOf())
-    val mAllCategoriesState: MutableState<MutableList<Category>> = mutableStateOf(mutableListOf())
+    val mAllTasksState: MutableState<List<Task>> = mutableStateOf(mutableListOf())
+    val mAllProjectState: MutableState<List<Project>> = mutableStateOf(mutableListOf())
+    val mAllCategoriesState: MutableState<List<Category>> = mutableStateOf(mutableListOf())
     val mIsAddCategoryPopUpExpanded: MutableState<Boolean> = mutableStateOf(false)
     private val mNewCategorySelectedColor: MutableState<Long> = mutableStateOf(0)
     private val mNewCategoryName: MutableState<String> = mutableStateOf("")
-    var completionState: MutableLiveData<BaseViewModel.CompletionState> =
-        MutableLiveData(BaseViewModel.CompletionState.ON_START)
+    var completionState: MutableLiveData<CompletionState> = MutableLiveData(CompletionState.ON_START)
+
+    var collectTasks : Job? = null
+    var collectProjects : Job? = null
+    var collectCategories : Job? = null
 
     fun onStart(destination: String) {
+        collectCategories = viewModelScope.launch {
+            mGetAllCategoriesInteractor.allCategoriesFlow.collect {
+                mAllCategoriesState.value = it
+            }
+        }
+
         when (destination) {
             AndroidNavObjects.Home.destination -> {
                 currentDestinationMutableLD.value = AndroidNavObjects.Home.destination
@@ -66,13 +76,17 @@ class HomeViewModel @Inject constructor(
 
     fun dispatchEvent(homeAction: HomeAction) {
         when (homeAction) {
-            is HomeActions.OnHomeCreated -> {
-                getAllTasks()
-                getAllCategories()
+            is HomeActions.OnHomeCreated -> collectTasks = viewModelScope.launch {
+                mGetAllTasksInteractor.allTasksFlow.collect {
+                    mAllTasksState.value = it
+                }
             }
 
-            is HomeActions.OnProjectCreated ->
-                getAllProjects()
+            is HomeActions.OnProjectCreated -> collectProjects = viewModelScope.launch{
+                mGetAllProjectInteractor.allProjectsFlow.collect {
+                    mAllProjectState.value = it
+                }
+            }
 
             is HomeActions.BottomNavBarOnNavItemSelected ->
                 homeAction.androidNavActionManager.onBottomNavItemSelected(homeAction.selectedNavItem)
@@ -82,7 +96,7 @@ class HomeViewModel @Inject constructor(
                     homeAction.androidNavActionManager.navigate(
                         AndroidNavObjects.Add,
                         homeAction.selectedItem,
-                        Gson().toJson(homeAction.selectedTask),
+                        Gson().toJson(UnknownTask),
                         Gson().toJson(UnknownProject)
                     )
                 } else if (homeAction.selectedItem == CATEGORY) {
@@ -96,7 +110,6 @@ class HomeViewModel @Inject constructor(
                 )
 
             is HomeActions.OnDeleteTaskSelected -> {
-                Log.i("TAG", "dispatchEvent: home"+currentDestinationMutableLD.value)
                 deleteTask(homeAction.task)
             }
 
@@ -151,7 +164,7 @@ class HomeViewModel @Inject constructor(
 
     private fun addNewCategory() {
         viewModelScope.launch {
-            completionState.value = BaseViewModel.CompletionState.ON_LOADING
+            completionState.value = CompletionState.ON_LOADING
             try {
                 mAddNewCategoryInteractor.addNewCategory(
                     Category(
@@ -159,18 +172,10 @@ class HomeViewModel @Inject constructor(
                         name = mNewCategoryName.value
                     )
                 )
-                completionState.value = BaseViewModel.CompletionState.ADD_CATEGORY_ON_COMPLETE
+                completionState.value = CompletionState.ADD_CATEGORY_ON_COMPLETE
             } catch (e: Exception) {
                 Log.e(this::class.java.simpleName, "dispatchEvent: ", e)
-                completionState.value = BaseViewModel.CompletionState.ON_ERROR
-            }
-        }
-    }
-
-    private fun getAllCategories() {
-        viewModelScope.launch {
-            mGetAllCategoriesInteractor.allCategoriesFlow.collect {
-                mAllCategoriesState.value = it.toMutableList()
+                completionState.value = CompletionState.ON_ERROR
             }
         }
     }
@@ -179,22 +184,6 @@ class HomeViewModel @Inject constructor(
         mIsAddCategoryPopUpExpanded.value = isExpanded
     }
 
-    private fun getAllProjects() {
-        viewModelScope.launch {
-            mGetAllProjectInteractor.allProjectsFlow
-                .collect { mAllProjectState.value = it.toMutableList() }
-        }
-    }
-
-    private fun getAllTasks() {
-        viewModelScope.launch {
-            mGetAllTasksInteractor.allTasksFlow
-                .collect {
-                    mAllTasksState.value = it.toMutableList()
-
-                }
-        }
-    }
 
     private fun deleteTask(task: Task) {
         viewModelScope.launch {
@@ -205,10 +194,14 @@ class HomeViewModel @Inject constructor(
     private fun resetStates() {
         mAllTasksState.value = mutableListOf()
         mAllProjectState.value = mutableListOf()
-        completionState.value = BaseViewModel.CompletionState.ON_START
+        completionState.value = CompletionState.ON_START
         mNewCategoryName.value = ""
         mNewCategorySelectedColor.value = 0
         mIsAddCategoryPopUpExpanded.value = false
+
+        collectCategories?.cancel()
+        collectProjects?.cancel()
+        collectTasks?.cancel()
     }
 
 }

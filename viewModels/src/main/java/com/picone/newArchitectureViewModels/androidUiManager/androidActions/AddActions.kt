@@ -20,4 +20,5 @@ object AddActions  {
         AddNavAction
     data class NavigateToProjectOnAddProjectComplete(override val androidNavActionManager: AndroidNavActionManager):
         AddNavAction
+    data class NavigateToHomeOnUpdateTaskComplete(override val androidNavActionManager: AndroidNavActionManager) : AddNavAction
 }

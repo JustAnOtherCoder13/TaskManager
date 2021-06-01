@@ -3,14 +3,12 @@ package com.picone.newArchitectureViewModels
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picone.newArchitectureViewModels.androidUiManager.DetailAction
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
 import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
-import com.picone.core.domain.interactor.underStain.GetAllUnderStainsInteractor
+import com.picone.newArchitectureViewModels.androidUiManager.DetailAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.DetailActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val mGetAllUnderStainsInteractor: GetAllUnderStainsInteractor,
     private val mGetAllUnderStainForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor,
     private val mAddNewUnderStainInteractor: AddNewUnderStainInteractor
 ) : BaseViewModel() {
@@ -64,7 +61,6 @@ class DetailViewModel @Inject constructor(
                 updateNewUnderStainDescription(action)
 
             is DetailActions.AddUnderStainButtonOnOkButtonClicked -> {
-                getNewUnderStainId()
                 addNewUnderStain()
             }
         }
@@ -85,19 +81,10 @@ class DetailViewModel @Inject constructor(
                 )
                 mIsAddUnderStainComponentVisible.value = false
                 mNewUnderStainSelectedDeadLine.value = ""
-                //reset dead line
             } catch (e: Exception) {
                 Log.i("TAG", "addNewUnderStain: $e")
             }
 
-        }
-    }
-
-    private fun getNewUnderStainId() {
-        viewModelScope.launch {
-            mGetAllUnderStainsInteractor.getAllUnderStains().collect {
-                mNewUnderStainId.value = it.size + 1
-            }
         }
     }
 
