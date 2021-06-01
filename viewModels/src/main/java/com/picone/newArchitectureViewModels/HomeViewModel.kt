@@ -16,6 +16,7 @@ import com.picone.core.domain.interactor.project.DeleteProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.task.DeleteTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
+import com.picone.core.util.Constants
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.DELETE
 import com.picone.core.util.Constants.EDIT
@@ -29,6 +30,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,11 +64,9 @@ class HomeViewModel @Inject constructor(
 
         when (destination) {
             AndroidNavObjects.Home.destination -> {
-                currentDestinationMutableLD.value = AndroidNavObjects.Home.destination
                 dispatchEvent(HomeActions.OnHomeCreated)
             }
             AndroidNavObjects.Project.destination -> {
-                currentDestinationMutableLD.value = AndroidNavObjects.Project.destination
                 dispatchEvent(HomeActions.OnProjectCreated)
             }
         }
@@ -135,7 +135,6 @@ class HomeViewModel @Inject constructor(
                 addNewCategory()
                 setAddCategoryPopUpMenuExpanded(false)
             }
-            //todo json error when delete project before edit following
             is HomeActions.ProjectRecyclerViewOnMenuItemSelected -> {
                 when (homeAction.selectedItem) {
                     EDIT -> homeAction.androidNavActionManager.navigate(
@@ -144,11 +143,19 @@ class HomeViewModel @Inject constructor(
                         Gson().toJson(UnknownTask),
                         Gson().toJson(homeAction.project)
                     )
-                    //todo show date picker icon
                     PASS_TO_TASK-> homeAction.androidNavActionManager.navigate(
                         AndroidNavObjects.Add,
                         homeAction.selectedItem,
-                        Gson().toJson(UnknownTask),
+                        Gson().toJson(Task(
+                            categoryId = homeAction.project.categoryId,
+                            close = null,
+                            creation = Calendar.getInstance().time,
+                            importance = -1,
+                            deadLine = null,
+                            description = homeAction.project.description,
+                            name = homeAction.project.name,
+                            start = null
+                        )),
                         Gson().toJson(homeAction.project)
                     )
                     DELETE -> viewModelScope.launch {

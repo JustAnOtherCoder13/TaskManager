@@ -33,7 +33,6 @@ class DetailViewModel @Inject constructor(
     var mNewUnderStainId: MutableState<Int> = mutableStateOf(0)
 
     fun onStart(selectedTask: Task) {
-        currentDestinationMutableLD.value = AndroidNavObjects.Detail.destination
         dispatchEvent(DetailActions.OnDetailCreated(selectedTask))
     }
     fun onStop() = resetStates()

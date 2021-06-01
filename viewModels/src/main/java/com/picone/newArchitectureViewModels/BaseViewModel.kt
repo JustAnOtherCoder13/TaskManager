@@ -14,8 +14,7 @@ abstract class BaseViewModel : ViewModel() {
         ADD_TASK_ON_COMPLETE,
         ADD_PROJECT_ON_COMPLETE,
         UPDATE_TASK_ON_COMPLETE,
-        ADD_CATEGORY_ON_COMPLETE
+        ADD_CATEGORY_ON_COMPLETE,
     }
 
-    var currentDestinationMutableLD : MutableLiveData<String> = MutableLiveData("")
 }

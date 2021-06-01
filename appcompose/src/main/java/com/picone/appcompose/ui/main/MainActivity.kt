@@ -1,7 +1,6 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -82,6 +81,7 @@ class MainActivity : AppCompatActivity() {
                                 "Category added",
                                 Toast.LENGTH_SHORT
                             ).show()
+
                         else -> {
                         }
                     }

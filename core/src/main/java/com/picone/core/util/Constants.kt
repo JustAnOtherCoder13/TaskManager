@@ -54,9 +54,9 @@ object Constants {
     const val KEY_EDIT_TASK = "edit task"
     const val KEY_EDIT_PROJECT = "edit project"
 
-    val UnknownTask = Task(0, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
+    val UnknownTask = Task(-1, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
 
-    val UnknownProject = Project(0,0,"unknown Project", "")
+    val UnknownProject = Project(-1,0,"unknown Project", "")
 
     enum class COMPLETION_STATE{
         DEFAULT,
