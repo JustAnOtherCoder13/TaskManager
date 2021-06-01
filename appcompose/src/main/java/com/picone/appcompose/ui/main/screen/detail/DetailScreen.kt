@@ -1,5 +1,6 @@
 package com.picone.appcompose.ui.main.screen.detail
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,17 +8,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.picone.appcompose.ui.SetProgressDrawable
 import com.picone.appcompose.ui.main.baseComponent.*
 import com.picone.appcompose.ui.values.TopLeftCornerCut
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.appcompose.ui.values.TopRoundedCorner
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
+import com.picone.core.util.Constants
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,8 +37,12 @@ fun DetailScreen(
     event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit,
     event_nameEditTextOnTextChange: (text: String) -> Unit,
     event_descriptionEditTextOnTextChange: (text: String) -> Unit,
-    event_onDatePickerIconClicked: () -> Unit
+    event_onDatePickerIconClicked: () -> Unit,
+    event_onUnderStainMenuItemSelected : (selectedItem : String, underSatin : UnderStain) ->Unit,
+    state_underStainName : String,
+    state_underStainDescription : String
 ) {
+    Log.e("TAG", "DetailScreen: "+state_allUnderStainsForTask )
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -46,13 +55,24 @@ fun DetailScreen(
         item { Spacer(modifier = Modifier.height(16.dp)) }
         if (!state_isAddUnderStainComponentVisible) {
             items(items = state_allUnderStainsForTask) { underStain ->
-                BaseExpandableItem(
-                    underStain.description,
-                ) {
+                BaseExpandableItem(itemDescription = underStain.description,) {
                     BaseExpandableItemTitle(
                         itemName = underStain.name,
-                        optionIcon = { },
-                        onTaskSelected = { }
+                        optionIcon = {
+                            Row() {
+                                SetProgressDrawable(start = underStain.start, close = underStain.close)
+                                BasePopUpMenuIcon(
+                                    state_menuItems = listOf(
+                                        Constants.EDIT,
+                                        Constants.DELETE,
+                                        Constants.START,
+                                        Constants.CLOSE
+                                    ) ,
+                                    state_icon = Icons.Default.MoreVert,
+                                    event_onMenuItemSelected = {selectedItem -> event_onUnderStainMenuItemSelected(selectedItem,underStain) }
+                                )
+                            }
+                        }
                     )
                 }
             }
@@ -73,12 +93,14 @@ fun DetailScreen(
                     modifier = Modifier.padding(horizontal = 5.dp)
                 ) {
                     AddUnderStainItem(
-                        state_datePickerIconDateText,
-                        event_AddUnderStainButtonOnOkButtonClicked,
-                        event_AddUnderStainButtonOnCancelButtonClicked,
-                        event_nameEditTextOnTextChange,
-                        event_descriptionEditTextOnTextChange,
-                        event_onDatePickerIconClicked
+                        state_datePickerIconDateText = state_datePickerIconDateText,
+                        event_AddUnderStainButtonOnOkButtonClicked = event_AddUnderStainButtonOnOkButtonClicked,
+                        event_AddUnderStainButtonOnCancelButtonClicked = event_AddUnderStainButtonOnCancelButtonClicked,
+                        event_nameEditTextOnTextChange = event_nameEditTextOnTextChange,
+                        event_descriptionEditTextOnTextChange = event_descriptionEditTextOnTextChange,
+                        event_onDatePickerIconClicked = event_onDatePickerIconClicked,
+                        state_underStainDescription = state_underStainDescription,
+                        state_underStainName = state_underStainName
                     )
                 }
             }
@@ -93,14 +115,10 @@ private fun AddUnderStainItem(
     event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit,
     event_nameEditTextOnTextChange: (text: String) -> Unit,
     event_descriptionEditTextOnTextChange: (text: String) -> Unit,
-    event_onDatePickerIconClicked: () -> Unit
+    event_onDatePickerIconClicked: () -> Unit,
+    state_underStainName : String,
+    state_underStainDescription : String
 ) {
-    var innerStateName by remember { mutableStateOf( "") }
-    var innerStateDescription by remember { mutableStateOf( "") }
-
-    event_nameEditTextOnTextChange(innerStateName)
-    event_descriptionEditTextOnTextChange(innerStateDescription)
-
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
@@ -115,19 +133,19 @@ private fun AddUnderStainItem(
         BaseEditText(
             state_title = "Name",
             state_textColor = MaterialTheme.colors.onSurface,
-            state_text = innerStateName,
-            event_baseEditTextOnTextChange = { text -> innerStateName = text }
+            state_text = state_underStainName,
+            event_baseEditTextOnTextChange = { text -> event_nameEditTextOnTextChange(text) }
         )
         BaseEditText(
             state_title = "Description",
             state_textColor = MaterialTheme.colors.onSurface,
-            state_text = innerStateDescription,
-            event_baseEditTextOnTextChange = { text -> innerStateDescription = text }
+            state_text = state_underStainDescription,
+            event_baseEditTextOnTextChange = { text -> event_descriptionEditTextOnTextChange(text) }
         )
         BaseOkAndCancelButtons(
             event_onOkButtonClicked = event_AddUnderStainButtonOnOkButtonClicked,
             event_onCancelButtonClicked = event_AddUnderStainButtonOnCancelButtonClicked,
-            state_isOkButtonEnable = innerStateName.trim().isNotEmpty() && innerStateDescription.trim().isNotEmpty(),
+            state_isOkButtonEnable = state_underStainName.trim().isNotEmpty() && state_underStainDescription.trim().isNotEmpty(),
         )
         Spacer(modifier = Modifier.height(10.dp))
     }

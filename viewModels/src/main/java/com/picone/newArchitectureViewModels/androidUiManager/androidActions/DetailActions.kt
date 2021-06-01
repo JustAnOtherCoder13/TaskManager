@@ -2,6 +2,7 @@ package com.picone.newArchitectureViewModels.androidUiManager.androidActions
 
 import com.picone.newArchitectureViewModels.androidUiManager.DetailAction
 import com.picone.core.domain.entity.Task
+import com.picone.core.domain.entity.UnderStain
 
 
 object DetailActions : DetailAction {
@@ -13,5 +14,5 @@ object DetailActions : DetailAction {
     data class NameEditTextOnTextChange(val underStainName : String) : DetailAction
     data class DescriptionEditTextOnTextChange(val underStainDescription : String): DetailAction
     object AddUnderStainButtonOnOkButtonClicked : DetailAction
-
+    data class  OnUnderStainMenuItemSelected(val selectedItem: String, val underStain : UnderStain) : DetailAction
 }

@@ -39,9 +39,10 @@ object Constants {
 
     const val DELETE = "Delete"
     const val EDIT = "Edit"
+    const val START ="Start"
+    const val CLOSE = "Close"
 
     const val PASS_TO_TASK = "Pass to Task"
-
 
     const val IMPORTANT = "Important"
     const val NORMAL = "Normal"

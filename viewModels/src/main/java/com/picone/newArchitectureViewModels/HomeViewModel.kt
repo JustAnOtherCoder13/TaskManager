@@ -49,11 +49,12 @@ class HomeViewModel @Inject constructor(
     val mIsAddCategoryPopUpExpanded: MutableState<Boolean> = mutableStateOf(false)
     private val mNewCategorySelectedColor: MutableState<Long> = mutableStateOf(0)
     private val mNewCategoryName: MutableState<String> = mutableStateOf("")
-    var completionState: MutableLiveData<CompletionState> = MutableLiveData(CompletionState.ON_START)
+    var completionState: MutableLiveData<CompletionState> =
+        MutableLiveData(CompletionState.ON_START)
 
-    var collectTasks : Job? = null
-    var collectProjects : Job? = null
-    var collectCategories : Job? = null
+    private var collectTasks: Job? = null
+    private var collectProjects: Job? = null
+    private var collectCategories: Job? = null
 
     fun onStart(destination: String) {
         collectCategories = viewModelScope.launch {
@@ -82,7 +83,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            is HomeActions.OnProjectCreated -> collectProjects = viewModelScope.launch{
+            is HomeActions.OnProjectCreated -> collectProjects = viewModelScope.launch {
                 mGetAllProjectInteractor.allProjectsFlow.collect {
                     mAllProjectState.value = it
                 }
@@ -143,19 +144,21 @@ class HomeViewModel @Inject constructor(
                         Gson().toJson(UnknownTask),
                         Gson().toJson(homeAction.project)
                     )
-                    PASS_TO_TASK-> homeAction.androidNavActionManager.navigate(
+                    PASS_TO_TASK -> homeAction.androidNavActionManager.navigate(
                         AndroidNavObjects.Add,
                         homeAction.selectedItem,
-                        Gson().toJson(Task(
-                            categoryId = homeAction.project.categoryId,
-                            close = null,
-                            creation = Calendar.getInstance().time,
-                            importance = -1,
-                            deadLine = null,
-                            description = homeAction.project.description,
-                            name = homeAction.project.name,
-                            start = null
-                        )),
+                        Gson().toJson(
+                            Task(
+                                categoryId = homeAction.project.categoryId,
+                                close = null,
+                                creation = Calendar.getInstance().time,
+                                importance = -1,
+                                deadLine = null,
+                                description = homeAction.project.description,
+                                name = homeAction.project.name,
+                                start = null
+                            )
+                        ),
                         Gson().toJson(homeAction.project)
                     )
                     DELETE -> viewModelScope.launch {

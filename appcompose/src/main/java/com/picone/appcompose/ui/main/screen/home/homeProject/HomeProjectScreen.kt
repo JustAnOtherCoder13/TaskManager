@@ -3,6 +3,7 @@ package com.picone.appcompose.ui.main.screen.home.homeProject
 import androidx.compose.runtime.Composable
 import com.picone.appcompose.ui.main.screen.home.HomeScreen
 import com.picone.appcompose.ui.main.screen.home.ProjectRecyclerView
+import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 
 @Composable
@@ -17,14 +18,16 @@ fun HomeProjectScreen(
     event_addCategoryOnTextChange: (text: String) -> Unit,
     event_addCategoryOnOkButtonClicked: () -> Unit,
     event_addCategoryOnColorSelected: (color: Long) -> Unit,
-    event_projectRecyclerViewOnMenuItemSelected: (selectedItem: String, project : Project) -> Unit
+    event_projectRecyclerViewOnMenuItemSelected: (selectedItem: String, project : Project) -> Unit,
+    state_allCategories: List<Category>
 ) {
 
     HomeScreen(
         mainContent = {
             ProjectRecyclerView(
                 state_allProjects = state_allProjects,
-                event_projectRecyclerViewOnMenuItemSelected = event_projectRecyclerViewOnMenuItemSelected
+                event_projectRecyclerViewOnMenuItemSelected = event_projectRecyclerViewOnMenuItemSelected,
+                state_allCategories = state_allCategories
             )
         },
         state_topBarAddMenuItems = state_topBarAddMenuItems,

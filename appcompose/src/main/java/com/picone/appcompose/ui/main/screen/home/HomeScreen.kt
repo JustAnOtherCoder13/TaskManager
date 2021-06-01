@@ -35,7 +35,7 @@ fun HomeScreen(
     event_topBarAddCategoryPopUpOnDismiss: () -> Unit,
     event_addCategoryPopUpOnTextChange: (text: String) -> Unit,
     event_addCategoryOnOkButtonClicked : () -> Unit,
-    event_addCategoryOnColorSelected : (color : Long) -> Unit
+    event_addCategoryOnColorSelected : (color : Long) -> Unit,
 
 ) {
     Scaffold(
@@ -177,7 +177,8 @@ private fun TaskImportanceSelector(importance: String) {
 @Composable
 fun ProjectRecyclerView(
     state_allProjects: List<Project>,
-    event_projectRecyclerViewOnMenuItemSelected: (selectedItem : String, project : Project) -> Unit
+    event_projectRecyclerViewOnMenuItemSelected: (selectedItem : String, project : Project) -> Unit,
+    state_allCategories: List<Category>
     ) {
     BaseRecyclerView(
         items = state_allProjects,
@@ -187,11 +188,24 @@ fun ProjectRecyclerView(
                 BaseExpandableItemTitle(
                     itemName = project.name,
                     optionIcon = {
-                        BasePopUpMenuIcon(
-                            state_menuItems = listOf(EDIT, DELETE,PASS_TO_TASK) ,
-                            state_icon = Icons.Default.MoreVert,
-                            event_onMenuItemSelected = {selectedItem -> event_projectRecyclerViewOnMenuItemSelected(selectedItem, project)}
-                            )}
+                        
+                        Row() {
+                            Text(text = "${state_allCategories.filter { it.id == project.categoryId }[FIRST_ELEMENT].name} : ")
+                            Icon(
+                                Icons.Default.Label,
+                                contentDescription = null,
+                                tint = Color(state_allCategories.filter { it.id == project.categoryId }[FIRST_ELEMENT].color),
+                            )
+                        }
+                        Row() {
+                            BasePopUpMenuIcon(
+                                state_menuItems = listOf(EDIT, DELETE,PASS_TO_TASK) ,
+                                state_icon = Icons.Default.MoreVert,
+                                event_onMenuItemSelected = {selectedItem -> event_projectRecyclerViewOnMenuItemSelected(selectedItem, project)}
+                            )
+                        }
+
+                    }
                 )
             }
         }

@@ -1,6 +1,7 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -237,12 +238,12 @@ class MainActivity : AppCompatActivity() {
 
                                     )
                                 )
-                            }
+                            },
+                            state_allCategories = homeViewModel.mAllCategoriesState.value
                         )
                     }
 
                     //------------------------------------------------------------------------DETAIL
-                    //todo start, close , delete and edit underStain
 
                     composable(
                         route = AndroidNavObjects.Detail.getRoute(),
@@ -255,6 +256,8 @@ class MainActivity : AppCompatActivity() {
                             detailViewModel.onStart(selectedTask = selectedTask)
                             onDispose { detailViewModel.onStop() }
                         }
+
+                        Log.i("TAG", "getAllUnderStainsForTask: "+detailViewModel.mAllUnderStainsForTaskState.value)
 
                         DetailScreen(
                             state_Task = getTaskOrNull(backStackEntry) ?: UnknownTask,
@@ -296,7 +299,17 @@ class MainActivity : AppCompatActivity() {
                                         )
                                     }
                                 )
-                            }
+                            },
+                            event_onUnderStainMenuItemSelected = { selectedItem, underStain ->
+                                detailViewModel.dispatchEvent(
+                                    DetailActions.OnUnderStainMenuItemSelected(
+                                        selectedItem = selectedItem,
+                                        underStain = underStain
+                                    )
+                                )
+                            },
+                            state_underStainName = detailViewModel.mEditedUnderStainName.value,
+                            state_underStainDescription = detailViewModel.mEditedUnderStainDescription.value
                         )
                     }
 
