@@ -59,7 +59,6 @@ class AddViewModel @Inject constructor(
     private var collectAllCategories: Job? = null
 
     private var editedItemRelatedCategory: MutableLiveData<Category> = MutableLiveData()
-    private var projectToDelete : MutableLiveData<Project> = MutableLiveData()
 
     fun onStart(selectedTask: Task?, selectedProject: Project?) {
         dispatchEvent(AddActions.OnAddCreated(selectedTask, selectedProject))

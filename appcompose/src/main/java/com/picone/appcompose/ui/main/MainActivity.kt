@@ -1,7 +1,6 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -256,8 +255,6 @@ class MainActivity : AppCompatActivity() {
                             detailViewModel.onStart(selectedTask = selectedTask)
                             onDispose { detailViewModel.onStop() }
                         }
-
-                        Log.i("TAG", "getAllUnderStainsForTask: "+detailViewModel.mAllUnderStainsForTaskState.value)
 
                         DetailScreen(
                             state_Task = getTaskOrNull(backStackEntry) ?: UnknownTask,

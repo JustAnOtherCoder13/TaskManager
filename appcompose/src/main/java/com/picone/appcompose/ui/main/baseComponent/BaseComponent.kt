@@ -466,6 +466,7 @@ fun BaseDropDownMenu(
             .wrapContentHeight()
     ) {
         state_menuItems.forEachIndexed { _, item ->
+            if(item.trim().isNotEmpty())
             DropdownMenuItem(onClick = { event_onMenuItemSelected(item) }) {
                 Text(text = item)
             }

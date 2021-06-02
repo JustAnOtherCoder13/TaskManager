@@ -29,7 +29,7 @@ import java.util.*
 @Composable
 fun DetailScreen(
     state_Task: Task,
-    state_allUnderStainsForTask: List<UnderStain>,
+    state_allUnderStainsForTask: List<State<UnderStain>>,
     state_isAddUnderStainComponentVisible: Boolean,
     state_datePickerIconDateText: String,
     event_onAddUnderStainButtonClick: () -> Unit,
@@ -42,7 +42,6 @@ fun DetailScreen(
     state_underStainName : String,
     state_underStainDescription : String
 ) {
-    Log.e("TAG", "DetailScreen: "+state_allUnderStainsForTask )
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -55,21 +54,22 @@ fun DetailScreen(
         item { Spacer(modifier = Modifier.height(16.dp)) }
         if (!state_isAddUnderStainComponentVisible) {
             items(items = state_allUnderStainsForTask) { underStain ->
-                BaseExpandableItem(itemDescription = underStain.description,) {
+                BaseExpandableItem(itemDescription = underStain.value.description,) {
                     BaseExpandableItemTitle(
-                        itemName = underStain.name,
+                        itemName = underStain.value.name,
                         optionIcon = {
                             Row() {
-                                SetProgressDrawable(start = underStain.start, close = underStain.close)
+                                SetProgressDrawable(start = underStain.value.start, close = underStain.value.close)
                                 BasePopUpMenuIcon(
                                     state_menuItems = listOf(
                                         Constants.EDIT,
                                         Constants.DELETE,
-                                        Constants.START,
-                                        Constants.CLOSE
+                                        if(underStain.value.start == null )Constants.START
+                                        else if (underStain.value.close == null && underStain.value.start != null) Constants.CLOSE
+                                        else ""
                                     ) ,
                                     state_icon = Icons.Default.MoreVert,
-                                    event_onMenuItemSelected = {selectedItem -> event_onUnderStainMenuItemSelected(selectedItem,underStain) }
+                                    event_onMenuItemSelected = {selectedItem -> event_onUnderStainMenuItemSelected(selectedItem,underStain.value) }
                                 )
                             }
                         }
@@ -155,7 +155,7 @@ private fun AddUnderStainItem(
 @Composable
 private fun DetailHeader(
     state_task: Task,
-    state_allUnderStainsForTask: List<UnderStain>) {
+    state_allUnderStainsForTask: List<State<UnderStain>>) {
     Row(
         modifier = Modifier
             .clip(TopRoundedCorner)
@@ -180,7 +180,7 @@ private fun DetailHeader(
 }
 
 @Composable
-private fun UnderStainInformation(state_allUnderStainsForTask: List<UnderStain>) {
+private fun UnderStainInformation(state_allUnderStainsForTask: List<State<UnderStain>>) {
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
@@ -221,7 +221,7 @@ private fun TaskInformation(state_task: Task) {
 }
 
 @Composable
-private fun getCompletedUnderStainsForTask(allUnderStainsForTask: List<UnderStain>) =
+private fun getCompletedUnderStainsForTask(allUnderStainsForTask: List<State<UnderStain>>) =
     allUnderStainsForTask.filter { underStain ->
-        underStain.close != null
+        underStain.value.close != null
     }
