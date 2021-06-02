@@ -27,7 +27,6 @@ import com.picone.core.util.Constants.UNIMPORTANT
 import com.picone.core.util.Constants.UnknownProject
 import com.picone.core.util.Constants.UnknownTask
 import com.picone.newArchitectureViewModels.androidUiManager.HomeAction
-import com.picone.newArchitectureViewModels.androidUiManager.androidActions.AddActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.HomeActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -171,7 +170,6 @@ class HomeViewModel @Inject constructor(
                 when(homeAction.selectedItem){
                     "All"->{
                         getAllTasks()
-                        Log.i("TAG", "dispatchEvent: all")
                     }
                     IMPORTANT->{
                         filterTasks = viewModelScope.launch {
@@ -183,7 +181,6 @@ class HomeViewModel @Inject constructor(
                                 }
                             }
                         }
-                        Log.i("TAG", "dispatchEvent:  important")
                     }
                     NORMAL->{
                         filterTasks = viewModelScope.launch {
@@ -195,7 +192,6 @@ class HomeViewModel @Inject constructor(
                                 }
                             }
                         }
-                        Log.i("TAG", "dispatchEvent: normal")
                     }
                     UNIMPORTANT->{
                         filterTasks = viewModelScope.launch {
@@ -207,14 +203,19 @@ class HomeViewModel @Inject constructor(
                                 }
                             }
                         }
-                        Log.i("TAG", "dispatchEvent: unimportant")
                     }
                     mAllCategoriesState.value.filter { it.name == homeAction.selectedItem }[FIRST_ELEMENT].name ->{
-                        mAllTasksState.value = mAllTasksState.value.filter { task ->
-                            mAllCategoriesState.value.filter{ category ->
-                            category.id == task.categoryId
-                        }[FIRST_ELEMENT].id == task.categoryId  }
-                        Log.d("TAG", "dispatchEvent: "+homeAction.selectedItem)}
+
+                        filterTasks = viewModelScope.launch {
+                            mGetAllTasksInteractor.allTasksFlow.collect {
+                                mAllTasksState.value = it.filter { task ->
+                                    mAllCategoriesState.value.filter{ category ->
+                                        category.name == homeAction.selectedItem
+                                    }[FIRST_ELEMENT].id == task.categoryId
+                                }
+                            }
+                        }
+                        }
                 }
 
             }

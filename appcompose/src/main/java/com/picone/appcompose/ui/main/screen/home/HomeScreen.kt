@@ -164,29 +164,23 @@ private fun TaskImportanceSelector( allCategories : List<Category>, onFilterItem
         mutableStateOf("All")
     }
 
+
     Column(modifier = Modifier.fillMaxWidth()) {
-        val filterList = mutableListOf(
+        val firstList = listOf(
             "All",
-            "Filter by importance : ",
-            IMPORTANT,
-            NORMAL,
-            UNIMPORTANT,
-            "Filter by category : ",
+            "Filter by importance",
+            "Filter by category",
         )
-        val categoriesToStringList : MutableList<String> = mutableListOf()
-
-        allCategories.forEachIndexed { _, category -> categoriesToStringList.add(category.name) }
-
-        filterList.addAll(categoriesToStringList)
-
         HomeFilterDropDownMenu(
-            state_BaseSpinnerItemList = filterList ,
+            state_BaseSpinnerItemList = firstList ,
             state_baseSpinnerHint = innerStateSelectedFilterItem,
-            event_onItemSelected = {
-                innerStateSelectedFilterItem = it
-                onFilterItemSelected(it)
-            }
+            event_onItemSelected = { item ->
+                innerStateSelectedFilterItem = item
+                onFilterItemSelected(item)
+                                   },
+            state_allCategories = allCategories
         )
+
         Spacer(modifier = Modifier.height(16.dp))
     }
 }

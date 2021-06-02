@@ -24,6 +24,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.values.TopRightCornerCut
+import com.picone.core.domain.entity.Category
+import com.picone.core.util.Constants
+import java.util.*
 
 @Composable
 fun BaseOkAndCancelButtons(
@@ -257,16 +260,34 @@ fun BaseSpinner(
 fun HomeFilterDropDownMenu(
     state_BaseSpinnerItemList: List<String>,
     state_baseSpinnerHint: String,
-    event_onItemSelected: (item: String) -> Unit
+    event_onItemSelected: (item: String) -> Unit,
+    state_allCategories: List<Category>
 ) {
     var innerStateIsExpanded by remember { mutableStateOf(false) }
+
+    var innerStateIsImportanceMenuExpanded by remember {
+        mutableStateOf(false)
+    }
+    var innerStateIsCategoryMenuExpanded by remember {
+        mutableStateOf(false)
+    }
+
+    val filterByImportanceList = mutableListOf(
+        Constants.IMPORTANT,
+        Constants.NORMAL,
+        Constants.UNIMPORTANT,
+    )
+    val filterByCategoryList: MutableList<String> = mutableListOf()
+
+    state_allCategories.forEachIndexed { _, category -> filterByCategoryList.add(category.name) }
 
     Row(modifier = Modifier
         .animateContentSize()
         .clickable { innerStateIsExpanded = !innerStateIsExpanded }
         .padding(5.dp)
         .clip(RoundedCornerShape(5.dp))
-        .background(MaterialTheme.colors.surface),
+        .background(MaterialTheme.colors.surface)
+        .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
 
     ) {
@@ -287,22 +308,78 @@ fun HomeFilterDropDownMenu(
                 contentDescription = null,
             )
         }
-        DropdownMenu(
-            expanded = innerStateIsExpanded,
-            onDismissRequest = { innerStateIsExpanded = false },
-            modifier = Modifier
-                .wrapContentWidth()
-                .wrapContentHeight()
-        ) {
-            state_BaseSpinnerItemList.forEachIndexed { _, item ->
-                DropdownMenuItem(onClick = {
-                    innerStateIsExpanded = false
-                    event_onItemSelected(item)
-                }) {
-                    Text(text = item)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                DropdownMenu(
+                    expanded = innerStateIsExpanded,
+                    onDismissRequest = { innerStateIsExpanded = false },
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .wrapContentHeight()
+                ) {
+                    state_BaseSpinnerItemList.forEachIndexed { _, item ->
+                        DropdownMenuItem(onClick = {
+                            when (item) {
+                                "All" -> {
+                                    event_onItemSelected(item)
+                                    innerStateIsExpanded = false
+                                }
+                                "Filter by importance" -> innerStateIsImportanceMenuExpanded = true
+                                "Filter by category" -> innerStateIsCategoryMenuExpanded = true
+                            }
+                        }) {
+                            Text(text = item)
+                        }
+                    }
                 }
+
+                    DropdownMenu(
+                        expanded = innerStateIsImportanceMenuExpanded,
+                        onDismissRequest = {
+                            innerStateIsExpanded = false
+                            innerStateIsImportanceMenuExpanded = false
+                        },
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .wrapContentHeight()
+                    ) {
+                        filterByImportanceList.forEachIndexed { _, item ->
+                            DropdownMenuItem(onClick = {
+                                innerStateIsImportanceMenuExpanded = false
+                                event_onItemSelected(item)
+                                innerStateIsExpanded = false
+                            }) {
+                                Text(text = item)
+                            }
+                        }
+                    }
+                    DropdownMenu(
+                        expanded = innerStateIsCategoryMenuExpanded,
+                        onDismissRequest = {
+                            innerStateIsExpanded = false
+                            innerStateIsCategoryMenuExpanded = false
+                        },
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .wrapContentHeight()
+                    ) {
+                        filterByCategoryList.forEachIndexed { _, item ->
+                            DropdownMenuItem(onClick = {
+                                innerStateIsCategoryMenuExpanded = false
+                                innerStateIsExpanded = false
+                                event_onItemSelected(item)
+                            }) {
+                                Text(text = item)
+                            }
+                        }
+                    }
+
+
             }
-        }
+
+
     }
 }
 
@@ -394,37 +471,38 @@ fun <T> BasePopUpMenuIcon(
     event_onMenuItemSelected: (item: String) -> Unit,
 ) {
     var innerStateIsPopUpMenuExpanded by remember { mutableStateOf(false) }
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxHeight()
-        ) {
-            IconToPass(
-                state_icon = state_icon ,
-                event_OnClick = { innerStateIsPopUpMenuExpanded = true }
-            )
-            BaseDropDownMenu(
-                state_isPopUpMenuExpanded = innerStateIsPopUpMenuExpanded,
-                state_menuItems = state_menuItems,
-                event_onMenuItemSelected = { menuItem ->
-                    innerStateIsPopUpMenuExpanded = false
-                    if (menuItem.trim().isNotEmpty()) {
-                        event_onMenuItemSelected(menuItem)
-                    }
-                },
-            )
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxHeight()
+    ) {
+        IconToPass(
+            state_icon = state_icon,
+            event_OnClick = { innerStateIsPopUpMenuExpanded = true }
+        )
+        BaseDropDownMenu(
+            state_isPopUpMenuExpanded = innerStateIsPopUpMenuExpanded,
+            state_menuItems = state_menuItems,
+            event_onMenuItemSelected = { menuItem ->
+                innerStateIsPopUpMenuExpanded = false
+                if (menuItem.trim().isNotEmpty()) {
+                    event_onMenuItemSelected(menuItem)
+                }
+            },
+        )
     }
 }
+
 @Composable
 fun CategoryColorPopUpMenu(
-    event_onMenuItemSelected: (color : Long) -> Unit,
+    event_onMenuItemSelected: (color: Long) -> Unit,
 ) {
     var innerStateIsPopUpMenuExpanded by remember { mutableStateOf(false) }
     var innerStateColorSelectorTint by remember {
         mutableStateOf(Color.Transparent)
     }
 
-    val colorList : List<ColorItem> = listOf(
+    val colorList: List<ColorItem> = listOf(
         ColorItem(name = "Red", color = 0xfffe0000),
         ColorItem(name = "Yellow", color = 0xfffdfe02),
         ColorItem(name = "Green", color = 0xff0bff01),
@@ -437,8 +515,8 @@ fun CategoryColorPopUpMenu(
             .fillMaxHeight()
     ) {
         Icon(
-            imageVector =Icons.Default.Circle ,
-            contentDescription ="" ,
+            imageVector = Icons.Default.Circle,
+            contentDescription = "",
             modifier = Modifier
                 .clickable { innerStateIsPopUpMenuExpanded = true }
                 .fillMaxHeight()
@@ -456,9 +534,10 @@ fun CategoryColorPopUpMenu(
         ) {
             colorList.forEachIndexed { _, item ->
                 DropdownMenuItem(onClick = {
-                    innerStateIsPopUpMenuExpanded =false
+                    innerStateIsPopUpMenuExpanded = false
                     innerStateColorSelectorTint = Color(item.color)
-                    event_onMenuItemSelected(item.color) }) {
+                    event_onMenuItemSelected(item.color)
+                }) {
                     BaseInformationText(informationText = "${item.name} : ")
                     Icon(
                         imageVector = Icons.Default.Circle,
@@ -472,10 +551,10 @@ fun CategoryColorPopUpMenu(
     }
 }
 
-data class ColorItem(val name:String,val color : Long)
+data class ColorItem(val name: String, val color: Long)
 
 @Composable
-fun <T> IconToPass(state_icon: T, event_OnClick : ()-> Unit)  {
+fun <T> IconToPass(state_icon: T, event_OnClick: () -> Unit) {
     when (state_icon) {
         is ImageVector -> Icon(
             imageVector = state_icon,
@@ -519,10 +598,10 @@ fun BaseDropDownMenu(
             .wrapContentHeight()
     ) {
         state_menuItems.forEachIndexed { _, item ->
-            if(item.trim().isNotEmpty())
-            DropdownMenuItem(onClick = { event_onMenuItemSelected(item) }) {
-                Text(text = item)
-            }
+            if (item.trim().isNotEmpty())
+                DropdownMenuItem(onClick = { event_onMenuItemSelected(item) }) {
+                    Text(text = item)
+                }
         }
     }
 }

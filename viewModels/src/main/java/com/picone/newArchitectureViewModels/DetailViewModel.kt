@@ -91,7 +91,6 @@ class DetailViewModel @Inject constructor(
 
                     DELETE -> deleteUnderStain(detailAction)
 
-                    //todo don't update state??? why
                     START -> {
                         detailAction.underStain.start = Calendar.getInstance().time
                         viewModelScope.launch {

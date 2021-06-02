@@ -100,9 +100,6 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     //------------------------------------------------------------------------HOME
                     composable(AndroidNavObjects.Home.getRoute()) {
-
-                        //todo filter with title
-
                         DisposableEffect(key1 = homeViewModel) {
                             homeViewModel.onStart(AndroidNavObjects.Home.destination)
                             onDispose {

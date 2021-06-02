@@ -22,8 +22,6 @@ fun HomeTaskScreen(
     event_addCategoryOnOkButtonClicked : () -> Unit,
     event_addCategoryOnColorSelected : (color : Long) -> Unit,
     event_onFilterItemSelected : (item : String) -> Unit,
-
-
     ) {
     HomeScreen(
         state_topBarAddMenuItems = state_topBarAddMenuItems,
