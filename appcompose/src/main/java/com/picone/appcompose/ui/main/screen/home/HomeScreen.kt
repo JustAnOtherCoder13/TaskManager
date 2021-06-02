@@ -1,17 +1,16 @@
 package com.picone.appcompose.ui.main.screen.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.SetProgressDrawable
 import com.picone.appcompose.ui.main.baseComponent.*
@@ -21,7 +20,10 @@ import com.picone.core.domain.entity.Task
 import com.picone.core.util.Constants.DELETE
 import com.picone.core.util.Constants.EDIT
 import com.picone.core.util.Constants.FIRST_ELEMENT
+import com.picone.core.util.Constants.IMPORTANT
+import com.picone.core.util.Constants.NORMAL
 import com.picone.core.util.Constants.PASS_TO_TASK
+import com.picone.core.util.Constants.UNIMPORTANT
 
 
 @Composable
@@ -65,14 +67,14 @@ fun HomeScreen(
 @Composable
 fun TaskRecyclerView(
     state_allTasks: List<Task>,
-    state_importance: String,
+    event_onFilterItemSelected : (item : String) -> Unit,
     event_taskRecyclerViewOnTaskSelected: (item: Task) -> Unit,
     event_taskRecyclerViewOnMenuItemSelected: (String, task: Task) -> Unit,
     state_allCategories: List<Category>
 ) {
     BaseRecyclerView(
         items = state_allTasks,
-        tableHeaderView = { TaskImportanceSelector(importance = state_importance) },
+        tableHeaderView = { TaskImportanceSelector(state_allCategories, event_onFilterItemSelected) },
         itemView = { task ->
             TaskExpandableItem(
                 task,
@@ -156,19 +158,34 @@ private fun ExpandableTaskHeaderOptionIcon(
 }
 
 @Composable
-private fun TaskImportanceSelector(importance: String) {
-    //TODO add selector to filter by importance
+private fun TaskImportanceSelector( allCategories : List<Category>, onFilterItemSelected : (item : String) -> Unit) {
+
+    var innerStateSelectedFilterItem by remember {
+        mutableStateOf("All")
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = importance,
-            style = MaterialTheme.typography.h2,
-            color = MaterialTheme.colors.onSurface,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp)
-                .clip(RoundedCornerShape(5.dp))
-                .background(MaterialTheme.colors.surface)
+        val filterList = mutableListOf(
+            "All",
+            "Filter by importance : ",
+            IMPORTANT,
+            NORMAL,
+            UNIMPORTANT,
+            "Filter by category : ",
+        )
+        val categoriesToStringList : MutableList<String> = mutableListOf()
+
+        allCategories.forEachIndexed { _, category -> categoriesToStringList.add(category.name) }
+
+        filterList.addAll(categoriesToStringList)
+
+        HomeFilterDropDownMenu(
+            state_BaseSpinnerItemList = filterList ,
+            state_baseSpinnerHint = innerStateSelectedFilterItem,
+            event_onItemSelected = {
+                innerStateSelectedFilterItem = it
+                onFilterItemSelected(it)
+            }
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -188,7 +205,7 @@ fun ProjectRecyclerView(
                 BaseExpandableItemTitle(
                     itemName = project.name,
                     optionIcon = {
-                        
+
                         Row() {
                             Text(text = "${state_allCategories.filter { it.id == project.categoryId }[FIRST_ELEMENT].name} : ")
                             Icon(

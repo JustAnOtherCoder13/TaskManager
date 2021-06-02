@@ -1,6 +1,7 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         )
                         BaseViewModel.CompletionState.ADD_PROJECT_ON_COMPLETE -> addViewModel.dispatchEvent(
-                            AddActions.NavigateToProjectOnAddProjectComplete(
+                            AddActions.NavigateToProjectOnProjectComplete(
                                 androidNavActionManager = androidNavActionManager
                             )
                         )
@@ -81,6 +82,11 @@ class MainActivity : AppCompatActivity() {
                                 "Category added",
                                 Toast.LENGTH_SHORT
                             ).show()
+
+                        BaseViewModel.CompletionState.UPDATE_PROJECT_ON_COMPLETE -> { addViewModel.dispatchEvent(
+                            AddActions.NavigateToProjectOnProjectComplete(androidNavActionManager = androidNavActionManager)
+                            )
+                        }
 
                         else -> {
                         }
@@ -172,6 +178,11 @@ class MainActivity : AppCompatActivity() {
                             event_addCategoryOnColorSelected = {
                                 homeViewModel.dispatchEvent(
                                     HomeActions.AddCategoryOnColorSelected(it)
+                                )
+                            },
+                            event_onFilterItemSelected = {
+                                homeViewModel.dispatchEvent(
+                                    HomeActions.OnFilterItemSelected(it)
                                 )
                             }
                         )
@@ -315,7 +326,6 @@ class MainActivity : AppCompatActivity() {
                     composable(
                         route = "${AndroidNavObjects.Add.destination}/{${KEY_ITEM}}/{${KEY_EDIT_TASK}}/{${KEY_EDIT_PROJECT}}",
                         arguments = AndroidNavObjects.Add.arguments,
-
                         )
                     { backStackEntry ->
 

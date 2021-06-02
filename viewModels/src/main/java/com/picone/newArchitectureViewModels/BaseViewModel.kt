@@ -15,6 +15,7 @@ abstract class BaseViewModel : ViewModel() {
         ADD_PROJECT_ON_COMPLETE,
         UPDATE_TASK_ON_COMPLETE,
         ADD_CATEGORY_ON_COMPLETE,
+        UPDATE_PROJECT_ON_COMPLETE,
     }
 
 }

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.picone.core.domain.entity.Category
@@ -16,14 +15,19 @@ import com.picone.core.domain.interactor.project.DeleteProjectInteractor
 import com.picone.core.domain.interactor.project.GetAllProjectInteractor
 import com.picone.core.domain.interactor.task.DeleteTaskInteractor
 import com.picone.core.domain.interactor.task.GetAllTasksInteractor
-import com.picone.core.util.Constants
 import com.picone.core.util.Constants.CATEGORY
 import com.picone.core.util.Constants.DELETE
 import com.picone.core.util.Constants.EDIT
+import com.picone.core.util.Constants.FIRST_ELEMENT
+import com.picone.core.util.Constants.IMPORTANCE_LIST
+import com.picone.core.util.Constants.IMPORTANT
+import com.picone.core.util.Constants.NORMAL
 import com.picone.core.util.Constants.PASS_TO_TASK
+import com.picone.core.util.Constants.UNIMPORTANT
 import com.picone.core.util.Constants.UnknownProject
 import com.picone.core.util.Constants.UnknownTask
 import com.picone.newArchitectureViewModels.androidUiManager.HomeAction
+import com.picone.newArchitectureViewModels.androidUiManager.androidActions.AddActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.HomeActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,6 +59,7 @@ class HomeViewModel @Inject constructor(
     private var collectTasks: Job? = null
     private var collectProjects: Job? = null
     private var collectCategories: Job? = null
+    private var filterTasks: Job? = null
 
     fun onStart(destination: String) {
         collectCategories = viewModelScope.launch {
@@ -77,11 +82,7 @@ class HomeViewModel @Inject constructor(
 
     fun dispatchEvent(homeAction: HomeAction) {
         when (homeAction) {
-            is HomeActions.OnHomeCreated -> collectTasks = viewModelScope.launch {
-                mGetAllTasksInteractor.allTasksFlow.collect {
-                    mAllTasksState.value = it
-                }
-            }
+            is HomeActions.OnHomeCreated -> getAllTasks()
 
             is HomeActions.OnProjectCreated -> collectProjects = viewModelScope.launch {
                 mGetAllProjectInteractor.allProjectsFlow.collect {
@@ -165,10 +166,68 @@ class HomeViewModel @Inject constructor(
                         mDeleteProjectInteractor.deleteProject(homeAction.project)
                     }
                 }
+            }
+            is HomeActions.OnFilterItemSelected ->{
+                when(homeAction.selectedItem){
+                    "All"->{
+                        getAllTasks()
+                        Log.i("TAG", "dispatchEvent: all")
+                    }
+                    IMPORTANT->{
+                        filterTasks = viewModelScope.launch {
+                            mGetAllTasksInteractor.allTasksFlow.collect {
+                                mAllTasksState.value = it.filter { task ->
+                                    if (task.importance>=0)
+                                        IMPORTANCE_LIST[task.importance] == IMPORTANT
+                                    else false
+                                }
+                            }
+                        }
+                        Log.i("TAG", "dispatchEvent:  important")
+                    }
+                    NORMAL->{
+                        filterTasks = viewModelScope.launch {
+                            mGetAllTasksInteractor.allTasksFlow.collect {
+                                mAllTasksState.value = it.filter { task ->
+                                    if (task.importance>=0)
+                                        IMPORTANCE_LIST[task.importance] == NORMAL
+                                    else false
+                                }
+                            }
+                        }
+                        Log.i("TAG", "dispatchEvent: normal")
+                    }
+                    UNIMPORTANT->{
+                        filterTasks = viewModelScope.launch {
+                            mGetAllTasksInteractor.allTasksFlow.collect {
+                                mAllTasksState.value = it.filter { task ->
+                                    if (task.importance>=0)
+                                        IMPORTANCE_LIST[task.importance] == UNIMPORTANT
+                                    else false
+                                }
+                            }
+                        }
+                        Log.i("TAG", "dispatchEvent: unimportant")
+                    }
+                    mAllCategoriesState.value.filter { it.name == homeAction.selectedItem }[FIRST_ELEMENT].name ->{
+                        mAllTasksState.value = mAllTasksState.value.filter { task ->
+                            mAllCategoriesState.value.filter{ category ->
+                            category.id == task.categoryId
+                        }[FIRST_ELEMENT].id == task.categoryId  }
+                        Log.d("TAG", "dispatchEvent: "+homeAction.selectedItem)}
+                }
 
             }
 
 
+        }
+    }
+
+    private fun getAllTasks() {
+        collectTasks = viewModelScope.launch {
+            mGetAllTasksInteractor.allTasksFlow.collect {
+                mAllTasksState.value = it
+            }
         }
     }
 
@@ -212,6 +271,7 @@ class HomeViewModel @Inject constructor(
         collectCategories?.cancel()
         collectProjects?.cancel()
         collectTasks?.cancel()
+        filterTasks?.cancel()
     }
 
 }

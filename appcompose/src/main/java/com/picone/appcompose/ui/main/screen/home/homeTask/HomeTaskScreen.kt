@@ -20,9 +20,11 @@ fun HomeTaskScreen(
     event_topBarAddCategoryPopUpOnDismiss: () -> Unit,
     event_addCategoryOnTextChange: (text: String) -> Unit,
     event_addCategoryOnOkButtonClicked : () -> Unit,
-    event_addCategoryOnColorSelected : (color : Long) -> Unit
+    event_addCategoryOnColorSelected : (color : Long) -> Unit,
+    event_onFilterItemSelected : (item : String) -> Unit,
 
-) {
+
+    ) {
     HomeScreen(
         state_topBarAddMenuItems = state_topBarAddMenuItems,
         state_currentRoute = state_currentRoute,
@@ -34,7 +36,7 @@ fun HomeTaskScreen(
         mainContent = {
             TaskRecyclerView(
                 state_allTasks = state_allTasks,
-                state_importance = "all",
+                event_onFilterItemSelected = event_onFilterItemSelected,
                 event_taskRecyclerViewOnTaskSelected = event_taskRecyclerViewOnTaskSelected,
                 event_taskRecyclerViewOnMenuItemSelected = event_taskRecyclerViewOnMenuItemSelected,
                 state_allCategories = state_allCategories

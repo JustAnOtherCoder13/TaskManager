@@ -254,6 +254,59 @@ fun BaseSpinner(
 }
 
 @Composable
+fun HomeFilterDropDownMenu(
+    state_BaseSpinnerItemList: List<String>,
+    state_baseSpinnerHint: String,
+    event_onItemSelected: (item: String) -> Unit
+) {
+    var innerStateIsExpanded by remember { mutableStateOf(false) }
+
+    Row(modifier = Modifier
+        .animateContentSize()
+        .clickable { innerStateIsExpanded = !innerStateIsExpanded }
+        .padding(5.dp)
+        .clip(RoundedCornerShape(5.dp))
+        .background(MaterialTheme.colors.surface),
+        verticalAlignment = Alignment.CenterVertically
+
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = state_baseSpinnerHint,
+                style = MaterialTheme.typography.h2,
+                color = MaterialTheme.colors.onSurface,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(MaterialTheme.colors.surface)
+            )
+            Icon(
+                imageVector = if (innerStateIsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                contentDescription = null,
+            )
+        }
+        DropdownMenu(
+            expanded = innerStateIsExpanded,
+            onDismissRequest = { innerStateIsExpanded = false },
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight()
+        ) {
+            state_BaseSpinnerItemList.forEachIndexed { _, item ->
+                DropdownMenuItem(onClick = {
+                    innerStateIsExpanded = false
+                    event_onItemSelected(item)
+                }) {
+                    Text(text = item)
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun BaseDatePickerClickableIcon(
     state_datePickerIconDateText: String,
     event_onDatePickerIconClicked: () -> Unit

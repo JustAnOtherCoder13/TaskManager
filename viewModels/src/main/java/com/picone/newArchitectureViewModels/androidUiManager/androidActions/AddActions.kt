@@ -18,7 +18,7 @@ object AddActions  {
     data class AddScreenAddNewItemOnOkButtonClicked(val selectedItemType : String, val editedTask : Task?, val editedProject : Project?) : AddAction
     data class NavigateToDetailOnAddTaskComplete(override val androidNavActionManager: AndroidNavActionManager):
         AddNavAction
-    data class NavigateToProjectOnAddProjectComplete(override val androidNavActionManager: AndroidNavActionManager):
+    data class NavigateToProjectOnProjectComplete(override val androidNavActionManager: AndroidNavActionManager):
         AddNavAction
     data class NavigateToHomeOnUpdateTaskComplete(override val androidNavActionManager: AndroidNavActionManager) : AddNavAction
     data class DeleteProjectOnProjectPassInTaskComplete(val project: Project) : AddAction

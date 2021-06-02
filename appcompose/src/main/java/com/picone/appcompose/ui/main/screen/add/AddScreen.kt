@@ -47,7 +47,7 @@ fun AddScreen(
     val categoriesToStringList : MutableList<String> = mutableListOf()
 
 
-    state_addScreenAllCategories.forEachIndexed { _, category -> categoriesToStringList.add(category.name!!) }
+    state_addScreenAllCategories.forEachIndexed { _, category -> categoriesToStringList.add(category.name) }
 
     LazyColumn(
         modifier = Modifier

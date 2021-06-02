@@ -13,21 +13,21 @@ object HomeActions : HomeAction {
     object CloseCategoryPopUp : HomeAction
 
 
-    data class OnDeleteTaskSelected(val task : Task) :HomeAction
+    data class OnDeleteTaskSelected(val task: Task) : HomeAction
 
     data class AddCategoryOnOkButtonClicked(
         override val androidNavActionManager: AndroidNavActionManager,
-        ) : HomeNavAction
+    ) : HomeNavAction
 
     data class AddCategoryOnColorSelected(val color: Long) : HomeAction
 
-    data class AddCategoryOnTextChange(val name : String) : HomeAction
+    data class AddCategoryOnTextChange(val name: String) : HomeAction
 
     data class OnEditTaskSelected(
         override val androidNavActionManager: AndroidNavActionManager,
         val selectedItem: String,
         val task: Task
-        ): HomeNavAction
+    ) : HomeNavAction
 
     data class BottomNavBarOnNavItemSelected(
         override val androidNavActionManager: AndroidNavActionManager,
@@ -42,12 +42,14 @@ object HomeActions : HomeAction {
 
     data class TaskRecyclerViewOnTaskSelected(
         override val androidNavActionManager: AndroidNavActionManager,
-        val selectedTask : Task
+        val selectedTask: Task
     ) : HomeNavAction
 
     data class ProjectRecyclerViewOnMenuItemSelected(
         override val androidNavActionManager: AndroidNavActionManager,
         val selectedItem: String,
-        val project : Project
+        val project: Project
     ) : HomeNavAction
+
+    data class OnFilterItemSelected(val selectedItem: String) : HomeAction
 }
