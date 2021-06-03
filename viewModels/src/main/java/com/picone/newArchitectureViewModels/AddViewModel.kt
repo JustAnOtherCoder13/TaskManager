@@ -54,8 +54,7 @@ class AddViewModel @Inject constructor(
     var mNewItemName: MutableState<String> = mutableStateOf("")
     var mNewItemDescription: MutableState<String> = mutableStateOf("")
     var mIsOkButtonEnable: MutableState<Boolean> = mutableStateOf(false)
-    var completionState: MutableLiveData<CompletionState> =
-        MutableLiveData(CompletionState.ON_START)
+    public override var completionState: MutableLiveData<CompletionState> = MutableLiveData(CompletionState.ON_START)
 
     private var collectTasks: Job? = null
     private var collectAllCategories: Job? = null
@@ -303,7 +302,7 @@ class AddViewModel @Inject constructor(
             ).parse(mNewTaskSelectedDeadLine.value)
         else null
 
-    private fun resetStates() {
+     override fun resetStates() {
         completionState.value = CompletionState.ON_START
         mNewTaskSelectedDeadLine.value = ""
         mNewTaskImportance.value = "Importance"

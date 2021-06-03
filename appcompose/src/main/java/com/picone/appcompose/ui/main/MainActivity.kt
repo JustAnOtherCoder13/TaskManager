@@ -1,6 +1,7 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 val completionStateObserver = Observer<BaseViewModel.CompletionState> {
+                    Log.d("TAG", "onCreate: $it")
                     when (it) {
                         BaseViewModel.CompletionState.ADD_TASK_ON_COMPLETE -> addViewModel.dispatchEvent(
                             AddActions.NavigateToDetailOnAddTaskComplete(
@@ -113,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                             homeViewModel.onStart(AndroidNavObjects.Home.destination)
                             onDispose {
                                 homeViewModel.completionState.removeObserver(completionStateObserver)
-                                homeViewModel.onStop()
+                                homeViewModel.resetStates()
                             }
                         }
 
@@ -152,14 +154,14 @@ class MainActivity : AppCompatActivity() {
                                 event_taskRecyclerViewOnMenuItemSelected = { menuItem, task ->
                                     when (menuItem) {
                                         DELETE -> homeViewModel.dispatchEvent(
-                                            HomeActions.OnDeleteTaskSelected(
+                                            HomeActions.TaskRecyclerViewOnDeleteTaskSelected(
                                                 task
                                             )
                                             //todo pop up to confirm delete
                                         )
                                         EDIT -> {
                                             homeViewModel.dispatchEvent(
-                                                HomeActions.OnEditTaskSelected(
+                                                HomeActions.TaskRecyclerViewOnEditTaskSelected(
                                                     androidNavActionManager = androidNavActionManager,
                                                     selectedItem = "null",
                                                     task = task
@@ -168,7 +170,7 @@ class MainActivity : AppCompatActivity() {
                                         }
                                     }
                                 },
-                                state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpanded.value,
+                                state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpandedState.value,
                                 event_topBarAddCategoryPopUpOnDismiss = {
                                     homeViewModel.dispatchEvent(
                                         HomeActions.CloseCategoryPopUp
@@ -206,7 +208,7 @@ class MainActivity : AppCompatActivity() {
 
                         DisposableEffect(key1 = homeViewModel) {
                             homeViewModel.onStart(AndroidNavObjects.Project.destination)
-                            onDispose { homeViewModel.onStop() }
+                            onDispose { homeViewModel.resetStates() }
                         }
 
                         HorizontalAnimationRightToLeft {
@@ -232,7 +234,7 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 },
                                 state_currentRoute = navBackStackEntry?.destination?.route,
-                                state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpanded.value,
+                                state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpandedState.value,
                                 event_topBarAddCategoryPopUpOnDismiss = {
                                     homeViewModel.dispatchEvent(
                                         HomeActions.CloseCategoryPopUp
