@@ -2,16 +2,25 @@ package com.picone.newArchitectureViewModels
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picone.core.compose.DetailAction
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
+import com.picone.core.domain.interactor.task.UpdateTaskInteractor
 import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
+import com.picone.core.domain.interactor.underStain.DeleteUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
-import com.picone.core.domain.interactor.underStain.GetAllUnderStainsInteractor
+import com.picone.core.domain.interactor.underStain.UpdateUnderStainInteractor
+import com.picone.core.util.Constants.CLOSE
+import com.picone.core.util.Constants.DELETE
+import com.picone.core.util.Constants.EDIT
+import com.picone.core.util.Constants.START
+import com.picone.newArchitectureViewModels.androidUiManager.DetailAction
+import com.picone.newArchitectureViewModels.androidUiManager.androidActions.DetailActions
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -20,48 +29,131 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val mGetAllUnderStainsInteractor: GetAllUnderStainsInteractor,
     private val mGetAllUnderStainForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor,
-    private val mAddNewUnderStainInteractor: AddNewUnderStainInteractor
-) : ViewModel() {
+    private val mAddNewUnderStainInteractor: AddNewUnderStainInteractor,
+    private val mDeleteUnderStainInteractor: DeleteUnderStainInteractor,
+    private val mUpdateUnderStainInteractor: UpdateUnderStainInteractor,
+    private val mUpdateTaskInteractor: UpdateTaskInteractor
+) : BaseViewModel() {
 
-    var mAllUnderStainsForTaskState: MutableState<List<UnderStain>> = mutableStateOf(emptyList())
+    var mAllUnderStainsForTaskState: MutableState<List<State<UnderStain>>> = mutableStateOf(emptyList())
     var mIsAddUnderStainComponentVisible: MutableState<Boolean> = mutableStateOf(false)
+    var mEditedUnderStain: MutableState<UnderStain?> = mutableStateOf(null)
     var mNewUnderStainSelectedDeadLine: MutableState<String> = mutableStateOf("")
-    var mNewUnderStainSelectedTaskId: MutableState<Int> = mutableStateOf(0)
-    var mNewUnderStainName: MutableState<String> = mutableStateOf("")
-    var mNewUnderStainDescription: MutableState<String> = mutableStateOf("")
+    private var mNewUnderStainSelectedTaskId: MutableState<Int> = mutableStateOf(0)
     var mNewUnderStainId: MutableState<Int> = mutableStateOf(0)
+    var mEditedUnderStainName: MutableState<String> = mutableStateOf("")
+    var mEditedUnderStainDescription: MutableState<String> = mutableStateOf("")
 
-    fun onStart(selectedTask: Task) = dispatchEvent(DetailActions.OnDetailCreated(selectedTask))
+    private var collectAllUnderStainsForTask : Job? =null
+
+    fun onStart(selectedTask: Task) {
+        dispatchEvent(DetailActions.OnDetailCreated(selectedTask))
+    }
+
     fun onStop() = resetStates()
 
-    fun dispatchEvent(action: DetailAction) {
-        when (action) {
+    fun dispatchEvent(detailAction: DetailAction) {
+        when (detailAction) {
             is DetailActions.OnDetailCreated ->
-                getAllUnderStainsForTask(action)
+                getAllUnderStainsForTask(detailAction)
 
             is DetailActions.OnAddUnderStainButtonClick ->
-                updateIsAddComponentVisible(true)
+                isAddUnderStainComponentVisible(true)
 
             is DetailActions.AddUnderStainButtonOnCancelButtonClicked -> {
-                updateIsAddComponentVisible(false)
-                mNewUnderStainSelectedDeadLine.value = ""
+                resetAddUnderStainComponent()
             }
 
             is DetailActions.OnDatePickerIconClickedOnDateSelected ->
-                updateSelectedDeadline(action)
+                updateSelectedDeadline(detailAction)
 
             is DetailActions.NameEditTextOnTextChange ->
-                updateNewUnderStainName(action)
+                updateNewUnderStainName(detailAction)
 
             is DetailActions.DescriptionEditTextOnTextChange ->
-                updateNewUnderStainDescription(action)
+                updateNewUnderStainDescription(detailAction)
 
             is DetailActions.AddUnderStainButtonOnOkButtonClicked -> {
-                getNewUnderStainId()
-                addNewUnderStain()
+                if (mEditedUnderStain.value!=null) {
+                    viewModelScope.launch {
+                        updateEditedUnderStain()
+                        resetAddUnderStainComponent()
+                    }
+                } else addNewUnderStain()
+
+                resetAddUnderStainComponent()
             }
+
+            is DetailActions.OnUnderStainMenuItemSelected -> {
+                when (detailAction.selectedItem) {
+                    EDIT ->  updateAddUnderStainComponentValue(detailAction)
+
+                    DELETE -> deleteUnderStain(detailAction)
+
+                    START -> {
+                        val startDate = Calendar.getInstance().time
+                        detailAction.underStain.start = startDate
+                        viewModelScope.launch {
+                            mUpdateUnderStainInteractor.updateUnderStain(detailAction.underStain)
+                        }
+                        if (detailAction.selectedTask.start == null) {
+                            detailAction.selectedTask.start = startDate
+                            viewModelScope.launch {
+                                mUpdateTaskInteractor.updateTask(detailAction.selectedTask)
+                            }
+                        }
+                    }
+
+                    CLOSE -> {
+                        detailAction.underStain.close = Calendar.getInstance().time
+                        viewModelScope.launch {
+                            mUpdateUnderStainInteractor.updateUnderStain(detailAction.underStain)
+                        }
+                        //todo if all under stains closed pop up "would you like to close this task?"
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun updateEditedUnderStain() {
+        mUpdateUnderStainInteractor.updateUnderStain(
+            UnderStain(
+                id = mEditedUnderStain.value?.id!!,
+                taskId = mEditedUnderStain.value?.taskId!!,
+                name = mEditedUnderStainName.value,
+                description = mEditedUnderStainDescription.value,
+                start = mEditedUnderStain.value?.start,
+                deadLine = getSelectedDeadLineOrNull(),
+                close = mEditedUnderStain.value?.close
+            )
+        )
+    }
+
+    private fun updateAddUnderStainComponentValue(detailAction: DetailActions.OnUnderStainMenuItemSelected) {
+        mEditedUnderStain.value = detailAction.underStain
+        isAddUnderStainComponentVisible(true)
+        mNewUnderStainSelectedDeadLine.value =
+            if (detailAction.underStain.deadLine != null) SimpleDateFormat(
+                "dd/MM/yyyy",
+                Locale.FRANCE
+            ).format(detailAction.underStain.deadLine!!) else ""
+        mEditedUnderStainDescription.value = detailAction.underStain.description
+        mEditedUnderStainName.value = detailAction.underStain.name
+    }
+
+    private fun resetAddUnderStainComponent() {
+        isAddUnderStainComponentVisible(false)
+        mEditedUnderStain.value = null
+        mNewUnderStainSelectedDeadLine.value = ""
+        mEditedUnderStainName.value = ""
+        mEditedUnderStainDescription.value = ""
+    }
+
+    private fun deleteUnderStain(detailAction: DetailActions.OnUnderStainMenuItemSelected) {
+        viewModelScope.launch {
+            mDeleteUnderStainInteractor.deleteUnderStain(detailAction.underStain)
         }
     }
 
@@ -70,10 +162,9 @@ class DetailViewModel @Inject constructor(
             try {
                 mAddNewUnderStainInteractor.addNewUnderStain(
                     underStain = UnderStain(
-                        id = mNewUnderStainId.value,
                         taskId = mNewUnderStainSelectedTaskId.value,
-                        name = mNewUnderStainName.value,
-                        description = mNewUnderStainDescription.value,
+                        name = mEditedUnderStainName.value,
+                        description = mEditedUnderStainDescription.value,
                         start = null,
                         deadLine = getSelectedDeadLineOrNull(),
                         close = null
@@ -81,7 +172,6 @@ class DetailViewModel @Inject constructor(
                 )
                 mIsAddUnderStainComponentVisible.value = false
                 mNewUnderStainSelectedDeadLine.value = ""
-                //reset dead line
             } catch (e: Exception) {
                 Log.i("TAG", "addNewUnderStain: $e")
             }
@@ -89,20 +179,12 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    private fun getNewUnderStainId() {
-        viewModelScope.launch {
-            mGetAllUnderStainsInteractor.getAllUnderStains().collect {
-                mNewUnderStainId.value = it.size + 1
-            }
-        }
-    }
-
     private fun updateNewUnderStainName(action: DetailActions.NameEditTextOnTextChange) {
-        mNewUnderStainName.value = action.underStainName
+        mEditedUnderStainName.value = action.underStainName
     }
 
     private fun updateNewUnderStainDescription(action: DetailActions.DescriptionEditTextOnTextChange) {
-        mNewUnderStainDescription.value = action.underStainDescription
+        mEditedUnderStainDescription.value = action.underStainDescription
     }
 
     private fun getSelectedDeadLineOrNull() =
@@ -112,32 +194,32 @@ class DetailViewModel @Inject constructor(
                 Locale.FRANCE
             ).parse(mNewUnderStainSelectedDeadLine.value)
         else null
-
     private fun getAllUnderStainsForTask(action: DetailActions.OnDetailCreated) {
+        collectAllUnderStainsForTask =
         viewModelScope.launch {
             mGetAllUnderStainForTaskIdInteractor.getAllUnderStainForTaskId(taskId = action.task.id)
-                .collect {
-                    mAllUnderStainsForTaskState.value = it.toMutableList()
-                    mNewUnderStainSelectedTaskId.value = action.task.id
-                }
+                .catch { exception -> Log.e("TAG", "getAllUnderStainsForTask: ",exception ) }
+                .collect { mAllUnderStainsForTaskState.value = it }
         }
+        mNewUnderStainSelectedTaskId.value = action.task.id
     }
 
     private fun updateSelectedDeadline(action: DetailActions.OnDatePickerIconClickedOnDateSelected) {
         mNewUnderStainSelectedDeadLine.value = action.selectedDate
     }
 
-    private fun updateIsAddComponentVisible(isVisible: Boolean) {
+    private fun isAddUnderStainComponentVisible(isVisible: Boolean) {
         mIsAddUnderStainComponentVisible.value = isVisible
     }
 
     private fun resetStates() {
-        mAllUnderStainsForTaskState.value = emptyList()
         mIsAddUnderStainComponentVisible.value = false
+        mEditedUnderStain.value = null
         mNewUnderStainSelectedDeadLine.value = ""
         mNewUnderStainSelectedTaskId.value = 0
-        mNewUnderStainName.value = ""
-        mNewUnderStainDescription.value = ""
+        mEditedUnderStainName.value = ""
+        mEditedUnderStainDescription.value = ""
         mNewUnderStainId.value = 0
+        collectAllUnderStainsForTask?.cancel()
     }
 }

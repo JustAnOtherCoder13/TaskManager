@@ -17,8 +17,8 @@ import java.util.*
     )]
 )
 data class UnderStain(
-    @PrimaryKey(autoGenerate = true) val id: Int,
-
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     @ColumnInfo(index = true) val taskId: Int,
     val name: String,
     val description: String,
