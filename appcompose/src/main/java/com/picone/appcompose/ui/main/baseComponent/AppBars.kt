@@ -64,8 +64,12 @@ fun AddCategoryPopUp(
     event_addCategoryOnColorSelected : (color : Long) -> Unit
 ) {
 
+    var innerStateSelectedColor : Long by remember {
+        mutableStateOf(0L)
+    }
     var innerStateName by remember { mutableStateOf("") }
     event_baseEditTextOnTextChange(innerStateName)
+    event_addCategoryOnColorSelected(innerStateSelectedColor)
 
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -92,13 +96,15 @@ fun AddCategoryPopUp(
                 Spacer(modifier = Modifier.height(5.dp))
                 Row() {
                     Text(text = "Color : ")
-                    CategoryColorPopUpMenu(event_onMenuItemSelected = event_addCategoryOnColorSelected)
+                    CategoryColorPopUpMenu(
+                        event_onMenuItemSelected = { innerStateSelectedColor = it }
+                    )
                 }
                 Spacer(modifier = Modifier.height(5.dp))
                 BaseOkAndCancelButtons(
                     event_onOkButtonClicked = event_addCategoryOnOkButtonClicked,
                     event_onCancelButtonClicked = event_OnDismiss,
-                    state_isOkButtonEnable = innerStateName.trim().isNotEmpty()
+                    state_isOkButtonEnable = innerStateName.trim().isNotEmpty() && innerStateSelectedColor != 0L
                 )
 
             }

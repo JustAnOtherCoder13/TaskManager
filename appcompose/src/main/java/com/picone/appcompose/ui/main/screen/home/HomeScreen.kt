@@ -1,13 +1,12 @@
 package com.picone.appcompose.ui.main.screen.home
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,10 +19,7 @@ import com.picone.core.domain.entity.Task
 import com.picone.core.util.Constants.DELETE
 import com.picone.core.util.Constants.EDIT
 import com.picone.core.util.Constants.FIRST_ELEMENT
-import com.picone.core.util.Constants.IMPORTANT
-import com.picone.core.util.Constants.NORMAL
 import com.picone.core.util.Constants.PASS_TO_TASK
-import com.picone.core.util.Constants.UNIMPORTANT
 
 
 @Composable

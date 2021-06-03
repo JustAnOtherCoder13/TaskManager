@@ -1,9 +1,9 @@
 package com.picone.newArchitectureViewModels.androidUiManager.androidActions
 
 import com.picone.core.domain.entity.Project
+import com.picone.core.domain.entity.Task
 import com.picone.newArchitectureViewModels.androidUiManager.HomeAction
 import com.picone.newArchitectureViewModels.androidUiManager.HomeNavAction
-import com.picone.core.domain.entity.Task
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavActionManager
 
 object HomeActions : HomeAction {

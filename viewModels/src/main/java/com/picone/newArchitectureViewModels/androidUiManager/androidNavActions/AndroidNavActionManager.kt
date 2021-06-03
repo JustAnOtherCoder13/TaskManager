@@ -1,7 +1,6 @@
 package com.picone.newArchitectureViewModels.androidUiManager.androidNavActions
 
 import androidx.navigation.NavController
-import com.google.gson.Gson
 
 class AndroidNavActionManager(private val navController: NavController) {
 

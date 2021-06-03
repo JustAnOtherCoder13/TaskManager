@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.picone.core.domain.entity.Task
 import com.picone.core.domain.entity.UnderStain
+import com.picone.core.domain.interactor.task.UpdateTaskInteractor
 import com.picone.core.domain.interactor.underStain.AddNewUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.DeleteUnderStainInteractor
 import com.picone.core.domain.interactor.underStain.GetAllUnderStainForTaskIdInteractor
@@ -21,8 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,7 +32,8 @@ class DetailViewModel @Inject constructor(
     private val mGetAllUnderStainForTaskIdInteractor: GetAllUnderStainForTaskIdInteractor,
     private val mAddNewUnderStainInteractor: AddNewUnderStainInteractor,
     private val mDeleteUnderStainInteractor: DeleteUnderStainInteractor,
-    private val mUpdateUnderStainInteractor: UpdateUnderStainInteractor
+    private val mUpdateUnderStainInteractor: UpdateUnderStainInteractor,
+    private val mUpdateTaskInteractor: UpdateTaskInteractor
 ) : BaseViewModel() {
 
     var mAllUnderStainsForTaskState: MutableState<List<State<UnderStain>>> = mutableStateOf(emptyList())
@@ -92,9 +92,16 @@ class DetailViewModel @Inject constructor(
                     DELETE -> deleteUnderStain(detailAction)
 
                     START -> {
-                        detailAction.underStain.start = Calendar.getInstance().time
+                        val startDate = Calendar.getInstance().time
+                        detailAction.underStain.start = startDate
                         viewModelScope.launch {
                             mUpdateUnderStainInteractor.updateUnderStain(detailAction.underStain)
+                        }
+                        if (detailAction.selectedTask.start == null) {
+                            detailAction.selectedTask.start = startDate
+                            viewModelScope.launch {
+                                mUpdateTaskInteractor.updateTask(detailAction.selectedTask)
+                            }
                         }
                     }
 
@@ -103,6 +110,7 @@ class DetailViewModel @Inject constructor(
                         viewModelScope.launch {
                             mUpdateUnderStainInteractor.updateUnderStain(detailAction.underStain)
                         }
+                        //todo if all under stains closed pop up "would you like to close this task?"
                     }
                 }
             }

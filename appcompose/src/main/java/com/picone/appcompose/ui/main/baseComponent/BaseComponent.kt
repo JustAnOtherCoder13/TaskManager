@@ -12,7 +12,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.core.domain.entity.Category
 import com.picone.core.util.Constants
-import java.util.*
 
 @Composable
 fun BaseOkAndCancelButtons(
@@ -143,6 +145,7 @@ fun <T> BaseRecyclerView(
                 .clip(RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp))
                 .border(2.dp, MaterialTheme.colors.onSurface)
                 .background(MaterialTheme.colors.secondaryVariant)
+                .fillMaxWidth()
 
         ) {
             if (tableHeaderView != null) {

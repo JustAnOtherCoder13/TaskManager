@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,13 +17,7 @@ import com.picone.appcompose.ui.main.baseComponent.BaseDatePickerClickableIcon
 import com.picone.appcompose.ui.main.baseComponent.BaseEditText
 import com.picone.appcompose.ui.main.baseComponent.BaseSpinner
 import com.picone.core.domain.entity.Category
-import com.picone.core.domain.entity.Project
-import com.picone.core.domain.entity.Task
-import com.picone.core.util.Constants.FIRST_ELEMENT
 import com.picone.core.util.Constants.IMPORTANCE_LIST
-import com.picone.core.util.Constants.IMPORTANT
-import com.picone.core.util.Constants.NORMAL
-import com.picone.core.util.Constants.UNIMPORTANT
 
 
 @Composable

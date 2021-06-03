@@ -1,9 +1,9 @@
 package com.picone.appcompose.ui.main.test
 
-import com.picone.newArchitectureViewModels.androidUiManager.UiAction
-import com.picone.newArchitectureViewModels.androidUiManager.UiState
 import com.picone.core.domain.entity.Task
 import com.picone.newArchitectureViewModels.HomeViewModel
+import com.picone.newArchitectureViewModels.androidUiManager.UiAction
+import com.picone.newArchitectureViewModels.androidUiManager.UiState
 
 typealias Reducer <S> = (S, UiAction) -> S
 
