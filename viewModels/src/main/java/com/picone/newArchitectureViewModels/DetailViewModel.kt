@@ -131,8 +131,8 @@ class DetailViewModel @Inject constructor(
     )
 
     private val editedUnderStain = UnderStain(
-        id = mEditedUnderStainState.value?.id!!,
-        taskId = mEditedUnderStainState.value?.taskId!!,
+        id = mEditedUnderStainState.value?.id?:-1,
+        taskId = mEditedUnderStainState.value?.taskId?:-1,
         name = mEditedUnderStainNameState.value,
         description = mEditedUnderStainDescriptionState.value,
         start = mEditedUnderStainState.value?.start,

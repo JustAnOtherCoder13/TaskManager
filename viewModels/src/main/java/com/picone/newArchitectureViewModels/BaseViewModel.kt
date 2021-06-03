@@ -29,7 +29,9 @@ abstract class BaseViewModel : ViewModel() {
         COLLECT_PROJECTS,
         COLLECT_CATEGORIES,
         FILTER_TASKS,
-        COLLECT_UNDER_STAIN_FOR_TASK
+        COLLECT_UNDER_STAIN_FOR_TASK,
+        COLLECT_TASKS_ON_ADD,
+        COLLECT_CATEGORIES_ON_ADD
     }
 
     private var collectTasks: Job? = null
@@ -43,16 +45,25 @@ abstract class BaseViewModel : ViewModel() {
         JobList.COLLECT_PROJECTS to collectProjects,
         JobList.COLLECT_CATEGORIES to collectCategories,
         JobList.FILTER_TASKS to filterTasks,
-        JobList.COLLECT_UNDER_STAIN_FOR_TASK to collectAllUnderStainsForTask
+        JobList.COLLECT_UNDER_STAIN_FOR_TASK to collectAllUnderStainsForTask,
+
+    )
+    val jobListAddCollector: MutableMap<JobList, Job?> = mutableMapOf(
+        JobList.COLLECT_TASKS_ON_ADD to collectTasks,
+        JobList.COLLECT_CATEGORIES_ON_ADD to collectCategories
     )
     protected open fun resetStates(){
         jobListCollector.forEach{ it.value?.cancel()}
+        jobListAddCollector.forEach{it.value?.cancel()}
     }
 
-    protected fun launchCoroutine(block: suspend CoroutineScope.() -> Unit) :Job?{
+    protected fun launchCoroutine(block: suspend CoroutineScope.() -> Unit) : Job {
         return viewModelScope.launch {
             completionState.value = CompletionState.ON_LOADING
-            try { block() }
+            try {
+                block()
+                completionState.value = CompletionState.ON_START
+            }
             catch (e:java.lang.Exception){
                 handleException(e)
             }

@@ -212,9 +212,7 @@ class HomeViewModel @Inject constructor(
 
     //COROUTINES ONE SHOT DELETE OR WRITE--------------------------------------------------------------------------------------------
     private fun addNewCategory() {
-        launchCoroutine(
-            onComplete = CompletionState.ADD_CATEGORY_ON_COMPLETE
-        ) {
+        launchCoroutine(CompletionState.ADD_CATEGORY_ON_COMPLETE) {
             mAddNewCategoryInteractor.addNewCategory(newCategory())
         }
     }

@@ -360,7 +360,7 @@ class MainActivity : AppCompatActivity() {
                             )
                             onDispose {
                                 addViewModel.completionState.removeObservers(this@MainActivity)
-                                addViewModel.onStop()
+                                addViewModel.resetStates()
                             }
                         }
 
