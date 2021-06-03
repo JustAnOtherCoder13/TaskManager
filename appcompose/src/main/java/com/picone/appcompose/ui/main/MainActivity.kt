@@ -152,23 +152,7 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 },
                                 event_taskRecyclerViewOnMenuItemSelected = { menuItem, task ->
-                                    when (menuItem) {
-                                        DELETE -> homeViewModel.dispatchEvent(
-                                            HomeActions.TaskRecyclerViewOnDeleteTaskSelected(
-                                                task
-                                            )
-                                            //todo pop up to confirm delete
-                                        )
-                                        EDIT -> {
-                                            homeViewModel.dispatchEvent(
-                                                HomeActions.TaskRecyclerViewOnEditTaskSelected(
-                                                    androidNavActionManager = androidNavActionManager,
-                                                    selectedItem = "null",
-                                                    task = task
-                                                )
-                                            )
-                                        }
-                                    }
+                                    homeViewModel.dispatchEvent(HomeActions.TaskRecyclerViewOnMenuItemSelected(menuItem,task,androidNavActionManager))
                                 },
                                 state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpandedState.value,
                                 event_topBarAddCategoryPopUpOnDismiss = {
@@ -283,16 +267,16 @@ class MainActivity : AppCompatActivity() {
                             getTaskOrNull(backStackEntry = backStackEntry) ?: UnknownTask
 
                         DisposableEffect(key1 = detailViewModel) {
-                            detailViewModel.onStart(selectedTask = selectedTask)
-                            onDispose { detailViewModel.onStop() }
+                            detailViewModel.onStart(selectedTask)
+                            onDispose { detailViewModel.resetStates() }
                         }
 
                         EnterAnimation {
                             DetailScreen(
                                 state_Task = getTaskOrNull(backStackEntry) ?: UnknownTask,
                                 state_allUnderStainsForTask = detailViewModel.mAllUnderStainsForTaskState.value,
-                                state_isAddUnderStainComponentVisible = detailViewModel.mIsAddUnderStainComponentVisible.value,
-                                state_datePickerIconDateText = detailViewModel.mNewUnderStainSelectedDeadLine.value,
+                                state_isAddUnderStainComponentVisible = detailViewModel.mIsAddUnderStainComponentVisibleState.value,
+                                state_datePickerIconDateText = detailViewModel.mNewUnderStainSelectedDeadLineState.value,
                                 event_onAddUnderStainButtonClick = {
                                     detailViewModel.dispatchEvent(
                                         DetailActions.OnAddUnderStainButtonClick
@@ -339,8 +323,8 @@ class MainActivity : AppCompatActivity() {
                                     )
                                     //todo pop up to confirm delete
                                 },
-                                state_underStainName = detailViewModel.mEditedUnderStainName.value,
-                                state_underStainDescription = detailViewModel.mEditedUnderStainDescription.value
+                                state_underStainName = detailViewModel.mEditedUnderStainNameState.value,
+                                state_underStainDescription = detailViewModel.mEditedUnderStainDescriptionState.value
                             )
                         }
                     }

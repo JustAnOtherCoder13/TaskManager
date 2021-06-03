@@ -24,23 +24,26 @@ abstract class BaseViewModel : ViewModel() {
         UPDATE_PROJECT_ON_COMPLETE,
     }
 
-    enum class JobList(name: String) {
-        COLLECT_TASKS("collectTasks"),
-        COLLECT_PROJECTS("collectProjects"),
-        COLLECT_CATEGORIES("collectCategories"),
-        FILTER_TASKS("filterTasks")
+    enum class JobList {
+        COLLECT_TASKS,
+        COLLECT_PROJECTS,
+        COLLECT_CATEGORIES,
+        FILTER_TASKS,
+        COLLECT_UNDER_STAIN_FOR_TASK
     }
 
     private var collectTasks: Job? = null
     private var collectProjects: Job? = null
     private var collectCategories: Job? = null
     private var filterTasks: Job? = null
+    private var collectAllUnderStainsForTask: Job? = null
 
     val jobListCollector: MutableMap<JobList, Job?> = mutableMapOf(
         JobList.COLLECT_TASKS to collectTasks,
         JobList.COLLECT_PROJECTS to collectProjects,
         JobList.COLLECT_CATEGORIES to collectCategories,
-        JobList.FILTER_TASKS to filterTasks
+        JobList.FILTER_TASKS to filterTasks,
+        JobList.COLLECT_UNDER_STAIN_FOR_TASK to collectAllUnderStainsForTask
     )
     protected open fun resetStates(){
         jobListCollector.forEach{ it.value?.cancel()}

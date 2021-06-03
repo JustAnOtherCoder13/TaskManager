@@ -76,10 +76,6 @@ class HomeViewModel @Inject constructor(
 
             is HomeActions.TaskRecyclerViewOnTaskSelected -> navToDetail(homeAction)
 
-            is HomeActions.TaskRecyclerViewOnDeleteTaskSelected -> deleteTask(homeAction.task)
-
-            is HomeActions.TaskRecyclerViewOnEditTaskSelected -> navToAddToEditTask(homeAction)
-
             is HomeActions.CloseCategoryPopUp -> setAddCategoryPopUpMenuExpanded(false)
 
             is HomeActions.AddCategoryOnColorSelected -> mNewCategorySelectedColorState.value =
@@ -90,6 +86,14 @@ class HomeViewModel @Inject constructor(
             is HomeActions.AddCategoryOnOkButtonClicked -> {
                 addNewCategory()
                 setAddCategoryPopUpMenuExpanded(false)
+            }
+
+            is HomeActions.TaskRecyclerViewOnMenuItemSelected ->{
+                when (homeAction.selectedItem) {
+                    DELETE -> deleteTask(homeAction.task)
+                    //todo pop up to confirm delete
+                    EDIT -> navToAddToEditTask(homeAction)
+                }
             }
 
             is HomeActions.ProjectRecyclerViewOnMenuItemSelected -> {
@@ -133,7 +137,7 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    private fun navToAddToEditTask(homeAction: HomeActions.TaskRecyclerViewOnEditTaskSelected) {
+    private fun navToAddToEditTask(homeAction: HomeActions.TaskRecyclerViewOnMenuItemSelected) {
         homeAction.androidNavActionManager.navigate(
             AndroidNavObjects.Add,
             homeAction.selectedItem,
@@ -166,11 +170,11 @@ class HomeViewModel @Inject constructor(
             launchCoroutine {
                 mGetAllTasksInteractor.allTasksFlow.collect { allTasks ->
                     mAllTasksState.value =
-                        allTasks.filter { task ->                            //filter all tasks
+                        allTasks.filter { task ->                                           //filter all tasks
                             mAllCategoriesState.value.filter { category ->
-                                category.name == selectedCategoryName       //get selected category
-                            }[FIRST_ELEMENT].id == task.categoryId          //get task if selected category
-                                                                            // id is equal to task category id
+                                category.name == selectedCategoryName                       //get selected category
+                            }[FIRST_ELEMENT].id == task.categoryId                          //get task if selected category
+                                                                                            // id is equal to task category id
                         }
                 }
             }
@@ -206,7 +210,7 @@ class HomeViewModel @Inject constructor(
             }
     }
 
-    //COROUTINES ONE SHOT READ OR WRITE--------------------------------------------------------------------------------------------
+    //COROUTINES ONE SHOT DELETE OR WRITE--------------------------------------------------------------------------------------------
     private fun addNewCategory() {
         launchCoroutine(
             onComplete = CompletionState.ADD_CATEGORY_ON_COMPLETE
