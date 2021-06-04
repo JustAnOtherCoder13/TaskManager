@@ -13,7 +13,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.picone.appcompose.ui.values.ProgressIcon
 import com.picone.core.domain.entity.Category
+import java.util.*
 
 @Composable
 fun setRedBorderStrokeOnSpinnerError(
@@ -80,5 +82,15 @@ fun <T> IconToPass(state_icon: T, event_OnClick: () -> Unit) {
                 .padding(horizontal = 5.dp)
         )
         else -> throw Exception("pass only Painter, ImageVector or ImageBitmap for icon value")
+    }
+}
+
+@Composable
+fun SetProgressDrawable(start: Date?, close: Date?) {
+    return when(close){
+        null ->
+            if (start!=null) ProgressIcon(color = Color.Yellow,"In progress  ")
+            else ProgressIcon(color = Color.Red,"To do  ")
+        else -> ProgressIcon(color = Color.Green,"Done  ")
     }
 }

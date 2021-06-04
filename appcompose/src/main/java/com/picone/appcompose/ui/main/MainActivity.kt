@@ -1,38 +1,32 @@
 package com.picone.appcompose.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.lifecycle.Observer
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.*
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
+import com.picone.appcompose.R
+import com.picone.appcompose.ui.main.screen.EnterAnimation
+import com.picone.appcompose.ui.main.screen.HorizontalAnimationLeftToRight
+import com.picone.appcompose.ui.main.screen.HorizontalAnimationRightToLeft
 import com.picone.appcompose.ui.main.screen.add.AddScreen
 import com.picone.appcompose.ui.main.screen.detail.DetailScreen
-import com.picone.appcompose.ui.main.screen.home.HomeScreen
 import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
 import com.picone.appcompose.ui.main.screen.home.homeTask.HomeTaskScreen
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
-import com.picone.core.util.Constants.CATEGORY
-import com.picone.core.util.Constants.DELETE
-import com.picone.core.util.Constants.EDIT
 import com.picone.core.util.Constants.KEY_EDIT_PROJECT
 import com.picone.core.util.Constants.KEY_EDIT_TASK
 import com.picone.core.util.Constants.KEY_ITEM
 import com.picone.core.util.Constants.KEY_TASK
-import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
 import com.picone.core.util.Constants.UnknownProject
 import com.picone.core.util.Constants.UnknownTask
@@ -65,7 +59,6 @@ class MainActivity : AppCompatActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 val completionStateObserver = Observer<BaseViewModel.CompletionState> {
-                    Log.d("TAG", "onCreate: $it")
                     when (it) {
                         BaseViewModel.CompletionState.ADD_TASK_ON_COMPLETE -> addViewModel.dispatchEvent(
                             AddActions.NavigateToDetailOnAddTaskComplete(
@@ -85,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                         BaseViewModel.CompletionState.ADD_CATEGORY_ON_COMPLETE ->
                             Toast.makeText(
                                 this@MainActivity,
-                                "Category added",
+                                getString(R.string.category_added_message),
                                 Toast.LENGTH_SHORT
                             ).show()
 
@@ -135,7 +128,13 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 },
                                 event_taskRecyclerViewOnMenuItemSelected = { menuItem, task ->
-                                    homeViewModel.dispatchEvent(HomeActions.TaskRecyclerViewOnMenuItemSelected(menuItem,task,androidNavActionManager))
+                                    homeViewModel.dispatchEvent(
+                                        HomeActions.TaskRecyclerViewOnMenuItemSelected(
+                                            menuItem,
+                                            task,
+                                            androidNavActionManager
+                                        )
+                                    )
                                 },
                                 event_onFilterItemSelected = {
                                     homeViewModel.dispatchEvent(
@@ -367,65 +366,4 @@ class MainActivity : AppCompatActivity() {
         }
         picker.addOnDismissListener {}
     }
-
-    @ExperimentalAnimationApi
-    @Composable
-    fun EnterAnimation(content: @Composable () -> Unit) {
-        AnimatedVisibility(
-            visible = true,
-            enter = slideInVertically(
-                initialOffsetY = { -200 }
-            ) + fadeIn(initialAlpha = 0.3f),
-            exit = slideOutVertically() + shrinkVertically() + fadeOut(),
-            content = content,
-            initiallyVisible = false
-        )
-    }
-
-    @ExperimentalAnimationApi
-    @Composable
-    fun HorizontalAnimationLeftToRight(content: @Composable () -> Unit) {
-        AnimatedVisibility(
-            visible = true,
-            enter = slideInHorizontally(
-                initialOffsetX = { -200 },
-                animationSpec = tween(durationMillis = 200)
-            ) + fadeIn(
-                initialAlpha = 0.3f,
-                animationSpec = tween(durationMillis = 200),
-            ),
-            exit = slideOutHorizontally(
-                targetOffsetX = { 200 },
-                animationSpec = spring(stiffness = Spring.StiffnessHigh)
-            ) + shrinkHorizontally() + fadeOut(),
-            content = { content() },
-            initiallyVisible = false
-        )
-
-    }
-
-    @ExperimentalAnimationApi
-    @Composable
-    fun HorizontalAnimationRightToLeft(content: @Composable () -> Unit) {
-        AnimatedVisibility(
-            visible = true,
-            enter = slideInHorizontally(
-                initialOffsetX = { 200 },
-                animationSpec = tween(durationMillis = 200)
-            ) + fadeIn(
-                initialAlpha = 0.3f,
-                animationSpec = tween(durationMillis = 200),
-            ),
-            exit = slideOutHorizontally(
-                targetOffsetX = { -200 },
-                animationSpec = spring(stiffness = Spring.StiffnessHigh)
-            ) + shrinkHorizontally(
-                shrinkTowards = Alignment.Start
-            ) + fadeOut(),
-            content = { content() },
-            initiallyVisible = false
-        )
-
-    }
-
 }

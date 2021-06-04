@@ -4,27 +4,38 @@
     <!-- __________________________COMMON________________________ -->
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="none">none</string>
+
 
     <!-- __________________________HOME________________________ -->
     <string name="home_icon_text">HOME</string>
     <string name="home_icon_content_description">home icon</string>
+    <string name="filter_all">All</string>
+    <string name="filter_by_importance">Filter by importance</string>
+    <string name="filter_by_category">Filter by category</string>
     <!-- __________________________PROJECT________________________ -->
     <string name="project_icon_text">PROJECT</string>
     <string name="project_icon_content_description">project icon</string>
 
     <!-- __________________________DETAIL________________________ -->
-
+    <string name="under_stain_information_title">Under Stain </string>
+    <string name="under_stain_information_total">Total = </string>
+    <string name="under_stain_information_done">Done = </string>
+    <string name="task_information_create_on">Create on : </string>
+    <string name="task_information_deadline_on">Deadline on : </string>
     <!-- __________________________ADD________________________ -->
-
+    <string name="category">Category</string>
+    <string name="importance">Importance</string>
 
     <!-- ___________________ADD CATEGORY POP UP________________________ -->
     <string name="add_category_pop_up_title">Add new Category</string>
     <string name="add_category_name_edit_text_title">Name</string>
     <string name="add_category_color_selector_title">Color : </string>
     <string name="dead_line">Dead line</string>
-    <string name="filter_all">All</string>
-    <string name="filter_by_importance">Filter by importance</string>
-    <string name="filter_by_category">Filter by category</string>
+    <string name="category_added_message">Category added</string>
+
 
     <!-- _______________________________________________________________ -->
 

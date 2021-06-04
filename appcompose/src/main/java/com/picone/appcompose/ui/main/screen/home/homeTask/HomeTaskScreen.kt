@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.R
-import com.picone.appcompose.ui.SetProgressDrawable
 import com.picone.appcompose.ui.main.baseComponents.*
 import com.picone.appcompose.ui.main.screen.home.HomeScreen
 import com.picone.core.domain.entity.Category
