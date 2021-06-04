@@ -22,6 +22,9 @@
     <string name="add_category_name_edit_text_title">Name</string>
     <string name="add_category_color_selector_title">Color : </string>
     <string name="dead_line">Dead line</string>
+    <string name="filter_all">All</string>
+    <string name="filter_by_importance">Filter by importance</string>
+    <string name="filter_by_category">Filter by category</string>
 
     <!-- _______________________________________________________________ -->
 

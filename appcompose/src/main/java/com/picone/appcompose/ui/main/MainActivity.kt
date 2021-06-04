@@ -19,6 +19,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.picone.appcompose.ui.main.screen.add.AddScreen
 import com.picone.appcompose.ui.main.screen.detail.DetailScreen
+import com.picone.appcompose.ui.main.screen.home.HomeScreen
 import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
 import com.picone.appcompose.ui.main.screen.home.homeTask.HomeTaskScreen
 import com.picone.appcompose.ui.values.TaskManagerTheme
@@ -118,12 +119,11 @@ class MainActivity : AppCompatActivity() {
                                 homeViewModel.resetStates()
                             }
                         }
-
                         HorizontalAnimationLeftToRight {
-
                             HomeTaskScreen(
-                                state_allTasks = homeViewModel.mAllTasksState.value,
-                                state_topBarAddMenuItems = topBarrAddMenuItems(),
+                                homeViewModel = homeViewModel,                          // pass view model and navManager
+                                androidNavActionManager = androidNavActionManager,      //cause homeScreen share common state and event
+                                state_allTasks = homeViewModel.mAllTasksState.value,    // for home and project
                                 state_currentRoute = navBackStackEntry?.destination?.route,
                                 state_allCategories = homeViewModel.mAllCategoriesState.value,
                                 event_taskRecyclerViewOnTaskSelected = { selectedTask ->
@@ -134,48 +134,8 @@ class MainActivity : AppCompatActivity() {
                                         )
                                     )
                                 },
-                                event_topBarOnMenuItemSelected = { selectedAddItem ->
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.TopBarOnMenuItemSelected(
-                                            androidNavActionManager = androidNavActionManager,
-                                            selectedItem = selectedAddItem,
-                                            selectedTask = null
-                                        )
-                                    )
-                                },
-                                event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.BottomNavBarOnNavItemSelected(
-                                            androidNavActionManager = androidNavActionManager,
-                                            selectedNavItem = selectedNavItem
-                                        )
-                                    )
-                                },
                                 event_taskRecyclerViewOnMenuItemSelected = { menuItem, task ->
                                     homeViewModel.dispatchEvent(HomeActions.TaskRecyclerViewOnMenuItemSelected(menuItem,task,androidNavActionManager))
-                                },
-                                state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpandedState.value,
-                                event_topBarAddCategoryPopUpOnDismiss = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.CloseCategoryPopUp
-                                    )
-                                },
-                                event_addCategoryOnTextChange = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnTextChange(it)
-                                    )
-                                },
-                                event_addCategoryOnOkButtonClicked = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnOkButtonClicked(
-                                            androidNavActionManager = androidNavActionManager
-                                        )
-                                    )
-                                },
-                                event_addCategoryOnColorSelected = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnColorSelected(it)
-                                    )
                                 },
                                 event_onFilterItemSelected = {
                                     homeViewModel.dispatchEvent(
@@ -194,65 +154,22 @@ class MainActivity : AppCompatActivity() {
                             homeViewModel.onStart(AndroidNavObjects.Project.destination)
                             onDispose { homeViewModel.resetStates() }
                         }
-
                         HorizontalAnimationRightToLeft {
-
                             HomeProjectScreen(
+                                homeViewModel = homeViewModel,
+                                androidNavActionManager = androidNavActionManager,
                                 state_allProjects = homeViewModel.mAllProjectState.value,
-                                state_topBarAddMenuItems = topBarrAddMenuItems(),
-                                event_topBarOnMenuItemSelected = { selectedAddItem ->
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.TopBarOnMenuItemSelected(
-                                            androidNavActionManager = androidNavActionManager,
-                                            selectedItem = selectedAddItem,
-                                            selectedTask = UnknownTask
-                                        )
-                                    )
-                                },
-                                event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.BottomNavBarOnNavItemSelected(
-                                            androidNavActionManager = androidNavActionManager,
-                                            selectedNavItem = selectedNavItem
-                                        )
-                                    )
-                                },
                                 state_currentRoute = navBackStackEntry?.destination?.route,
-                                state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpandedState.value,
-                                event_topBarAddCategoryPopUpOnDismiss = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.CloseCategoryPopUp
-                                    )
-                                },
-                                event_addCategoryOnTextChange = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnTextChange(it)
-                                    )
-                                },
-                                event_addCategoryOnOkButtonClicked = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnOkButtonClicked(
-                                            androidNavActionManager = androidNavActionManager
-                                        )
-                                    )
-                                },
-                                event_addCategoryOnColorSelected = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnColorSelected(it)
-                                    )
-                                },
+                                state_allCategories = homeViewModel.mAllCategoriesState.value,
                                 event_projectRecyclerViewOnMenuItemSelected = { selectedItem, project ->
                                     homeViewModel.dispatchEvent(
                                         HomeActions.ProjectRecyclerViewOnMenuItemSelected(
                                             androidNavActionManager = androidNavActionManager,
                                             selectedItem = selectedItem,
                                             project = project
-
                                         )
                                     )
-                                    //todo pop up confirm delete
-                                },
-                                state_allCategories = homeViewModel.mAllCategoriesState.value
+                                }
                             )
                         }
                     }
@@ -365,7 +282,6 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         EnterAnimation {
-
                             AddScreen(
                                 state_name = addViewModel.mNewItemName.value,
                                 state_description = addViewModel.mNewItemDescription.value,
@@ -427,13 +343,9 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-
             }
         }
     }
-
-    @Composable
-    private fun topBarrAddMenuItems() = listOf(CATEGORY, PROJECT, TASK)
 
     @Composable
     private fun getTaskOrNull(backStackEntry: NavBackStackEntry): Task? {
