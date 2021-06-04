@@ -18,6 +18,7 @@ import com.picone.core.util.Constants.START
 import com.picone.newArchitectureViewModels.androidUiManager.DetailAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.DetailActions
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -33,15 +34,15 @@ class DetailViewModel @Inject constructor(
     private val mUpdateTaskInteractor: UpdateTaskInteractor
 ) : BaseViewModel() {
 
-    val mAllUnderStainsForTaskState: MutableState<List<State<UnderStain>>> =
+    var mAllUnderStainsForTaskState: MutableState<List<State<UnderStain>>> =
         mutableStateOf(listOf())
-    val mIsAddUnderStainComponentVisibleState: MutableState<Boolean> = mutableStateOf(false)
-    val mNewUnderStainSelectedDeadLineState: MutableState<String> = mutableStateOf("")
-    val mEditedUnderStainNameState: MutableState<String> = mutableStateOf("")
-    val mEditedUnderStainDescriptionState: MutableState<String> = mutableStateOf("")
-    private val mEditedUnderStainState: MutableState<UnderStain?> = mutableStateOf(null)
-    private val mNewUnderStainSelectedTaskIdState: MutableState<Int> = mutableStateOf(0)
-    private val mNewUnderStainIdState: MutableState<Int> = mutableStateOf(0)
+    var mIsAddUnderStainComponentVisibleState: MutableState<Boolean> = mutableStateOf(false)
+    var mNewUnderStainSelectedDeadLineState: MutableState<String> = mutableStateOf("")
+    var mEditedUnderStainNameState: MutableState<String> = mutableStateOf("")
+    var mEditedUnderStainDescriptionState: MutableState<String> = mutableStateOf("")
+    private var mEditedUnderStainState: MutableState<UnderStain?> = mutableStateOf(null)
+    private var mNewUnderStainSelectedTaskIdState: MutableState<Int> = mutableStateOf(0)
+    private var mNewUnderStainIdState: MutableState<Int> = mutableStateOf(0)
 
     fun onStart(selectedTask: Task) = dispatchEvent(DetailActions.OnDetailCreated(selectedTask))
 
@@ -79,29 +80,34 @@ class DetailViewModel @Inject constructor(
 
     // FLOW COLLECTORS-----------------------------------------------------------------------------------------------------------
     private fun getAllUnderStainsForTask(taskId: Int) {
-        jobListCollector[JobList.COLLECT_UNDER_STAIN_FOR_TASK] =
+        jobListHomeCollector[JobList.COLLECT_UNDER_STAIN_FOR_TASK] =
             viewModelScope.launch {
+                completionState.value = CompletionState.ON_LOADING
                 mGetAllUnderStainForTaskIdInteractor.getAllUnderStainForTaskId(taskId)
-                    .collect { mAllUnderStainsForTaskState.value = it }
+                    .catch { e -> handleException(e) }
+                    .collect {
+                        mAllUnderStainsForTaskState.value = it
+                        completionState.value = CompletionState.ON_START
+                    }
             }
         mNewUnderStainSelectedTaskIdState.value = taskId
     }
 
     //COROUTINES ONE SHOT DELETE OR WRITE--------------------------------------------------------------------------------------------
     private fun deleteUnderStain(detailAction: DetailActions.OnUnderStainMenuItemSelected) =
-        launchCoroutine { mDeleteUnderStainInteractor.deleteUnderStain(detailAction.underStain) }
+        launchCoroutine (this){ mDeleteUnderStainInteractor.deleteUnderStain(detailAction.underStain) }
 
     private fun updateEditedUnderStain() =
-        launchCoroutine { mUpdateUnderStainInteractor.updateUnderStain(editedUnderStain) }
+        launchCoroutine(this) { mUpdateUnderStainInteractor.updateUnderStain(editedUnderStain()) }
 
     private fun addNewUnderStain() {
-        launchCoroutine { mAddNewUnderStainInteractor.addNewUnderStain(newUnderStain) }
+        launchCoroutine(this) { mAddNewUnderStainInteractor.addNewUnderStain(newUnderStain()) }
         resetAddUnderStainComponent()
     }
 
     private fun closeUnderStain(detailAction: DetailActions.OnUnderStainMenuItemSelected) {
         detailAction.underStain.close = Calendar.getInstance().time
-        launchCoroutine { mUpdateUnderStainInteractor.updateUnderStain(detailAction.underStain) }
+        launchCoroutine(this) { mUpdateUnderStainInteractor.updateUnderStain(detailAction.underStain) }
     }
 
     private fun startTask(
@@ -109,7 +115,7 @@ class DetailViewModel @Inject constructor(
         startDate: Date
     ) {
         detailAction.selectedTask.start = startDate
-        launchCoroutine { mUpdateTaskInteractor.updateTask(detailAction.selectedTask) }
+        launchCoroutine(this) { mUpdateTaskInteractor.updateTask(detailAction.selectedTask) }
     }
 
     private fun startUnderStain(
@@ -117,11 +123,11 @@ class DetailViewModel @Inject constructor(
         startDate: Date
     ) {
         detailAction.underStain.start = startDate
-        launchCoroutine { mUpdateUnderStainInteractor.updateUnderStain(detailAction.underStain) }
+        launchCoroutine (this){ mUpdateUnderStainInteractor.updateUnderStain(detailAction.underStain) }
     }
 
     //HELPERS----------------------------------------------------------------------------------------------------------------------
-    private val newUnderStain = UnderStain(
+    private fun newUnderStain() = UnderStain(
         taskId = mNewUnderStainSelectedTaskIdState.value,
         name = mEditedUnderStainNameState.value,
         description = mEditedUnderStainDescriptionState.value,
@@ -130,9 +136,9 @@ class DetailViewModel @Inject constructor(
         close = null
     )
 
-    private val editedUnderStain = UnderStain(
-        id = mEditedUnderStainState.value?.id?:-1,
-        taskId = mEditedUnderStainState.value?.taskId?:-1,
+    private fun editedUnderStain() = UnderStain(
+        id = mEditedUnderStainState.value?.id!!,
+        taskId = mEditedUnderStainState.value?.taskId!!,
         name = mEditedUnderStainNameState.value,
         description = mEditedUnderStainDescriptionState.value,
         start = mEditedUnderStainState.value?.start,
@@ -147,7 +153,7 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun updateOrAddUnderStain() {
-        if (mEditedUnderStainState.value != null) launchCoroutine { updateEditedUnderStain() }
+        if (mEditedUnderStainState.value != null) launchCoroutine(this) { updateEditedUnderStain() }
         else addNewUnderStain()
         resetAddUnderStainComponent()
     }

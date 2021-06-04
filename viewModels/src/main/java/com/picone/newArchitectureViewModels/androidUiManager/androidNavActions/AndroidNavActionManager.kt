@@ -30,7 +30,7 @@ class AndroidNavActionManager(private val navController: NavController) {
         when (selectedItem) {
             AndroidNavObjects.Home.destination -> AndroidNavObjects.Home.doNavAction(navController)
             AndroidNavObjects.Project.destination -> AndroidNavObjects.Project.doNavAction(navController)
-            else -> throw Exception("not allowed destination")
+            else -> throw Exception("Unknown nav action in ${this.javaClass.simpleName}")
         }
     }
 }

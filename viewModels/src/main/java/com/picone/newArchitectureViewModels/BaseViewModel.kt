@@ -1,5 +1,6 @@
 package com.picone.newArchitectureViewModels
 
+import android.database.sqlite.SQLiteException
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+
 
 abstract class BaseViewModel : ViewModel() {
 
@@ -24,7 +26,14 @@ abstract class BaseViewModel : ViewModel() {
         UPDATE_PROJECT_ON_COMPLETE,
     }
 
-    enum class JobList {
+    //JOB TO STOP FLOW WHEN SCREEN IS NOT SHOWN
+    private var collectTasks: Job? = null
+    private var collectProjects: Job? = null
+    private var collectCategories: Job? = null
+    private var filterTasks: Job? = null
+    private var collectAllUnderStainsForTask: Job? = null
+
+    protected enum class JobList {
         COLLECT_TASKS,
         COLLECT_PROJECTS,
         COLLECT_CATEGORIES,
@@ -34,56 +43,59 @@ abstract class BaseViewModel : ViewModel() {
         COLLECT_CATEGORIES_ON_ADD
     }
 
-    private var collectTasks: Job? = null
-    private var collectProjects: Job? = null
-    private var collectCategories: Job? = null
-    private var filterTasks: Job? = null
-    private var collectAllUnderStainsForTask: Job? = null
-
-    val jobListCollector: MutableMap<JobList, Job?> = mutableMapOf(
+    protected val jobListHomeCollector: MutableMap<JobList, Job?> = mutableMapOf(
         JobList.COLLECT_TASKS to collectTasks,
         JobList.COLLECT_PROJECTS to collectProjects,
         JobList.COLLECT_CATEGORIES to collectCategories,
         JobList.FILTER_TASKS to filterTasks,
         JobList.COLLECT_UNDER_STAIN_FOR_TASK to collectAllUnderStainsForTask,
-
     )
-    val jobListAddCollector: MutableMap<JobList, Job?> = mutableMapOf(
+
+    protected val jobListAddCollector: MutableMap<JobList, Job?> = mutableMapOf(
         JobList.COLLECT_TASKS_ON_ADD to collectTasks,
         JobList.COLLECT_CATEGORIES_ON_ADD to collectCategories
     )
-    protected open fun resetStates(){
-        jobListCollector.forEach{ it.value?.cancel()}
-        jobListAddCollector.forEach{it.value?.cancel()}
+
+    protected open fun resetStates() {
+        jobListHomeCollector.forEach { it.value?.cancel() }
+        jobListAddCollector.forEach { it.value?.cancel() }
     }
 
-    protected fun launchCoroutine(block: suspend CoroutineScope.() -> Unit) : Job {
-        return viewModelScope.launch {
+    //COROUTINES------------------------------------------------------------------------------------
+    protected fun launchCoroutine(
+        viewModel: ViewModel,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job {
+        return viewModel.viewModelScope.launch() {
             completionState.value = CompletionState.ON_LOADING
             try {
                 block()
                 completionState.value = CompletionState.ON_START
-            }
-            catch (e:java.lang.Exception){
+            } catch (e: SQLiteException) {
+                completionState.value = CompletionState.ON_ERROR
                 handleException(e)
             }
         }
     }
 
-    protected fun launchCoroutine( onComplete : CompletionState, block: suspend CoroutineScope.() -> Unit){
-        viewModelScope.launch {
+    protected fun launchCoroutine(
+        onComplete: CompletionState,
+        viewModel: ViewModel,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job {
+        return viewModel.viewModelScope.launch() {
             completionState.value = CompletionState.ON_LOADING
             try {
                 block()
                 completionState.value = onComplete
-            }
-            catch (e:java.lang.Exception){
+            } catch (e: SQLiteException) {
+                completionState.value = CompletionState.ON_ERROR
                 handleException(e)
             }
         }
     }
 
-    private fun CoroutineScope.handleException(e: Exception) {
+    protected fun CoroutineScope.handleException(e: Throwable) {
         Log.e(this::class.java.simpleName, "dispatchEvent: ", e)
         completionState.value = CompletionState.ON_ERROR
     }

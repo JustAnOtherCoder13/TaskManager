@@ -12,13 +12,11 @@ object HomeActions : HomeAction {
     object OnProjectCreated : HomeAction
     object CloseCategoryPopUp : HomeAction
 
-
-
     data class TaskRecyclerViewOnMenuItemSelected(
         val selectedItem: String,
         val task: Task,
         override val androidNavActionManager: AndroidNavActionManager
-        ) : HomeNavAction
+    ) : HomeNavAction
 
     data class AddCategoryOnOkButtonClicked(
         override val androidNavActionManager: AndroidNavActionManager,

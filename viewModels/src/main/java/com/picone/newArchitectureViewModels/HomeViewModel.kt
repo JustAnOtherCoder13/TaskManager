@@ -1,8 +1,10 @@
 package com.picone.newArchitectureViewModels
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
@@ -29,7 +31,9 @@ import com.picone.newArchitectureViewModels.androidUiManager.HomeAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.HomeActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -43,17 +47,17 @@ class HomeViewModel @Inject constructor(
     private val mDeleteProjectInteractor: DeleteProjectInteractor
 ) : BaseViewModel() {
 
-    val mAllTasksState: MutableState<List<Task>> = mutableStateOf(listOf())
-    val mAllProjectState: MutableState<List<Project>> = mutableStateOf(listOf())
-    val mAllCategoriesState: MutableState<List<Category>> = mutableStateOf(listOf())
-    val mIsAddCategoryPopUpExpandedState: MutableState<Boolean> = mutableStateOf(false)
-    private val mNewCategorySelectedColorState: MutableState<Long> = mutableStateOf(0)
-    private val mNewCategoryNameState: MutableState<String> = mutableStateOf("")
+    var mAllTasksState: MutableState<List<Task>> = mutableStateOf(listOf())
+    var mAllProjectState: MutableState<List<Project>> = mutableStateOf(listOf())
+    var mAllCategoriesState: MutableState<List<Category>> = mutableStateOf(listOf())
+    var mIsAddCategoryPopUpExpandedState: MutableState<Boolean> = mutableStateOf(false)
+    private var mNewCategorySelectedColorState: MutableState<Long> = mutableStateOf(0)
+    private var mNewCategoryNameState: MutableState<String> = mutableStateOf("")
     public override var completionState: MutableLiveData<CompletionState> =
         MutableLiveData(CompletionState.ON_START)
 
     fun onStart(destination: String) {
-        jobListCollector[JobList.COLLECT_CATEGORIES] = launchCoroutine {
+        jobListHomeCollector[JobList.COLLECT_CATEGORIES] = launchCoroutine(this) {
             mGetAllCategoriesInteractor.allCategoriesFlow.collect { mAllCategoriesState.value = it }
         }
 
@@ -88,7 +92,7 @@ class HomeViewModel @Inject constructor(
                 setAddCategoryPopUpMenuExpanded(false)
             }
 
-            is HomeActions.TaskRecyclerViewOnMenuItemSelected ->{
+            is HomeActions.TaskRecyclerViewOnMenuItemSelected -> {
                 when (homeAction.selectedItem) {
                     DELETE -> deleteTask(homeAction.task)
                     //todo pop up to confirm delete
@@ -166,61 +170,73 @@ class HomeViewModel @Inject constructor(
 
     // FLOW COLLECTORS--------------------------------------------------------------------------------------------------------
     private fun triggerCategoryFilter(selectedCategoryName: String) {
-        jobListCollector[JobList.FILTER_TASKS] =
-            launchCoroutine {
+        jobListHomeCollector[JobList.FILTER_TASKS] =
+            launchCoroutine(this) {
                 mGetAllTasksInteractor.allTasksFlow.collect { allTasks ->
                     mAllTasksState.value =
                         allTasks.filter { task ->                                           //filter all tasks
                             mAllCategoriesState.value.filter { category ->
                                 category.name == selectedCategoryName                       //get selected category
                             }[FIRST_ELEMENT].id == task.categoryId                          //get task if selected category
-                                                                                            // id is equal to task category id
+                            // id is equal to task category id
                         }
                 }
             }
     }
 
     private fun triggerImportanceFilter(selectedImportance: String) {
-        jobListCollector[JobList.FILTER_TASKS] = launchCoroutine {
-            mGetAllTasksInteractor.allTasksFlow.collect { allTasks ->                       //filter all tasks
-                mAllTasksState.value = allTasks.filter { task ->
-                    if (task.importance >= 0)                                               //if task importance is set
-                        IMPORTANCE_LIST[task.importance] == selectedImportance              //get task if importance is equal
-                    else false                                                              //to selected importance
+        jobListHomeCollector[JobList.FILTER_TASKS] = viewModelScope.launch {
+            completionState.value = CompletionState.ON_START
+
+            mGetAllTasksInteractor.allTasksFlow
+                .catch { e -> handleException(e) }
+                .collect { allTasks ->                       //filter all tasks
+                    mAllTasksState.value = allTasks.filter { task ->
+                        if (task.importance >= 0)                                               //if task importance is set
+                            IMPORTANCE_LIST[task.importance] == selectedImportance              //get task if importance is equal
+                        else false                                                              //to selected importance
+                    }
+                    completionState.value = CompletionState.ON_START
                 }
-            }
         }
     }
 
     private fun getAllProjects() {
-        jobListCollector[JobList.COLLECT_PROJECTS] =
-            launchCoroutine {
-                mGetAllProjectInteractor.allProjectsFlow.collect {
-                    mAllProjectState.value = it
-                }
+        jobListHomeCollector[JobList.COLLECT_PROJECTS] =
+            viewModelScope.launch {
+                mGetAllProjectInteractor.allProjectsFlow
+                    .catch { e -> handleException(e) }
+                    .collect {
+                        mAllProjectState.value = it
+                        completionState.value = CompletionState.ON_START
+                    }
             }
     }
 
     private fun getAllTasks() {
-        jobListCollector[JobList.COLLECT_TASKS] =
-            launchCoroutine {
-                mGetAllTasksInteractor.allTasksFlow.collect {
-                    mAllTasksState.value = it
-                }
+        jobListHomeCollector[JobList.COLLECT_TASKS] =
+            viewModelScope.launch {
+                mGetAllTasksInteractor.allTasksFlow
+                    .catch { e -> handleException(e) }
+                    .collect {
+                        mAllTasksState.value = it
+                        completionState.value = CompletionState.ON_START
+                    }
             }
     }
 
     //COROUTINES ONE SHOT DELETE OR WRITE--------------------------------------------------------------------------------------------
     private fun addNewCategory() {
-        launchCoroutine(CompletionState.ADD_CATEGORY_ON_COMPLETE) {
+        launchCoroutine(CompletionState.ADD_CATEGORY_ON_COMPLETE, this) {
             mAddNewCategoryInteractor.addNewCategory(newCategory())
         }
     }
 
-    private fun deleteTask(task: Task) = launchCoroutine { mDeleteTaskInteractor.deleteTask(task) }
+    private fun deleteTask(task: Task) =
+        launchCoroutine(this) { mDeleteTaskInteractor.deleteTask(task) }
 
     private fun deleteProject(project: Project) =
-        launchCoroutine { mDeleteProjectInteractor.deleteProject(project) }
+        launchCoroutine(this) { mDeleteProjectInteractor.deleteProject(project) }
 
     //HELPERS----------------------------------------------------------------------------------------------------------------------
     private fun newCategory() = Category(

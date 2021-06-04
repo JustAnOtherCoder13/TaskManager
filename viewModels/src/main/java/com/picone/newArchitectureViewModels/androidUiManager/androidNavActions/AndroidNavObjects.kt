@@ -28,7 +28,6 @@ object AndroidNavObjects {
 
     val Add = object : AndroidNavAction {
         override val KEY: String = KEY_ITEM
-
         override val arguments: List<NamedNavArgument> =
             listOf(navArgument(KEY) { type = NavType.StringType },
                 navArgument(KEY_EDIT_TASK) { type = NavType.StringType },
