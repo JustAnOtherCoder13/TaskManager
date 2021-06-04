@@ -1,18 +1,19 @@
 package com.picone.appcompose.ui.main.screen.home
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.picone.appcompose.R
 import com.picone.appcompose.ui.SetProgressDrawable
-import com.picone.appcompose.ui.main.baseComponent.*
+import com.picone.appcompose.ui.main.baseComponents.*
 import com.picone.core.domain.entity.Category
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
@@ -69,9 +70,9 @@ fun TaskRecyclerView(
     state_allCategories: List<Category>
 ) {
     BaseRecyclerView(
-        items = state_allTasks,
-        tableHeaderView = { TaskImportanceSelector(state_allCategories, event_onFilterItemSelected) },
-        itemView = { task ->
+        state_itemList = state_allTasks,
+        content_header = { TaskImportanceSelector(state_allCategories, event_onFilterItemSelected) },
+        content_item = { task ->
             TaskExpandableItem(
                 task,
                 event_onTaskSelected = event_taskRecyclerViewOnTaskSelected,
@@ -92,8 +93,8 @@ fun TaskExpandableItem(
     state_taskCategoryColor: Color
 ) {
     BaseExpandableItem(
-        itemDescription = state_task.description,
-        itemHeader = {
+        state_itemDescription = state_task.description,
+        content_itemHeader = {
             ExpandableTaskHeader(
                 state_task = state_task,
                 event_onTaskSelected = event_onTaskSelected,
@@ -114,8 +115,8 @@ private fun ExpandableTaskHeader(
     state_taskCategoryColor: Color
 ) {
     BaseExpandableItemTitle(
-        itemName = state_task.name,
-        optionIcon = {
+        state_itemName = state_task.name,
+        content_optionIcon = {
             ExpandableTaskHeaderOptionIcon(
                 state_task = state_task,
                 event_onMenuItemSelected = { event_onMenuItemSelected(it, state_task) },
@@ -124,7 +125,7 @@ private fun ExpandableTaskHeader(
 
                 )
         },
-        onTaskSelected = { event_onTaskSelected(state_task) }
+        event_onTaskSelected = { event_onTaskSelected(state_task) }
     )
 }
 
@@ -138,7 +139,7 @@ private fun ExpandableTaskHeaderOptionIcon(
     Column() {
         Row() {
             SetProgressDrawable(start = state_task.start, close = state_task.close)
-            BasePopUpMenuIcon(listOf(DELETE, EDIT), Icons.Default.MoreVert, event_onMenuItemSelected)
+            BaseDropDownMenuIcon(listOf(DELETE, EDIT), Icons.Default.MoreVert, event_onMenuItemSelected)
 
         }
         Row() {
@@ -188,13 +189,13 @@ fun ProjectRecyclerView(
     state_allCategories: List<Category>
     ) {
     BaseRecyclerView(
-        items = state_allProjects,
-        tableHeaderView = null,
-        itemView = { project ->
-            BaseExpandableItem(itemDescription = project.description) {
+        state_itemList = state_allProjects,
+        content_header = null,
+        content_item = { project ->
+            BaseExpandableItem(state_itemDescription = project.description) {
                 BaseExpandableItemTitle(
-                    itemName = project.name,
-                    optionIcon = {
+                    state_itemName = project.name,
+                    content_optionIcon = {
 
                         Row() {
                             Text(text = "${state_allCategories.filter { it.id == project.categoryId }[FIRST_ELEMENT].name} : ")
@@ -205,7 +206,7 @@ fun ProjectRecyclerView(
                             )
                         }
                         Row() {
-                            BasePopUpMenuIcon(
+                            BaseDropDownMenuIcon(
                                 state_menuItems = listOf(EDIT, DELETE,PASS_TO_TASK) ,
                                 state_icon = Icons.Default.MoreVert,
                                 event_onMenuItemSelected = {selectedItem -> event_projectRecyclerViewOnMenuItemSelected(selectedItem, project)}
@@ -217,4 +218,83 @@ fun ProjectRecyclerView(
             }
         }
     )
+}
+
+@Composable
+fun AddCategoryPopUp(
+    state_isExpanded: Boolean,
+    event_OnDismiss: () -> Unit,
+    event_baseEditTextOnTextChange: (text: String) -> Unit,
+    event_addCategoryOnOkButtonClicked: () -> Unit,
+    event_addCategoryOnColorSelected: (color: Long) -> Unit
+) {
+
+    var innerStateSelectedColor: Long by remember {
+        mutableStateOf(0L)
+    }
+    var innerStateName by remember { mutableStateOf("") }
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier
+            .padding(top = 60.dp, start = 20.dp)
+    ) {
+        DropdownMenu(
+            expanded = state_isExpanded,
+            onDismissRequest = event_OnDismiss,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 5.dp)
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                BaseTitleInformationText(state_titleText = stringResource(R.string.add_category_pop_up_title))
+                Spacer(modifier = Modifier.height(10.dp))
+                AddCategoryPopUpBody(
+                    event_addCategoryOnColorSelected = {
+                        innerStateSelectedColor = it
+                        event_addCategoryOnColorSelected(it)
+                    },
+                    event_baseEditTextOnTextChange = {
+                        innerStateName = it
+                        event_baseEditTextOnTextChange(it)
+                    })
+                Spacer(modifier = Modifier.height(5.dp))
+                BaseOkAndCancelButtons(
+                    event_onOkButtonClicked = event_addCategoryOnOkButtonClicked,
+                    event_onCancelButtonClicked = event_OnDismiss,
+                    state_isOkButtonEnable = innerStateName.trim()
+                        .isNotEmpty() && innerStateSelectedColor != 0L
+                )
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun AddCategoryPopUpBody(
+    event_baseEditTextOnTextChange: (text: String) -> Unit,
+    event_addCategoryOnColorSelected: (color: Long) -> Unit
+) {
+    var innerStateSelectedColor: Long by remember {
+        mutableStateOf(0L)
+    }
+    var innerStateName by remember { mutableStateOf("") }
+    event_baseEditTextOnTextChange(innerStateName)
+    event_addCategoryOnColorSelected(innerStateSelectedColor)
+
+    BaseEditText(
+        state_title = stringResource(R.string.add_category_name_edit_text_title),
+        state_textColor = MaterialTheme.colors.onSurface,
+        state_text = innerStateName,
+        event_baseEditTextOnTextChange = { string -> innerStateName = string }
+    )
+    Spacer(modifier = Modifier.height(5.dp))
+    Row() {
+        Text(text = stringResource(R.string.add_category_color_selector_title))
+        CategoryColorDropDownMenu(
+            event_onMenuItemSelected = { innerStateSelectedColor = it }
+        )
+    }
 }

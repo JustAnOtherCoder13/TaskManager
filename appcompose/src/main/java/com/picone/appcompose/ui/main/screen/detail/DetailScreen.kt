@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.picone.appcompose.ui.SetProgressDrawable
-import com.picone.appcompose.ui.main.baseComponent.*
+import com.picone.appcompose.ui.main.baseComponents.*
 import com.picone.appcompose.ui.values.TopLeftCornerCut
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.appcompose.ui.values.TopRoundedCorner
@@ -54,13 +54,13 @@ fun DetailScreen(
         item { Spacer(modifier = Modifier.height(16.dp)) }
         if (!state_isAddUnderStainComponentVisible) {
             items(items = state_allUnderStainsForTask) { underStain ->
-                BaseExpandableItem(itemDescription = underStain.value.description,) {
+                BaseExpandableItem(state_itemDescription = underStain.value.description,) {
                     BaseExpandableItemTitle(
-                        itemName = underStain.value.name,
-                        optionIcon = {
+                        state_itemName = underStain.value.name,
+                        content_optionIcon = {
                             Row() {
                                 SetProgressDrawable(start = underStain.value.start, close = underStain.value.close)
-                                BasePopUpMenuIcon(
+                                BaseDropDownMenuIcon(
                                     state_menuItems = listOf(
                                         Constants.EDIT,
                                         Constants.DELETE,
@@ -187,10 +187,10 @@ private fun UnderStainInformation(state_allUnderStainsForTask: List<State<UnderS
             .clip(TopLeftCornerCut)
             .background(MaterialTheme.colors.surface)
     ) {
-        BaseTitleInformationText(titleText = "Under Stain ")
+        BaseTitleInformationText(state_titleText = "Under Stain ")
         Spacer(modifier = Modifier.height(10.dp))
-        BaseInformationText(informationText = "Total = " + state_allUnderStainsForTask.size)
-        BaseInformationText(informationText = "Done = " + getCompletedUnderStainsForTask(state_allUnderStainsForTask).size)
+        BaseInformationText(state_information_text = "Total = " + state_allUnderStainsForTask.size)
+        BaseInformationText(state_information_text = "Done = " + getCompletedUnderStainsForTask(state_allUnderStainsForTask).size)
     }
 }
 
@@ -203,16 +203,16 @@ private fun TaskInformation(state_task: Task) {
             .background(MaterialTheme.colors.surface)
 
     ) {
-        BaseTitleInformationText(titleText = state_task.name)
+        BaseTitleInformationText(state_titleText = state_task.name)
         Spacer(modifier = Modifier.height(10.dp))
         BaseInformationText(
-            informationText = "Create on : " + SimpleDateFormat(
+            state_information_text = "Create on : " + SimpleDateFormat(
                 "dd/MM/yyy",
                 Locale.FRANCE
             ).format(state_task.creation)
         )
         BaseInformationText(
-            informationText = "Deadline on : " +
+            state_information_text = "Deadline on : " +
                     if (state_task.deadLine == null) "none"
                     else SimpleDateFormat("dd/MM/yyy", Locale.FRANCE)
                         .format(state_task.deadLine!!)

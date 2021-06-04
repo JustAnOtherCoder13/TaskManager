@@ -13,9 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.picone.appcompose.ui.main.baseComponent.BaseDatePickerClickableIcon
-import com.picone.appcompose.ui.main.baseComponent.BaseEditText
-import com.picone.appcompose.ui.main.baseComponent.BaseSpinner
+import com.picone.appcompose.ui.main.baseComponents.BaseDatePickerClickableIcon
+import com.picone.appcompose.ui.main.baseComponents.BaseEditText
+import com.picone.appcompose.ui.main.baseComponents.BaseSpinner
 import com.picone.core.domain.entity.Category
 import com.picone.core.util.Constants.IMPORTANCE_LIST
 
