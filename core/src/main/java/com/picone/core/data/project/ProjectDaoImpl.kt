@@ -12,13 +12,15 @@ class ProjectDaoImpl @Inject constructor(taskDatabase: TaskDatabase) {
         return projectDao.getAllProjects()
     }
 
-    suspend fun getProjectForId(projectId:Int):Project{
-        return projectDao.getProjectForId(projectId)
-    }
-
     suspend fun addNewProject(project: Project){
         projectDao.addNewProject(project)
     }
 
+    suspend fun deleteProject(project: Project){
+        projectDao.deleteProject(project)
+    }
 
+    suspend fun updateProject(project : Project){
+        projectDao.updateProject(project)
+    }
 }

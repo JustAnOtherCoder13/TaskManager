@@ -10,13 +10,16 @@ class ProjectRepository @Inject constructor(
     fun getAllProjects(): Flow<List<Project>> {
         return projectDaoImpl.getAllProjects()
     }
-
-    suspend fun getProjectForId(projectId: Int): Project {
-        return projectDaoImpl.getProjectForId(projectId)
-    }
-
     suspend fun addNewProject(project: Project) {
         projectDaoImpl.addNewProject(project)
+    }
+
+    suspend fun deleteProject(project: Project){
+        projectDaoImpl.deleteProject(project)
+    }
+
+    suspend fun updateProject(project : Project){
+        projectDaoImpl.updateProject(project)
     }
 
 }

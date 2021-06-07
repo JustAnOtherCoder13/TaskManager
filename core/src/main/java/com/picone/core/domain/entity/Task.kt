@@ -7,20 +7,23 @@ import androidx.room.PrimaryKey
 import com.picone.core.util.Constants.TASK_TABLE_NAME
 import java.util.*
 
-@Entity(tableName = TASK_TABLE_NAME,foreignKeys = [ForeignKey(
-    entity = Category::class,
-    parentColumns = arrayOf("id"),
-    childColumns = arrayOf("categoryId")
-)])
+@Entity(
+    tableName = TASK_TABLE_NAME, foreignKeys = [ForeignKey(
+        entity = Category::class,
+        parentColumns = arrayOf("id"),
+        childColumns = arrayOf("categoryId")
+    )]
+)
 data class Task(
-    @PrimaryKey(autoGenerate = true)val id:Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
+    @ColumnInfo(index = true) val categoryId: Int,
+    val name: String,
+    val description: String,
+    var importance: Int,
+    val creation: Date,
+    var start: Date?,
+    var deadLine: Date?,
+    var close: Date?
+)
 
-    @ColumnInfo(index = true)val categoryId:Int,
-    var name:String?,
-    var description:String?,
-    var importance:Int,
-    val creation:Date,
-    val start : Date?,
-    val deadLine : Date?,
-    var close:Date?
-    )

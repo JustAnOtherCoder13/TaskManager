@@ -9,8 +9,8 @@ import java.util.*
 object Generator {
 
     private val CATEGORIES: List<Category> = listOf(
-        Category(1, "red", "for work"),
-        Category(2, "orange", "learnings")
+        Category(1, 0xffffeb46, "for work"),
+        Category(2, 0xff91a4fc, "learnings")
     )
 
     fun generatedCategories(): MutableList<Category> {
