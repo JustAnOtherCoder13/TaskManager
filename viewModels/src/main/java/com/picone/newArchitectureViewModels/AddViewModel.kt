@@ -25,7 +25,7 @@ import com.picone.core.util.Constants.TASK
 import com.picone.core.util.Constants.UnknownTask
 import com.picone.newArchitectureViewModels.androidUiManager.AddAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.AddActions
-import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavDirections
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -105,10 +105,10 @@ class AddViewModel @Inject constructor(
             is AddActions.NavigateToDetailOnAddTaskComplete -> navToDetail(addAction)
 
             is AddActions.NavigateToProjectOnProjectComplete ->
-                addAction.androidNavActionManager.navigate(AndroidNavObjects.Project)
+                addAction.androidNavActionManager.navigate(AndroidNavDirections.Project)
 
             is AddActions.NavigateToHomeOnUpdateTaskComplete ->
-                addAction.androidNavActionManager.navigate(AndroidNavObjects.Home)
+                addAction.androidNavActionManager.navigate(AndroidNavDirections.Home)
 
             is AddActions.DeleteProjectOnProjectPassInTaskComplete ->
                 launchCoroutine(CompletionState.ADD_TASK_ON_COMPLETE, this) {
@@ -129,7 +129,7 @@ class AddViewModel @Inject constructor(
                 }[FIRST_ELEMENT])
                 completionState.value = CompletionState.ON_START
                 addAction.androidNavActionManager.navigate(
-                    AndroidNavObjects.Detail,
+                    AndroidNavDirections.Detail,
                     taskToJson
                 )
             }

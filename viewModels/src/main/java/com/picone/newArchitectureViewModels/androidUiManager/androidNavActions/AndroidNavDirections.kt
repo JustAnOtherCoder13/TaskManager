@@ -8,7 +8,7 @@ import com.picone.core.util.Constants.KEY_EDIT_PROJECT
 import com.picone.core.util.Constants.KEY_EDIT_TASK
 import com.picone.core.util.Constants.KEY_ITEM
 
-object AndroidNavObjects {
+object AndroidNavDirections {
 
     val Home = object : AndroidNavAction {
         override val destination: String = "home"

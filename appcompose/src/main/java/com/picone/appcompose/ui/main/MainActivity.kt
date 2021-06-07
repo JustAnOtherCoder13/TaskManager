@@ -35,7 +35,7 @@ import com.picone.newArchitectureViewModels.androidUiManager.androidActions.AddA
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.DetailActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.HomeActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavActionManager
-import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavDirections
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 import java.text.SimpleDateFormat
@@ -100,13 +100,13 @@ class MainActivity : AppCompatActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = AndroidNavObjects.Home.destination
+                    startDestination = AndroidNavDirections.Home.destination
                 ) {
                     //------------------------------------------------------------------------HOME
-                    composable(AndroidNavObjects.Home.getRoute()) {
+                    composable(AndroidNavDirections.Home.getRoute()) {
 
                         DisposableEffect(key1 = homeViewModel) {
-                            homeViewModel.onStart(AndroidNavObjects.Home.destination)
+                            homeViewModel.onStart(AndroidNavDirections.Home.destination)
                             onDispose {
                                 homeViewModel.completionState.removeObserver(completionStateObserver)
                                 homeViewModel.resetStates()
@@ -147,10 +147,10 @@ class MainActivity : AppCompatActivity() {
 
                     //------------------------------------------------------------------------PROJECT
 
-                    composable(AndroidNavObjects.Project.getRoute()) {
+                    composable(AndroidNavDirections.Project.getRoute()) {
 
                         DisposableEffect(key1 = homeViewModel) {
-                            homeViewModel.onStart(AndroidNavObjects.Project.destination)
+                            homeViewModel.onStart(AndroidNavDirections.Project.destination)
                             onDispose { homeViewModel.resetStates() }
                         }
                         HorizontalAnimationRightToLeft {
@@ -176,8 +176,8 @@ class MainActivity : AppCompatActivity() {
                     //------------------------------------------------------------------------DETAIL
 
                     composable(
-                        route = AndroidNavObjects.Detail.getRoute(),
-                        arguments = AndroidNavObjects.Detail.arguments
+                        route = AndroidNavDirections.Detail.getRoute(),
+                        arguments = AndroidNavDirections.Detail.arguments
                     ) { backStackEntry ->
                         val selectedTask =
                             getTaskOrNull(backStackEntry = backStackEntry) ?: UnknownTask
@@ -248,13 +248,13 @@ class MainActivity : AppCompatActivity() {
                     //------------------------------------------------------------------------ADD
 
                     composable(
-                        route = "${AndroidNavObjects.Add.destination}/{${KEY_ITEM}}/{${KEY_EDIT_TASK}}/{${KEY_EDIT_PROJECT}}",
-                        arguments = AndroidNavObjects.Add.arguments,
+                        route = "${AndroidNavDirections.Add.destination}/{${KEY_ITEM}}/{${KEY_EDIT_TASK}}/{${KEY_EDIT_PROJECT}}",
+                        arguments = AndroidNavDirections.Add.arguments,
                     )
                     { backStackEntry ->
 
                         val selectedItemType =
-                            backStackEntry.arguments?.getString(AndroidNavObjects.Add.KEY) ?: ""
+                            backStackEntry.arguments?.getString(AndroidNavDirections.Add.KEY) ?: ""
 
                         var selectedTask =
                             backStackEntry.arguments?.getString(KEY_EDIT_TASK)?.let { json ->

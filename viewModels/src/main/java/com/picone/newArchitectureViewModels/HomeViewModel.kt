@@ -28,7 +28,7 @@ import com.picone.core.util.Constants.UnknownProject
 import com.picone.core.util.Constants.UnknownTask
 import com.picone.newArchitectureViewModels.androidUiManager.HomeAction
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.HomeActions
-import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavDirections
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -61,8 +61,8 @@ class HomeViewModel @Inject constructor(
         }
 
         when (destination) {
-            AndroidNavObjects.Home.destination -> dispatchEvent(HomeActions.OnHomeCreated)
-            AndroidNavObjects.Project.destination -> dispatchEvent(HomeActions.OnProjectCreated)
+            AndroidNavDirections.Home.destination -> dispatchEvent(HomeActions.OnHomeCreated)
+            AndroidNavDirections.Project.destination -> dispatchEvent(HomeActions.OnProjectCreated)
         }
     }
 
@@ -123,7 +123,7 @@ class HomeViewModel @Inject constructor(
     private fun triggerSelectedItemAction(homeAction: HomeActions.TopBarOnMenuItemSelected) {
         if (homeAction.selectedItem != CATEGORY) {
             homeAction.androidNavActionManager.navigate(
-                AndroidNavObjects.Add,
+                AndroidNavDirections.Add,
                 homeAction.selectedItem,
                 Gson().toJson(UnknownTask),
                 Gson().toJson(UnknownProject)
@@ -135,14 +135,14 @@ class HomeViewModel @Inject constructor(
 
     private fun navToDetail(homeAction: HomeActions.TaskRecyclerViewOnTaskSelected) {
         homeAction.androidNavActionManager.navigate(
-            AndroidNavObjects.Detail,
+            AndroidNavDirections.Detail,
             Gson().toJson(homeAction.selectedTask)
         )
     }
 
     private fun navToAddToEditTask(homeAction: HomeActions.TaskRecyclerViewOnMenuItemSelected) {
         homeAction.androidNavActionManager.navigate(
-            AndroidNavObjects.Add,
+            AndroidNavDirections.Add,
             homeAction.selectedItem,
             Gson().toJson(homeAction.task),
             Gson().toJson(UnknownProject)
@@ -151,7 +151,7 @@ class HomeViewModel @Inject constructor(
 
     private fun navToAddToPassProjectToTask(homeAction: HomeActions.ProjectRecyclerViewOnMenuItemSelected) {
         homeAction.androidNavActionManager.navigate(
-            AndroidNavObjects.Add,
+            AndroidNavDirections.Add,
             homeAction.selectedItem,
             Gson().toJson(projectToTask(homeAction)),
             Gson().toJson(homeAction.project)
@@ -160,7 +160,7 @@ class HomeViewModel @Inject constructor(
 
     private fun navToAddToEditProject(homeAction: HomeActions.ProjectRecyclerViewOnMenuItemSelected) {
         homeAction.androidNavActionManager.navigate(
-            AndroidNavObjects.Add,
+            AndroidNavDirections.Add,
             homeAction.selectedItem,
             Gson().toJson(UnknownTask),
             Gson().toJson(homeAction.project)
