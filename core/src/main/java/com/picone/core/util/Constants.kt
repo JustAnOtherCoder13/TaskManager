@@ -44,6 +44,7 @@ object Constants {
 
     const val PASS_TO_TASK = "Pass to Task"
 
+    const val ALL = "All"
     const val IMPORTANT = "Important"
     const val NORMAL = "Normal"
     const val UNIMPORTANT = "Unimportant"
@@ -55,7 +56,7 @@ object Constants {
     const val KEY_EDIT_TASK = "edit task"
     const val KEY_EDIT_PROJECT = "edit project"
 
-    val UnknownTask = Task(-1, 0, "task not found", "", 0, Calendar.getInstance().time, null, null, null)
+    val UnknownTask = Task(-1, 0, "task not found", "", -1, Calendar.getInstance().time, null, null, null)
 
     val UnknownProject = Project(-1,0,"unknown Project", "")
 

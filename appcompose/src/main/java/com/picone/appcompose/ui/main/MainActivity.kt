@@ -6,16 +6,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.lifecycle.Observer
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.*
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
+import com.picone.appcompose.R
+import com.picone.appcompose.ui.main.screen.EnterAnimation
+import com.picone.appcompose.ui.main.screen.HorizontalAnimationLeftToRight
+import com.picone.appcompose.ui.main.screen.HorizontalAnimationRightToLeft
 import com.picone.appcompose.ui.main.screen.add.AddScreen
 import com.picone.appcompose.ui.main.screen.detail.DetailScreen
 import com.picone.appcompose.ui.main.screen.home.homeProject.HomeProjectScreen
@@ -23,14 +23,10 @@ import com.picone.appcompose.ui.main.screen.home.homeTask.HomeTaskScreen
 import com.picone.appcompose.ui.values.TaskManagerTheme
 import com.picone.core.domain.entity.Project
 import com.picone.core.domain.entity.Task
-import com.picone.core.util.Constants.CATEGORY
-import com.picone.core.util.Constants.DELETE
-import com.picone.core.util.Constants.EDIT
 import com.picone.core.util.Constants.KEY_EDIT_PROJECT
 import com.picone.core.util.Constants.KEY_EDIT_TASK
 import com.picone.core.util.Constants.KEY_ITEM
 import com.picone.core.util.Constants.KEY_TASK
-import com.picone.core.util.Constants.PROJECT
 import com.picone.core.util.Constants.TASK
 import com.picone.core.util.Constants.UnknownProject
 import com.picone.core.util.Constants.UnknownTask
@@ -39,7 +35,7 @@ import com.picone.newArchitectureViewModels.androidUiManager.androidActions.AddA
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.DetailActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidActions.HomeActions
 import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavActionManager
-import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavObjects
+import com.picone.newArchitectureViewModels.androidUiManager.androidNavActions.AndroidNavDirections
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 import java.text.SimpleDateFormat
@@ -82,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                         BaseViewModel.CompletionState.ADD_CATEGORY_ON_COMPLETE ->
                             Toast.makeText(
                                 this@MainActivity,
-                                "Category added",
+                                getString(R.string.category_added_message),
                                 Toast.LENGTH_SHORT
                             ).show()
 
@@ -104,24 +100,23 @@ class MainActivity : AppCompatActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = AndroidNavObjects.Home.destination
+                    startDestination = AndroidNavDirections.Home.destination
                 ) {
                     //------------------------------------------------------------------------HOME
-                    composable(AndroidNavObjects.Home.getRoute()) {
+                    composable(AndroidNavDirections.Home.getRoute()) {
 
                         DisposableEffect(key1 = homeViewModel) {
-                            homeViewModel.onStart(AndroidNavObjects.Home.destination)
+                            homeViewModel.onStart(AndroidNavDirections.Home.destination)
                             onDispose {
                                 homeViewModel.completionState.removeObserver(completionStateObserver)
-                                homeViewModel.onStop()
+                                homeViewModel.resetStates()
                             }
                         }
-
                         HorizontalAnimationLeftToRight {
-
                             HomeTaskScreen(
-                                state_allTasks = homeViewModel.mAllTasksState.value,
-                                state_topBarAddMenuItems = topBarrAddMenuItems(),
+                                homeViewModel = homeViewModel,                          // pass view model and navManager
+                                androidNavActionManager = androidNavActionManager,      //cause homeScreen share common state and event
+                                state_allTasks = homeViewModel.mAllTasksState.value,    // for home and project
                                 state_currentRoute = navBackStackEntry?.destination?.route,
                                 state_allCategories = homeViewModel.mAllCategoriesState.value,
                                 event_taskRecyclerViewOnTaskSelected = { selectedTask ->
@@ -132,63 +127,13 @@ class MainActivity : AppCompatActivity() {
                                         )
                                     )
                                 },
-                                event_topBarOnMenuItemSelected = { selectedAddItem ->
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.TopBarOnMenuItemSelected(
-                                            androidNavActionManager = androidNavActionManager,
-                                            selectedItem = selectedAddItem,
-                                            selectedTask = null
-                                        )
-                                    )
-                                },
-                                event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.BottomNavBarOnNavItemSelected(
-                                            androidNavActionManager = androidNavActionManager,
-                                            selectedNavItem = selectedNavItem
-                                        )
-                                    )
-                                },
                                 event_taskRecyclerViewOnMenuItemSelected = { menuItem, task ->
-                                    when (menuItem) {
-                                        DELETE -> homeViewModel.dispatchEvent(
-                                            HomeActions.OnDeleteTaskSelected(
-                                                task
-                                            )
-                                            //todo pop up to confirm delete
+                                    homeViewModel.dispatchEvent(
+                                        HomeActions.TaskRecyclerViewOnMenuItemSelected(
+                                            menuItem,
+                                            task,
+                                            androidNavActionManager
                                         )
-                                        EDIT -> {
-                                            homeViewModel.dispatchEvent(
-                                                HomeActions.OnEditTaskSelected(
-                                                    androidNavActionManager = androidNavActionManager,
-                                                    selectedItem = "null",
-                                                    task = task
-                                                )
-                                            )
-                                        }
-                                    }
-                                },
-                                state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpanded.value,
-                                event_topBarAddCategoryPopUpOnDismiss = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.CloseCategoryPopUp
-                                    )
-                                },
-                                event_addCategoryOnTextChange = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnTextChange(it)
-                                    )
-                                },
-                                event_addCategoryOnOkButtonClicked = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnOkButtonClicked(
-                                            androidNavActionManager = androidNavActionManager
-                                        )
-                                    )
-                                },
-                                event_addCategoryOnColorSelected = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnColorSelected(it)
                                     )
                                 },
                                 event_onFilterItemSelected = {
@@ -202,71 +147,28 @@ class MainActivity : AppCompatActivity() {
 
                     //------------------------------------------------------------------------PROJECT
 
-                    composable(AndroidNavObjects.Project.getRoute()) {
+                    composable(AndroidNavDirections.Project.getRoute()) {
 
                         DisposableEffect(key1 = homeViewModel) {
-                            homeViewModel.onStart(AndroidNavObjects.Project.destination)
-                            onDispose { homeViewModel.onStop() }
+                            homeViewModel.onStart(AndroidNavDirections.Project.destination)
+                            onDispose { homeViewModel.resetStates() }
                         }
-
                         HorizontalAnimationRightToLeft {
-
                             HomeProjectScreen(
+                                homeViewModel = homeViewModel,
+                                androidNavActionManager = androidNavActionManager,
                                 state_allProjects = homeViewModel.mAllProjectState.value,
-                                state_topBarAddMenuItems = topBarrAddMenuItems(),
-                                event_topBarOnMenuItemSelected = { selectedAddItem ->
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.TopBarOnMenuItemSelected(
-                                            androidNavActionManager = androidNavActionManager,
-                                            selectedItem = selectedAddItem,
-                                            selectedTask = UnknownTask
-                                        )
-                                    )
-                                },
-                                event_bottomNavBarOnNavItemSelected = { selectedNavItem ->
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.BottomNavBarOnNavItemSelected(
-                                            androidNavActionManager = androidNavActionManager,
-                                            selectedNavItem = selectedNavItem
-                                        )
-                                    )
-                                },
                                 state_currentRoute = navBackStackEntry?.destination?.route,
-                                state_topBarAddCategoryPopUpIsExpanded = homeViewModel.mIsAddCategoryPopUpExpanded.value,
-                                event_topBarAddCategoryPopUpOnDismiss = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.CloseCategoryPopUp
-                                    )
-                                },
-                                event_addCategoryOnTextChange = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnTextChange(it)
-                                    )
-                                },
-                                event_addCategoryOnOkButtonClicked = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnOkButtonClicked(
-                                            androidNavActionManager = androidNavActionManager
-                                        )
-                                    )
-                                },
-                                event_addCategoryOnColorSelected = {
-                                    homeViewModel.dispatchEvent(
-                                        HomeActions.AddCategoryOnColorSelected(it)
-                                    )
-                                },
+                                state_allCategories = homeViewModel.mAllCategoriesState.value,
                                 event_projectRecyclerViewOnMenuItemSelected = { selectedItem, project ->
                                     homeViewModel.dispatchEvent(
                                         HomeActions.ProjectRecyclerViewOnMenuItemSelected(
                                             androidNavActionManager = androidNavActionManager,
                                             selectedItem = selectedItem,
                                             project = project
-
                                         )
                                     )
-                                    //todo pop up confirm delete
-                                },
-                                state_allCategories = homeViewModel.mAllCategoriesState.value
+                                }
                             )
                         }
                     }
@@ -274,23 +176,23 @@ class MainActivity : AppCompatActivity() {
                     //------------------------------------------------------------------------DETAIL
 
                     composable(
-                        route = AndroidNavObjects.Detail.getRoute(),
-                        arguments = AndroidNavObjects.Detail.arguments
+                        route = AndroidNavDirections.Detail.getRoute(),
+                        arguments = AndroidNavDirections.Detail.arguments
                     ) { backStackEntry ->
                         val selectedTask =
                             getTaskOrNull(backStackEntry = backStackEntry) ?: UnknownTask
 
                         DisposableEffect(key1 = detailViewModel) {
-                            detailViewModel.onStart(selectedTask = selectedTask)
-                            onDispose { detailViewModel.onStop() }
+                            detailViewModel.onStart(selectedTask)
+                            onDispose { detailViewModel.resetStates() }
                         }
 
                         EnterAnimation {
                             DetailScreen(
                                 state_Task = getTaskOrNull(backStackEntry) ?: UnknownTask,
                                 state_allUnderStainsForTask = detailViewModel.mAllUnderStainsForTaskState.value,
-                                state_isAddUnderStainComponentVisible = detailViewModel.mIsAddUnderStainComponentVisible.value,
-                                state_datePickerIconDateText = detailViewModel.mNewUnderStainSelectedDeadLine.value,
+                                state_isAddUnderStainComponentVisible = detailViewModel.mIsAddUnderStainComponentVisibleState.value,
+                                state_datePickerIconDateText = detailViewModel.mNewUnderStainSelectedDeadLineState.value,
                                 event_onAddUnderStainButtonClick = {
                                     detailViewModel.dispatchEvent(
                                         DetailActions.OnAddUnderStainButtonClick
@@ -337,8 +239,8 @@ class MainActivity : AppCompatActivity() {
                                     )
                                     //todo pop up to confirm delete
                                 },
-                                state_underStainName = detailViewModel.mEditedUnderStainName.value,
-                                state_underStainDescription = detailViewModel.mEditedUnderStainDescription.value
+                                state_underStainName = detailViewModel.mEditedUnderStainNameState.value,
+                                state_underStainDescription = detailViewModel.mEditedUnderStainDescriptionState.value
                             )
                         }
                     }
@@ -346,13 +248,13 @@ class MainActivity : AppCompatActivity() {
                     //------------------------------------------------------------------------ADD
 
                     composable(
-                        route = "${AndroidNavObjects.Add.destination}/{${KEY_ITEM}}/{${KEY_EDIT_TASK}}/{${KEY_EDIT_PROJECT}}",
-                        arguments = AndroidNavObjects.Add.arguments,
+                        route = "${AndroidNavDirections.Add.destination}/{${KEY_ITEM}}/{${KEY_EDIT_TASK}}/{${KEY_EDIT_PROJECT}}",
+                        arguments = AndroidNavDirections.Add.arguments,
                     )
                     { backStackEntry ->
 
                         val selectedItemType =
-                            backStackEntry.arguments?.getString(AndroidNavObjects.Add.KEY) ?: ""
+                            backStackEntry.arguments?.getString(AndroidNavDirections.Add.KEY) ?: ""
 
                         var selectedTask =
                             backStackEntry.arguments?.getString(KEY_EDIT_TASK)?.let { json ->
@@ -374,12 +276,11 @@ class MainActivity : AppCompatActivity() {
                             )
                             onDispose {
                                 addViewModel.completionState.removeObservers(this@MainActivity)
-                                addViewModel.onStop()
+                                addViewModel.resetStates()
                             }
                         }
 
                         EnterAnimation {
-
                             AddScreen(
                                 state_name = addViewModel.mNewItemName.value,
                                 state_description = addViewModel.mNewItemDescription.value,
@@ -441,13 +342,9 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-
             }
         }
     }
-
-    @Composable
-    private fun topBarrAddMenuItems() = listOf(CATEGORY, PROJECT, TASK)
 
     @Composable
     private fun getTaskOrNull(backStackEntry: NavBackStackEntry): Task? {
@@ -469,65 +366,4 @@ class MainActivity : AppCompatActivity() {
         }
         picker.addOnDismissListener {}
     }
-
-    @ExperimentalAnimationApi
-    @Composable
-    fun EnterAnimation(content: @Composable () -> Unit) {
-        AnimatedVisibility(
-            visible = true,
-            enter = slideInVertically(
-                initialOffsetY = { -200 }
-            ) + fadeIn(initialAlpha = 0.3f),
-            exit = slideOutVertically() + shrinkVertically() + fadeOut(),
-            content = content,
-            initiallyVisible = false
-        )
-    }
-
-    @ExperimentalAnimationApi
-    @Composable
-    fun HorizontalAnimationLeftToRight(content: @Composable () -> Unit) {
-        AnimatedVisibility(
-            visible = true,
-            enter = slideInHorizontally(
-                initialOffsetX = { -200 },
-                animationSpec = tween(durationMillis = 200)
-            ) + fadeIn(
-                initialAlpha = 0.3f,
-                animationSpec = tween(durationMillis = 200),
-            ),
-            exit = slideOutHorizontally(
-                targetOffsetX = { 200 },
-                animationSpec = spring(stiffness = Spring.StiffnessHigh)
-            ) + shrinkHorizontally() + fadeOut(),
-            content = { content() },
-            initiallyVisible = false
-        )
-
-    }
-
-    @ExperimentalAnimationApi
-    @Composable
-    fun HorizontalAnimationRightToLeft(content: @Composable () -> Unit) {
-        AnimatedVisibility(
-            visible = true,
-            enter = slideInHorizontally(
-                initialOffsetX = { 200 },
-                animationSpec = tween(durationMillis = 200)
-            ) + fadeIn(
-                initialAlpha = 0.3f,
-                animationSpec = tween(durationMillis = 200),
-            ),
-            exit = slideOutHorizontally(
-                targetOffsetX = { -200 },
-                animationSpec = spring(stiffness = Spring.StiffnessHigh)
-            ) + shrinkHorizontally(
-                shrinkTowards = Alignment.Start
-            ) + fadeOut(),
-            content = { content() },
-            initiallyVisible = false
-        )
-
-    }
-
 }

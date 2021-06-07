@@ -14,9 +14,10 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.picone.appcompose.ui.SetProgressDrawable
-import com.picone.appcompose.ui.main.baseComponent.*
+import com.picone.appcompose.R
+import com.picone.appcompose.ui.main.baseComponents.*
 import com.picone.appcompose.ui.values.TopLeftCornerCut
 import com.picone.appcompose.ui.values.TopRightCornerCut
 import com.picone.appcompose.ui.values.TopRoundedCorner
@@ -32,15 +33,15 @@ fun DetailScreen(
     state_allUnderStainsForTask: List<State<UnderStain>>,
     state_isAddUnderStainComponentVisible: Boolean,
     state_datePickerIconDateText: String,
+    state_underStainName : String,
+    state_underStainDescription : String,
     event_onAddUnderStainButtonClick: () -> Unit,
     event_AddUnderStainButtonOnOkButtonClicked: () -> Unit,
     event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit,
     event_nameEditTextOnTextChange: (text: String) -> Unit,
     event_descriptionEditTextOnTextChange: (text: String) -> Unit,
     event_onDatePickerIconClicked: () -> Unit,
-    event_onUnderStainMenuItemSelected : (selectedItem : String, underSatin : UnderStain) ->Unit,
-    state_underStainName : String,
-    state_underStainDescription : String
+    event_onUnderStainMenuItemSelected : (selectedItem : String, underSatin : UnderStain) ->Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -50,17 +51,21 @@ fun DetailScreen(
             .clip(TopRoundedCorner)
             .background(MaterialTheme.colors.secondary)
     ) {
-        item { DetailHeader(state_Task, state_allUnderStainsForTask) }
+        item { DetailHeader(
+            state_task = state_Task,
+            state_allUnderStainsForTask = state_allUnderStainsForTask
+        ) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         if (!state_isAddUnderStainComponentVisible) {
             items(items = state_allUnderStainsForTask) { underStain ->
-                BaseExpandableItem(itemDescription = underStain.value.description,) {
+                BaseExpandableItem(state_itemDescription = underStain.value.description) {
                     BaseExpandableItemTitle(
-                        itemName = underStain.value.name,
-                        optionIcon = {
-                            Row() {
+                        state_itemName = underStain.value.name,
+                        content_optionIcon = {
+                            Row {
                                 SetProgressDrawable(start = underStain.value.start, close = underStain.value.close)
-                                BasePopUpMenuIcon(
+                                BaseDropDownMenuIcon(
+                                    //todo pass with string resources
                                     state_menuItems = listOf(
                                         Constants.EDIT,
                                         Constants.DELETE,
@@ -82,9 +87,8 @@ fun DetailScreen(
                     modifier = Modifier
                         .padding(5.dp)
                         .fillMaxWidth(),
-                ) {
-                    Text(text = "Add Under Stain")
-                }
+                    content = { Text(text = "Add Under Stain") }
+                )
             }
         }
         if (state_isAddUnderStainComponentVisible) {
@@ -93,14 +97,14 @@ fun DetailScreen(
                     modifier = Modifier.padding(horizontal = 5.dp)
                 ) {
                     AddUnderStainItem(
+                        state_underStainDescription = state_underStainDescription,
+                        state_underStainName = state_underStainName,
                         state_datePickerIconDateText = state_datePickerIconDateText,
                         event_AddUnderStainButtonOnOkButtonClicked = event_AddUnderStainButtonOnOkButtonClicked,
                         event_AddUnderStainButtonOnCancelButtonClicked = event_AddUnderStainButtonOnCancelButtonClicked,
                         event_nameEditTextOnTextChange = event_nameEditTextOnTextChange,
                         event_descriptionEditTextOnTextChange = event_descriptionEditTextOnTextChange,
                         event_onDatePickerIconClicked = event_onDatePickerIconClicked,
-                        state_underStainDescription = state_underStainDescription,
-                        state_underStainName = state_underStainName
                     )
                 }
             }
@@ -110,14 +114,14 @@ fun DetailScreen(
 
 @Composable
 private fun AddUnderStainItem(
+    state_underStainName : String,
+    state_underStainDescription : String,
     state_datePickerIconDateText: String,
     event_AddUnderStainButtonOnOkButtonClicked: () -> Unit,
     event_AddUnderStainButtonOnCancelButtonClicked: () -> Unit,
     event_nameEditTextOnTextChange: (text: String) -> Unit,
     event_descriptionEditTextOnTextChange: (text: String) -> Unit,
     event_onDatePickerIconClicked: () -> Unit,
-    state_underStainName : String,
-    state_underStainDescription : String
 ) {
     Column(
         modifier = Modifier
@@ -131,26 +135,25 @@ private fun AddUnderStainItem(
             event_onDatePickerIconClicked = event_onDatePickerIconClicked
         )
         BaseEditText(
-            state_title = "Name",
+            state_title = stringResource(R.string.name),
             state_textColor = MaterialTheme.colors.onSurface,
             state_text = state_underStainName,
-            event_baseEditTextOnTextChange = { text -> event_nameEditTextOnTextChange(text) }
+            event_baseEditTextOnTextChange =  event_nameEditTextOnTextChange
         )
         BaseEditText(
-            state_title = "Description",
+            state_title = stringResource(R.string.description),
             state_textColor = MaterialTheme.colors.onSurface,
             state_text = state_underStainDescription,
-            event_baseEditTextOnTextChange = { text -> event_descriptionEditTextOnTextChange(text) }
+            event_baseEditTextOnTextChange = event_descriptionEditTextOnTextChange
         )
         BaseOkAndCancelButtons(
+            state_isOkButtonEnable = state_underStainName.trim().isNotEmpty() && state_underStainDescription.trim().isNotEmpty(),
             event_onOkButtonClicked = event_AddUnderStainButtonOnOkButtonClicked,
             event_onCancelButtonClicked = event_AddUnderStainButtonOnCancelButtonClicked,
-            state_isOkButtonEnable = state_underStainName.trim().isNotEmpty() && state_underStainDescription.trim().isNotEmpty(),
         )
         Spacer(modifier = Modifier.height(10.dp))
     }
 }
-
 
 @Composable
 private fun DetailHeader(
@@ -164,33 +167,28 @@ private fun DetailHeader(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            modifier = Modifier
-                .weight(4f)
-        ) {
-            TaskInformation(state_task)
-        }
-        Row(
-            modifier = Modifier
-                .weight(3f)
-        ) {
-            UnderStainInformation(state_allUnderStainsForTask)
-        }
+        Row(modifier = Modifier.weight(4f)
+        ) { TaskInformation(state_task) }
+
+        Row(modifier = Modifier.weight(3f)
+        ) { UnderStainInformation(state_allUnderStainsForTask) }
     }
 }
 
 @Composable
-private fun UnderStainInformation(state_allUnderStainsForTask: List<State<UnderStain>>) {
+private fun UnderStainInformation(
+    state_allUnderStainsForTask: List<State<UnderStain>>
+) {
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 15.dp)
             .clip(TopLeftCornerCut)
             .background(MaterialTheme.colors.surface)
     ) {
-        BaseTitleInformationText(titleText = "Under Stain ")
+        BaseTitleInformationText(state_titleText = stringResource(R.string.under_stain_information_title))
         Spacer(modifier = Modifier.height(10.dp))
-        BaseInformationText(informationText = "Total = " + state_allUnderStainsForTask.size)
-        BaseInformationText(informationText = "Done = " + getCompletedUnderStainsForTask(state_allUnderStainsForTask).size)
+        BaseInformationText(state_information_text = stringResource(R.string.under_stain_information_total) + state_allUnderStainsForTask.size)
+        BaseInformationText(state_information_text = stringResource(R.string.under_stain_information_done) + getCompletedUnderStainsForTask(state_allUnderStainsForTask).size)
     }
 }
 
@@ -203,17 +201,17 @@ private fun TaskInformation(state_task: Task) {
             .background(MaterialTheme.colors.surface)
 
     ) {
-        BaseTitleInformationText(titleText = state_task.name)
+        BaseTitleInformationText(state_titleText = state_task.name)
         Spacer(modifier = Modifier.height(10.dp))
         BaseInformationText(
-            informationText = "Create on : " + SimpleDateFormat(
+            state_information_text = stringResource(R.string.task_information_create_on) + SimpleDateFormat(
                 "dd/MM/yyy",
                 Locale.FRANCE
             ).format(state_task.creation)
         )
         BaseInformationText(
-            informationText = "Deadline on : " +
-                    if (state_task.deadLine == null) "none"
+            state_information_text = stringResource(R.string.task_information_deadline_on) +
+                    if (state_task.deadLine == null) stringResource(R.string.none)
                     else SimpleDateFormat("dd/MM/yyy", Locale.FRANCE)
                         .format(state_task.deadLine!!)
         )
@@ -221,7 +219,9 @@ private fun TaskInformation(state_task: Task) {
 }
 
 @Composable
-private fun getCompletedUnderStainsForTask(allUnderStainsForTask: List<State<UnderStain>>) =
-    allUnderStainsForTask.filter { underStain ->
+private fun getCompletedUnderStainsForTask(
+    state_allUnderStainsForTask: List<State<UnderStain>>
+) =
+    state_allUnderStainsForTask.filter { underStain ->
         underStain.value.close != null
     }

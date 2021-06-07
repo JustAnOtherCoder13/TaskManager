@@ -12,21 +12,21 @@ interface AndroidNavAction {
 
     fun doNavAction(navController: NavController) {
         navController.navigate(destination) {
-            popUpTo(AndroidNavObjects.Home.destination) {}
+            popUpTo(AndroidNavDirections.Home.destination) {}
             launchSingleTop = true
         }
     }
 
     fun doNavAction(navController: NavController, argument: String) {
         navController.navigate("$destination/${argument}") {
-            popUpTo(AndroidNavObjects.Home.destination) {}
+            popUpTo(AndroidNavDirections.Home.destination) {}
             launchSingleTop = true
         }
     }
 
     fun doNavAction(navController: NavController, argument: String, secondArgument : String, thirdArgument : String) {
         navController.navigate("$destination/${argument}/${secondArgument}/${thirdArgument}") {
-            popUpTo(AndroidNavObjects.Home.destination) {}
+            popUpTo(AndroidNavDirections.Home.destination) {}
             launchSingleTop = true
         }
     }
